@@ -21,11 +21,11 @@ module.exports = {
   				foreground: 'hsl(var(--card-foreground))'
   			},
   			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
+  				DEFAULT: '#273CF5',
   				foreground: 'hsl(var(--popover-foreground))'
   			},
   			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
+  				DEFAULT: '#0024DE',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
   			secondary: {
