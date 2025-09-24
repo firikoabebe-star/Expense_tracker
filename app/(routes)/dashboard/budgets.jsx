@@ -1,11 +1,11 @@
 import React from 'react'
 
-function page() {
+function budgets() {
   return (
     <div>
-      dashboard
+      my budgets
     </div>
   )
 }
 
-export default page
+export default budgets
