@@ -4,6 +4,7 @@ import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 function SideNav() {
   const menuList = [
@@ -43,22 +44,24 @@ function SideNav() {
         {menuList.map((menu) => {
           const IconComponent = menu.icon;
           return (
-            <div className={`flex gap-2 items-center text-gray-500 font-md p-5 cursor-pointer rounded-md hover:text-primary hover:bg-blue-100
+            <Link href={menu.path} className={`flex gap-2 items-center text-gray-500 font-md p-5 cursor-pointer rounded-md hover:text-primary hover:bg-blue-100
                 ${path==menu.path&&'text-primary bg-blue-100'}
             `}
             key={menu.id}>
               <IconComponent />
               <h2>{menu.name}</h2>
-            </div>
+            </Link>
+
           );
         })}
       </div>
       <div className='fixed bottom-10 p-5 flex gap-2 items-center'>
         <UserButton/>
-        Profile
+        Profile 
       </div>
     </div>
   );
 }
 
 export default SideNav;
+
