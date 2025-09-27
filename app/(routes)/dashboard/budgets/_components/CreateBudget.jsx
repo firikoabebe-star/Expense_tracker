@@ -19,7 +19,7 @@ import { db } from '../../../../../utils/dbConfig';
 import { Budgets } from '../../../../../utils/schema';
 import { toast } from 'sonner';
 
-function CreateBudget() {
+function CreateBudget({refreshData}) {
   const [emojiIcon, setEmojiIcon] = useState('😊');
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [name,setName]=useState();
@@ -37,7 +37,9 @@ function CreateBudget() {
       createdBy:user?.primaryEmailAddress?.emailAddress,
       icon:emojiIcon
      }).returning({insertedId:Budgets.id})
+
      if(result){
+      refreshData()
       toast('New Budget Created!')
      }
   }

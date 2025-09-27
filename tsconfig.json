@@ -23,6 +23,13 @@
       }
     ]
   },
+  
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"] 
+    }
+    ,
+  
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
