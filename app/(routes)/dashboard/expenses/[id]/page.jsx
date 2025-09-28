@@ -7,9 +7,10 @@ import { useUser } from "@clerk/nextjs";
 import { use } from "react"; // 👈 import use
 import BudgetItem from "../../budgets/_components/Budgetitem";
 import AddExpense from '../_components/AddExpense'
+import EditBudget from '../_components/EditBudget'
 import ExpenseListTable from '../_components/ExpenseListTable'
 import { Button } from "../../../../../components/ui/button.jsx";
-import { Trash } from "lucide-react";
+import { PenBox, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,7 +83,9 @@ function ExpensesScreen({ params }) {
   return (
     <div className="p-10">
       <h2 className="text-2xl font-bold flex justify-between items-center">My Expenses
-       
+       <div className='flex gap-2 items-center'>
+        <EditBudget budgetInfo={budgetInfo}
+        refreshData={()=>getBudgetInfo()}/>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button className='flex gap-2' variant='destructive'> 
@@ -102,7 +105,7 @@ function ExpensesScreen({ params }) {
                         </AlertDialogFooter>
                     </AlertDialogContent>
                     </AlertDialog>
-        
+        </div>
       </h2>
       <div className='grid grid-cols-1 md:grid-cols-2 mt-6 gap-5'>
        {budgetInfo? <BudgetItem budget={budgetInfo}/>:

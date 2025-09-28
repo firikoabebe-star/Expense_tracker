@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 function Hero() {
@@ -17,12 +18,12 @@ function Hero() {
       </p>
 
       <div className="mt-4 flex justify-center gap-4 sm:mt-6">
-        <a
+        <Link
           className="inline-block rounded border bg-primary px-5 py-3 font-medium text-white shadow-sm transition-colors hover:bg-gray-900"
           href="/sign-in"
         >
           Get Started
-        </a>
+        </Link>
 
         
       </div>
