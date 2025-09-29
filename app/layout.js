@@ -2,6 +2,7 @@ import { Outfit, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {ClerkProvider} from "@clerk/nextjs";
 import { Toaster } from "../components/ui/sonner"
+import { ThemeProvider } from "../components/theme-provider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -29,8 +30,16 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={`${outfit.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
-      ><Toaster />
+      ><ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster />
+        
         {children}
+        </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>

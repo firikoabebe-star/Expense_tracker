@@ -1,9 +1,9 @@
 "use client"
 import React, {useEffect,useState} from 'react'
 import CreateBudget from './CreateBudget.jsx'
-import { db } from '../../../../../utils/dbConfig.jsx'
+import { db } from '/utils/dbConfig.jsx'
 import {desc, asc, eq, getTableColumns, sql } from 'drizzle-orm'
-import { Budgets, Expenses} from '../../../../../utils/schema.jsx'
+import { Budgets, Expenses} from '/utils/schema.jsx'
 import { useUser } from "@clerk/nextjs";
 import BudgetItem from  './Budgetitem.jsx'
 

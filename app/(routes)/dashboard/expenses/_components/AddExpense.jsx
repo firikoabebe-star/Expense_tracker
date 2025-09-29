@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import { Input } from "../../../../../components/ui/input";
-import { Button } from "../../../../../components/ui/button";
-import { Budgets, Expenses } from "../../../../../utils/schema";
+import { Input } from "/components/ui/input";
+import { Button } from "/components/ui/button";
+import { Budgets, Expenses } from "/utils/schema";
 import { toast } from "sonner";
-import { db } from "../../../../../utils/dbConfig.jsx";
+import { db } from "/utils/dbConfig.jsx";
 import moment from "moment";
 import { Loader } from "lucide-react";
 
@@ -56,7 +56,7 @@ function AddExpense({budgetId,user, refreshData}) {
         />
       </div>
       <Button
-  disabled={(!name && !amount) || loading}
+  disabled={(!name && !amount ) || loading}
   className="mt-3 w-full"
   onClick={() => addNewExpense()}
 >

@@ -18,6 +18,8 @@ function page() {
        console.log(result)
       }
       const router=useRouter();
+
+      
   return (
     <div className='p-6'>
         <Button onClick={()=>router.back()}><ArrowLeft className="w-5 h-5" /></Button>

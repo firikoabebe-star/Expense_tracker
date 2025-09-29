@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 function SideNav() {
-  const menuList = [
+  const menuList = [    //objects inside 
     {
       id: 1,
       name: 'Dashboard',
@@ -26,16 +26,11 @@ function SideNav() {
       icon: ReceiptText, // Corrected spelling
       path:'/dashboard/expenses',
     },
-    {
-      id: 4,
-      name: 'Upgrade',
-      icon: ShieldCheck, // Corrected spelling
-      path:'/dashboard/upgrade'
-    },
+
   ];
-  const path=usePathname();
+  const path=usePathname();    //gives u the current path
   useEffect(() => {
-    console.log(path)
+    console.log(path)        //usefull for debugging navigation
   },[path])
   return (
     <div className='h-screen p-5 border shadow-sm'>
@@ -44,8 +39,8 @@ function SideNav() {
         {menuList.map((menu) => {
           const IconComponent = menu.icon;
           return (
-            <Link href={menu.path} className={`flex gap-2 items-center text-gray-500 font-md p-5 cursor-pointer rounded-md hover:text-primary hover:bg-blue-100
-                ${path==menu.path&&'text-primary bg-blue-100'}
+            <Link href={menu.path} className={`flex gap-2 items-center text-gray-500 font-md p-5 cursor-pointer rounded-md hover:text-primary hover:bg-green-100
+                ${path==menu.path&&'text-primary bg-green-100'}
             `}
             key={menu.id}>
               <IconComponent />

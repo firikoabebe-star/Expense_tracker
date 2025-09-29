@@ -13,7 +13,7 @@ function Header() {
     return (
         <div className='p-5 justify-between flex items-center border shadow-sm'>
             <Image src='./logo.svg' alt='logo' width={100} height={50} />
-            {isSignedIn ? <UserButton /> : <a
+            {isSignedIn ? <UserButton/> : <a
           className="inline-block rounded border bg-primary px-5 py-3 font-medium text-white shadow-sm transition-colors hover:bg-gray-900"
           href="/sign-in"
         >

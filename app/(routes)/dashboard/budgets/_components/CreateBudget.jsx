@@ -11,12 +11,12 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogClose,
-} from "../../../../../components/ui/dialog"
+} from "/components/ui/dialog"
 import EmojiPicker from 'emoji-picker-react'
-import { Button } from '../../../../../components/ui/button';
-import { Input } from "../../../../../components/ui/input"
-import { db } from '../../../../../utils/dbConfig';
-import { Budgets } from '../../../../../utils/schema';
+import { Button } from '/components/ui/button';
+import { Input } from "/components/ui/input"
+import { db } from '/utils/dbConfig';
+import { Budgets } from '/utils/schema';
 import { toast } from 'sonner';
 
 function CreateBudget({refreshData}) {
@@ -61,7 +61,7 @@ function CreateBudget({refreshData}) {
               <div>
                 <Button
                   variant="outline"
-                  onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
+                  onClick={() => setOpenEmojiPicker(!openEmojiPicker)}//toggles b/n true and false wich opens and closes the emoji picker
                 >
                   {emojiIcon}
                 </Button>
