@@ -5,13 +5,18 @@ import { Budgets, Expenses } from "../../../../../utils/schema";
 import { toast } from "sonner";
 import { db } from "../../../../../utils/dbConfig.jsx";
 import moment from "moment";
+import { Loader } from "lucide-react";
 
 function AddExpense({budgetId,user, refreshData}) {
 
-    const [name,setName]=useState();
-    const [amount,setAmount]=useState();
-   
+    const [name,setName]=useState("");
+    const [amount,setAmount]=useState("");
+    const [loading,setLoading]=useState(false);
+    /**
+     * Used to add new expense
+     */
     const addNewExpense=async()=>{
+      setLoading(true);
         const result=await db.insert(Expenses).values({
             name:name,
             amount:amount,
@@ -19,11 +24,15 @@ function AddExpense({budgetId,user, refreshData}) {
             createdAt:moment().format("DD/MM/YYYY")
         }).returning({insertedId:Budgets.id});
 
+        setAmount('');
+        setName('');
         console.log(result);
         if(result){
+          setLoading(false)
             refreshData()
             toast('New Expense Added')
         }
+        setLoading(false);  
     }
 
   return (
@@ -33,6 +42,7 @@ function AddExpense({budgetId,user, refreshData}) {
         <h2 className="text-black font-medium my-1">Expense Name</h2>
         <Input
           placeholder="e.g bedroom decor"
+          value={name}
           onChange={(e) => setName(e.target.value)}
         />
       </div>
@@ -41,12 +51,22 @@ function AddExpense({budgetId,user, refreshData}) {
         <Input
           type='Number'
           placeholder="e.g 1000"
+          value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
       </div>
-      <Button disabled={!(name&&amount)} 
-      className='mt-3 w-full'
-      onClick={()=>addNewExpense()}>Add New Expense</Button>
+      <Button
+  disabled={(!name && !amount) || loading}
+  className="mt-3 w-full"
+  onClick={() => addNewExpense()}
+>
+  {loading ? (
+    <Loader className="animate-spin" />
+  ) : (
+    "Add New Expense"
+  )}
+</Button>
+
     </div>
   );
 }
