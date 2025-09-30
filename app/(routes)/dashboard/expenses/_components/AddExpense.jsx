@@ -39,7 +39,7 @@ function AddExpense({budgetId,user, refreshData}) {
     <div className='border p-5 rounded-lg hover:shadow-md'>
       <h2 className="font-bold text-lg">AddExpense</h2>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1">Expense Name</h2>
+        <h2 className="text-black font-medium my-1 dark:text-white">Expense Name</h2>
         <Input
           placeholder="e.g bedroom decor"
           value={name}
@@ -47,7 +47,7 @@ function AddExpense({budgetId,user, refreshData}) {
         />
       </div>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1">Expense Amount</h2>
+        <h2 className="text-black font-medium my-1 dark:text-white">Expense Amount</h2>
         <Input
           type='Number'
           placeholder="e.g 1000"
@@ -57,7 +57,7 @@ function AddExpense({budgetId,user, refreshData}) {
       </div>
       <Button
   disabled={(!name && !amount ) || loading}
-  className="mt-3 w-full"
+  className="mt-3 w-full "
   onClick={() => addNewExpense()}
 >
   {loading ? (

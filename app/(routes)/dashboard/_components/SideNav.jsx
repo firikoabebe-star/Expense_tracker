@@ -33,8 +33,8 @@ function SideNav() {
     console.log(path)        //usefull for debugging navigation
   },[path])
   return (
-    <div className='h-screen p-5 border shadow-sm'>
-      <Image src='/logo.svg' alt='logo' height={50} width={100} />
+    <div className='h-screen p-5 border shadow-sm dark:bg-[#1B1B1F]'>
+      <Image src='/logoipsum-247.svg' alt='logo' height={50} width={50} />
       <div className='mt-5'>
         {menuList.map((menu) => {
           const IconComponent = menu.icon;

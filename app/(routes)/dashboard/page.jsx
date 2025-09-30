@@ -50,8 +50,9 @@ function page() {
     setExpensesList(result);
    
     }
+    
   return (
-    <div className='p-8'>
+    <div className='p-8 dark:bg-[#1B1B1F]'>
       <h2 className='font-bold text-3xl'>Hi, {user?.firstName}✌️</h2>
       <p className='text-gray-500'>Here's what's happenning with your money, Lets manage your expense</p>
 

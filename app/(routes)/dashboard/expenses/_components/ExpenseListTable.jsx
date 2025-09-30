@@ -30,7 +30,7 @@ function ExpenseListTable({expensesList, refreshData}) {
           <h2>{expenses.amount}</h2>
           <h2>{expenses.createdAt}</h2>
           <h2>
-            <Trash className='text-red-600 cursor pointer' 
+            <Trash className=' hover:text-red-700 text-red-600 cursor pointer' 
             onClick={()=>deleteExpense(expenses)}/>
           </h2>
         </div>

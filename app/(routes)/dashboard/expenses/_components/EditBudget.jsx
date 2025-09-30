@@ -11,12 +11,12 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogClose,
-} from "../../../../../components/ui/dialog"
+} from "/components/ui/dialog"
 import EmojiPicker from 'emoji-picker-react'
 import { useUser } from '@clerk/nextjs'
-import { Input } from '../../../../../components/ui/input'
-import { Budgets } from '../../../../../utils/schema'
-import { db } from '../../../../../utils/dbConfig'
+import { Input } from '/components/ui/input'
+import { Budgets } from '/utils/schema'
+import { db } from '/utils/dbConfig'
 import { eq } from 'drizzle-orm'
 import { toast } from 'sonner'
 
@@ -50,7 +50,7 @@ const [emojiIcon, setEmojiIcon] = useState();
     <div>
         <Dialog>
               <DialogTrigger asChild>
-               <Button className='flex gap-2'> <PenBox/> Edit</Button>
+               <Button className='flex gap-2 dark:bg-[#15a095] dark:hover:bg-[#0a6f67] hover:bg-[#107c73]'> <PenBox/> Edit</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -60,12 +60,13 @@ const [emojiIcon, setEmojiIcon] = useState();
                     <div>
                       <Button
                         variant="outline"
+                         className="dark:border-white"
                         onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
                       >
                         {emojiIcon}
                       </Button>
                       <div className='mt-2'>
-                       <h2 className='text-black font-medium my-1'>Budget Name</h2>
+                       <h2 className='text-black font-medium my-1 dark:text-white'>Budget Name</h2>
                      {budgetInfo && (
                     <Input
                         placeholder="e.g home decor"
@@ -76,7 +77,7 @@ const [emojiIcon, setEmojiIcon] = useState();
 
                        </div>
                        <div className='mt-2'>
-                       <h2 className='text-black font-medium my-1'>Budget Amount</h2>
+                       <h2 className='text-black font-medium my-1 dark:text-white'>Budget Amount</h2>
                        {budgetInfo && (
                       <Input type='Number' placeholder="e.g 5000$"
                        defaultValue={budgetInfo.amount}
@@ -100,7 +101,7 @@ const [emojiIcon, setEmojiIcon] = useState();
                     <DialogClose asChild>
                       <Button 
                        disabled={!(name&&amount)}
-                       className='mt-5 w-full'
+                       className='mt-5 w-full dark:text-white'
                        onClick={()=>onUpdateBudget()}>Update Budget</Button>
                     </DialogClose>
                   </DialogFooter>

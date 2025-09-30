@@ -21,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../../../../components/ui/alert-dialog"
+} from "/components/ui/alert-dialog"
 import { toast } from "sonner";
 import { useRouter } from "next/navigation.js";
 function ExpensesScreen({ params }) {
@@ -81,21 +81,21 @@ function ExpensesScreen({ params }) {
     route.replace('/dashboard/budgets');
   }
   return (
-    <div className="p-10">
+    <div className="p-10 dark:bg-[#1B1B1F] h-screen">
       <h2 className="text-2xl font-bold flex justify-between items-center">My Expenses
        <div className='flex gap-2 items-center'>
         <EditBudget budgetInfo={budgetInfo}
         refreshData={()=>getBudgetInfo()}/>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button className='flex gap-2' variant='destructive'> 
+                        <Button className='flex gap-2 hover:bg-red-700 dark:bg-red-700  dark:hover:bg-red-800 dark:text-black' variant='destructive'> 
                         <Trash/> Delete</Button>
                    </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your Your current budget along with expenses
+                            This action cannot be undone. This will permanently delete your current budget along with expenses
                             and remove your data from our servers.
                         </AlertDialogDescription>
                         </AlertDialogHeader>
