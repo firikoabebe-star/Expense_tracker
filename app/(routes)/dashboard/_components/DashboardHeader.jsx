@@ -20,7 +20,7 @@ function DashboardHeader() {
       <div>
       <Sheet className=''> 
         <SheetTrigger>
-          <Menu className="cursor-pointer dark:hover:text-gray-400 flex md:hidden" />
+          <Menu className="cursor-pointer dark:hover:text-gray-400 flex lg:hidden" />
         </SheetTrigger>
 
         <SheetContent side="left"
