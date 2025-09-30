@@ -25,12 +25,12 @@ function ExpenseListTable({expensesList, refreshData}) {
         <h2 className='font-bold'>Action</h2>
       </div>
       {expensesList.map((expenses,index) => (
-        <div key={index} className='grid grid-cols-4 bg-slate-50 dark:bg-inherit p-2'>
+        <div key={index} className='grid grid-cols-4 bg-slate-50 dark:bg-inherit p-2 items-center'>
           <h2>{expenses.name}</h2>
           <h2>{expenses.amount}</h2>
           <h2>{expenses.createdAt}</h2>
           <h2>
-            <Trash className=' hover:text-red-700 text-red-600 cursor pointer' 
+            <Trash className=' hover:text-red-700 text-red-600 cursor pointer text-center' 
             onClick={()=>deleteExpense(expenses)}/>
           </h2>
         </div>
