@@ -54,7 +54,7 @@ function page() {
   return (
     <div className='p-8 dark:bg-[#1B1B1F]'>
       <h2 className='font-bold text-3xl'>Hi, {user?.firstName}✌️</h2>
-      <p className='text-gray-500'>Here's what's happenning with your money, Lets manage your expense</p>
+      <p className='text-gray-500'>Your money, simplified. Let’s manage your expenses smarter.</p>
 
       <CardInfo budgetList={budgetList}/>
       <div className='grid grid-cols-1 md:grid-cols-3 mt-6 gap-5'>

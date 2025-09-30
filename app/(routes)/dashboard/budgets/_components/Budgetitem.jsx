@@ -21,7 +21,8 @@ function Budgetitem({budget}) {
                     <h2 className='text-sm text-gray-500'>{budget?.totalItem} Item</h2>
                 </div>
         </div>
-        <h2 className='font-bold text-primary text-lg'>${budget?.amount}</h2>
+        <h2 className='font-bold text-primary text-lg whitespace-nowrap 
+  max-w-[120px] sm:max-w-[100px] xs:max-w-[80px]'>${budget?.amount}</h2>
         </div>
         <div className='mt-5'>
             <div className='flex items-center justify-between mb-3'>

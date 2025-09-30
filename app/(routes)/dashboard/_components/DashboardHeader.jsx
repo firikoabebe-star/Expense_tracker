@@ -15,12 +15,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 function DashboardHeader() {
   return (
-    <div className='p-5 shadow-sm border-b flex justify-between items-center dark:bg-[#1B1B1F]'>
+    <div className=' p-5 shadow-sm border-b flex justify-between items-center dark:bg-[#1B1B1F]'>
 
       <div>
-      <Sheet>
+      <Sheet className=''> 
         <SheetTrigger>
-          <Menu className="cursor-pointer dark:hover:text-gray-400" />
+          <Menu className="cursor-pointer dark:hover:text-gray-400 flex md:hidden" />
         </SheetTrigger>
 
         <SheetContent side="left"
@@ -37,10 +37,10 @@ function DashboardHeader() {
   ">
           <SheetHeader>
             <SheetTitle>
-              <h2 className='flex flex-col gap-6'>
+              <div className='flex flex-col gap-6'>
               <Image src='/logoipsum-247.svg' alt='logo' width={50} height={50} /> 
                Where are you headed?
-              </h2>
+              </div>
               </SheetTitle>
             <SheetDescription>
               Quick navigation links

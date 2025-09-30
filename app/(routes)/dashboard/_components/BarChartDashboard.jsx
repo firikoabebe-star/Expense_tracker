@@ -1,7 +1,7 @@
 "use client"
 
-import { Bar, BarChart, XAxis } from "recharts"
-
+import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -10,86 +10,65 @@ import {
   CardTitle,
 } from "../../../../components/ui/card"
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../../../components/ui/chart"
-import { useState } from "react"
-import { useUser } from "@clerk/nextjs"
-
-export const description = "A stacked bar chart with a legend"
-export const iframeHeight = "600px"
-export const containerClassName =
-  "[&>div]:w-full [&>div]:max-w-md flex items-center justify-center min-h-svh"
-
-// const chartData = [
-//   { date: "2024-07-15", running: 450, swimming: 300 },
-//   { date: "2024-07-16", running: 380, swimming: 420 },
-//   { date: "2024-07-17", running: 520, swimming: 120 },
-//   { date: "2024-07-18", running: 140, swimming: 550 },
-//   { date: "2024-07-19", running: 600, swimming: 350 },
-//   { date: "2024-07-20", running: 480, swimming: 400 },
-// ]
-
-
- 
- 
-const chartConfig = {
-  running: {
-    label: "Running",
-    color: "var(--chart-1)",
-  },
-  swimming: {
-    label: "Swimming",
-    color: "var(--chart-2)",
-  },
-}
-
 export default function BarChartDashboard({ budgetList }) {
-  const chartData = budgetList;
-  console.log(budgetList);
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    if (budgetList) {
+      const data = budgetList.map(budget => ({
+        name: budget.name,
+        totalSpend: budget.totalSpend || 0,
+        amount: Number(budget.amount)
+      }));
+      setChartData(data);
+    }
+  }, [budgetList]);
+
   return (
-    <Card>
+    <Card className="h-[400px]">
       <CardHeader>
-        <CardTitle>Tooltip - Default</CardTitle>
+        <CardTitle>Activity</CardTitle>
         <CardDescription>
-          Default tooltip with ChartTooltipContent.
+          Comparison of your allocated budget vs. actual spending.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 5,
+              right: 20,
+              left: 0,
+              bottom: 5,
+            }}
+          >
             <XAxis
-              dataKey="date"
+              dataKey="name"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) =>
-                new Date(value).toLocaleDateString("en-US", {
-                  weekday: "short",
-                })
-              }
             />
-            <Bar
-              dataKey="running"
-              stackId="a"
-              fill="var(--color-running)"
-              radius={[0, 0, 4, 4]}
+            <YAxis
+              tickLine={false}
+              axisLine={false}
             />
+            <Tooltip />
+            <Legend />
             <Bar
-              dataKey="swimming"
-              stackId="a"
-              fill="var(--color-swimming)"
+              dataKey="totalSpend"
+              name="Total Spend"
+              fill="#8884d8"
               radius={[4, 4, 0, 0]}
             />
-            <ChartTooltip
-              content={<ChartTooltipContent />}
-              cursor={false}
-              defaultIndex={1}
+            <Bar
+              dataKey="amount"
+              name="Budget Amount"
+              fill="#82ca9d"
+              radius={[4, 4, 0, 0]}
             />
           </BarChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   )

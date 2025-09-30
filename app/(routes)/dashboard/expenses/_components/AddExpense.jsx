@@ -5,6 +5,7 @@ import { Budgets, Expenses } from "/utils/schema";
 import { toast } from "sonner";
 import { db } from "/utils/dbConfig.jsx";
 import moment from "moment";
+import { eq, getTableColumns, sql } from "drizzle-orm";
 import { Loader } from "lucide-react";
 
 function AddExpense({budgetId,user, refreshData}) {
@@ -17,6 +18,27 @@ function AddExpense({budgetId,user, refreshData}) {
      */
     const addNewExpense=async()=>{
       setLoading(true);
+      // 1. Get Budget Info (Amount & Spend)
+      const budgetInfoResult = await db.select({
+        ...getTableColumns(Budgets),
+        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
+      }).from(Budgets)
+        .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
+        .where(eq(Budgets.id, budgetId))
+        .groupBy(Budgets.id);
+
+      const budgetInfo = budgetInfoResult[0];
+      const remainingBudget = (budgetInfo.amount || 0) - (budgetInfo.totalSpend || 0);
+
+      // 2. Validate new expense amount
+      if (Number(amount) > remainingBudget) {
+        setLoading(false);
+        toast.error(`Expense exceeds remaining budget of ${remainingBudget.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}.`);
+        return; // Stop execution
+      }
+
+
+      // 3. Insert Expense if valid
         const result=await db.insert(Expenses).values({
             name:name,
             amount:amount,
