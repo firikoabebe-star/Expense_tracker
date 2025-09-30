@@ -34,7 +34,7 @@ function SideNav() {
   },[path])
   return (
     <div className='h-screen p-5 border shadow-sm dark:bg-[#1B1B1F]'>
-      <Image src='/logoipsum-247.svg' alt='logo' height={50} width={50} />
+     <Link href='/'> <Image src='/logoipsum-247.svg' alt='logo' height={50} width={50} /></Link>
       <div className='mt-5'>
         {menuList.map((menu) => {
           const IconComponent = menu.icon;
