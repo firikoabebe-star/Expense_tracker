@@ -28,13 +28,13 @@ function SideNav() {
     },
 
   ];
-  const path=usePathname();    //gives u the current path
-  useEffect(() => {
-    console.log(path)        //usefull for debugging navigation
-  },[path])
+  const path=usePathname();
+  useEffect(()=>{
+    console.log(path)
+  }),[path]
   return (
     <div className='h-screen p-5 border shadow-sm dark:bg-[#1B1B1F]'>
-     <Link href='/'> <Image src='/logoipsum-247.svg' alt='logo' height={50} width={50} /></Link>
+     <Link href='/'> <Image src='/logoipsum-247.svg' alt='logo' height={50} width={50} /></Link>   
       <div className='mt-5'>
         {menuList.map((menu) => {
           const IconComponent = menu.icon;
