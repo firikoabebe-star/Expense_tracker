@@ -10,7 +10,7 @@ import AddExpense from '../_components/AddExpense'
 import EditBudget from '../_components/EditBudget'
 import ExpenseListTable from '../_components/ExpenseListTable'
 import { Button } from "../../../../../components/ui/button.jsx";
-import { PenBox, Trash } from "lucide-react";
+import { ArrowLeft, PenBox, Router, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,7 +82,11 @@ function ExpensesScreen({ params }) {
   }
   return (
     <div className="p-10 dark:bg-[#1B1B1F] h-screen">
-      <h2 className="text-2xl font-bold flex justify-between items-center">My Expenses
+      <h2 className="text-2xl font-bold flex justify-between items-center">
+        <div className='gap-2 flex items-center'>
+       <Button  className="dark:hover:bg-[#05766c] hover:bg-[#05766c]" onClick={() => route.back()}><ArrowLeft className="w-5 h-5" /></Button>
+        My Expenses
+        </div>
        <div className='flex gap-2 items-center'>
         <EditBudget budgetInfo={budgetInfo}
         refreshData={()=>getBudgetInfo()}/>

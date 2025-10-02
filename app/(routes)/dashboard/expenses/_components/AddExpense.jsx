@@ -77,15 +77,15 @@ function AddExpense({budgetId,user, refreshData}) {
           onChange={(e) => setAmount(e.target.value)}
         />
       </div>
-      <Button
+      <Button 
   disabled={(!name && !amount ) || loading}
-  className="mt-3 w-full "
+  className="mt-3 w-full hover:bg-[#107c73]"
   onClick={() => addNewExpense()}
 >
   {loading ? (
     <Loader className="animate-spin" />
   ) : (
-    "Add New Expense"
+   <h2> Add New Expense </h2> 
   )}
 </Button>
 
