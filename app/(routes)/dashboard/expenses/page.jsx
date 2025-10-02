@@ -51,7 +51,7 @@ const router=useRouter();
         <h2 className='font-bold'>Action</h2>
       </div>
       {expensesList.map((expenses,index) => (
-        <div key={index} className='grid grid-cols-4 bg-slate-50 dark:bg-inherit p-2 dark:bg-[#26262e] dark:hover:shadow-[0_1px_1px_white]'>
+        <div key={index} className='grid grid-cols-4 bg-slate-50 dark:bg-inherit p-2 dark:bg-[#38383a] dark:hover:shadow-[0_1px_1px_white]'>
           <h2>{expenses.name}</h2>
           <h2>{expenses.amount}</h2>
           <h2>{expenses.createdAt}</h2>

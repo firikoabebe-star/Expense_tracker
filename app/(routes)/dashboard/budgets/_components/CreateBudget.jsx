@@ -94,7 +94,7 @@ function CreateBudget({refreshData}) {
               <DialogClose asChild>
                 <Button 
                  disabled={!(name&&amount)}
-                 className='mt-5 w-full dark:text-white'
+                 className='mt-5 w-full dark:text-white hover:bg-[#107c73]'
                  onClick={()=>onCreateBudget()}>Create Budget</Button>
               </DialogClose>
             </DialogFooter>

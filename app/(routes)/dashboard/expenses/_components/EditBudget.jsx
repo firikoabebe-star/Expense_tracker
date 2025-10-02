@@ -101,7 +101,7 @@ const [emojiIcon, setEmojiIcon] = useState();
                     <DialogClose asChild>
                       <Button 
                        disabled={!(name&&amount)}
-                       className='mt-5 w-full dark:text-white'
+                       className='mt-5 w-full dark:text-white hover:bg-[#05766c]'
                        onClick={()=>onUpdateBudget()}>Update Budget</Button>
                     </DialogClose>
                   </DialogFooter>

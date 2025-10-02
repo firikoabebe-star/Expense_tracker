@@ -99,13 +99,12 @@ function ExpensesScreen({ params }) {
                         <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your current budget along with expenses
-                            and remove your data from our servers.
+                            This will permanently delete your budget and its expenses. This action cannot be undone.
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={()=>deleteBudget()}>Continue</AlertDialogAction>
+                        <AlertDialogAction className="hover:bg-[#107c73]" onClick={()=>deleteBudget()}>Continue</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                     </AlertDialog>
