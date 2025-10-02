@@ -1,5 +1,5 @@
 "use client"
-import { ArrowLeft, Trash } from 'lucide-react'
+import { ArrowLeft, Router, Trash } from 'lucide-react'
 import React, { useState ,useEffect} from 'react'
 import { db } from '/utils/dbConfig'
 import { Expenses } from '/utils/schema'
@@ -8,9 +8,11 @@ import { useUser } from '@clerk/nextjs';
 import { Budgets } from '/utils/schema'
 import { Button } from '/components/ui/button'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 function ExpenseList() {
 const [expensesList,setExpensesList]=useState([]);
 const {user}=useUser();
+const router=useRouter();
   useEffect(()=>{
         user&&getAllExpenses();
     },[user])

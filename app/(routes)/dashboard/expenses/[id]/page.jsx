@@ -1,15 +1,15 @@
 "use client";
 import React, { useEffect,useState } from "react";
-import { db } from "../../../../../utils/dbConfig.jsx";
+import { db } from "/utils/dbConfig.jsx";
 import { desc, eq, getTableColumns, sql } from "drizzle-orm";
-import { Budgets, Expenses } from "../../../../../utils/schema.jsx";
+import { Budgets, Expenses } from "/utils/schema.jsx";
 import { useUser } from "@clerk/nextjs";
 import { use } from "react"; // 👈 import use
 import BudgetItem from "../../budgets/_components/Budgetitem";
 import AddExpense from '../_components/AddExpense'
 import EditBudget from '../_components/EditBudget'
 import ExpenseListTable from '../_components/ExpenseListTable'
-import { Button } from "../../../../../components/ui/button.jsx";
+import { Button } from "/components/ui/button.jsx";
 import { ArrowLeft, PenBox, Router, Trash } from "lucide-react";
 import {
   AlertDialog,

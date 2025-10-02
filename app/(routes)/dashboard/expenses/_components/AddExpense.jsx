@@ -13,6 +13,8 @@ function AddExpense({budgetId,user, refreshData}) {
     const [name,setName]=useState("");
     const [amount,setAmount]=useState("");
     const [loading,setLoading]=useState(false);
+    //**use state is used so that we can convert from false to true for loading
+    // then from true to false when done */
     /**
      * Used to add new expense
      */
@@ -30,7 +32,8 @@ function AddExpense({budgetId,user, refreshData}) {
       const budgetInfo = budgetInfoResult[0];
       const remainingBudget = (budgetInfo.amount || 0) - (budgetInfo.totalSpend || 0);
 
-      // 2. Validate new expense amount
+      // 2. Validate new expense amount toast and stop if exceeds remaining budget
+
       if (Number(amount) > remainingBudget) {
         setLoading(false);
         toast.error(`Expense exceeds remaining budget of ${remainingBudget.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}.`);
