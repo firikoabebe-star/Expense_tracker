@@ -5,7 +5,16 @@ import { Button } from '/components/ui/button'
 import Image from 'next/image'
 import { TextEffect } from '/components/ui/text-effect'
 import { AnimatedGroup } from '/components/ui/animated-group'
-import { HeroHeader } from './header'
+import Autoplay from "embla-carousel-autoplay"
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "/components/ui/carousel"
+import LandingNavbar from './LandingNavbar'
 
 const transitionVariants = {
     item: {
@@ -27,10 +36,15 @@ const transitionVariants = {
     },
 }
 
+const Images = [
+  '/Happy_family3.jpg','/stacks-coins.jpg','/happy_family2.jpg','/Finance.jpg'
+]
+
 export default function HeroSection() {
     return (
         <>
-            <HeroHeader />
+            {/* <HeroHeader /> */}
+            <LandingNavbar/>
             <main className="overflow-hidden">
                 <div
                     aria-hidden
@@ -139,23 +153,13 @@ export default function HeroSection() {
                                     className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
                                     <div
                                         key={1}
-                                        className="bg-foreground/10 rounded-[calc(var(--radius-xl)+0.125rem)] border p-0.5">
+                                        >
                                         <Button asChild size="lg" className="rounded-xl px-5 text-base">
-                                            <Link href="#link">
-                                                <span className="text-nowrap">Start Building</span>
+                                            <Link href="/sign-up">
+                                                <span className="text-nowrap">Get Started</span>
                                             </Link>
                                         </Button>
                                     </div>
-                                    <Button
-                                        key={2}
-                                        asChild
-                                        size="lg"
-                                        variant="ghost"
-                                        className="h-10.5 rounded-xl px-5">
-                                        <Link href="#link">
-                                            <span className="text-nowrap">Request a demo</span>
-                                        </Link>
-                                    </Button>
                                 </AnimatedGroup>
                             </div>
                         </div>
@@ -172,24 +176,31 @@ export default function HeroSection() {
                                 },
                                 ...transitionVariants,
                             }}>
-                            <div
-                                className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
-                                <div
-                                    className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
-                                    <Image
-                                        className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
-                                        src="/happy_family2.jpg"
-                                        alt="app screen"
-                                        width="2700"
-                                        height="1440" />
-                                    <Image
-                                        className="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
-                                        src="/happy_family3.jpg"
-                                        alt="app screen"
-                                        width="2700"
-                                        height="1440" />
-                                </div>
-                            </div>
+                           
+                                            <div className="flex items-center justify-center w-full mx-auto py-10">
+                                         <Carousel className="w-full max-w-3xl rounded-2xl "
+                                            // plugins={[
+                                            //       Autoplay({
+                                            //         delay: 2000,
+                                            //       }),
+                                            //     ]}
+                                         >
+
+                                          <CarouselContent className="-ml-1 rounded-2xl ">
+                                            {Images.map((image, index) => (
+                                              <CarouselItem key={index} className="pl-1 w-full rounded-2xl">
+                                               
+                                                <Image src={image} width={1000} height={1000} className=' w-[1500px] h-[500px] rounded-2xl'  alt='image'/>
+                                                
+                                              </CarouselItem>
+                                            ))}
+                                          </CarouselContent>
+                                          <CarouselPrevious />
+                                          <CarouselNext />
+                                        </Carousel>
+                                        
+                                        </div>
+                               
                         </AnimatedGroup>
                     </div>
                 </section>
