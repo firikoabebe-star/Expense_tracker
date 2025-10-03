@@ -112,7 +112,7 @@ export default function HeroSection() {
                                     speedSegment={0.3}
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
-                                    Modern Solutions for Customer Engagement
+                                    Manage Your Expense Control your Money.
                                 </TextEffect>
                                 <TextEffect
                                     per="line"
@@ -121,7 +121,7 @@ export default function HeroSection() {
                                     delay={0.5}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg">
-                                    Highly customizable components for building modern websites and applications that look and feel the way you mean it.
+                                   Start creating your budget today and save a ton of money.
                                 </TextEffect>
 
                                 <AnimatedGroup
@@ -178,13 +178,13 @@ export default function HeroSection() {
                                     className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
                                     <Image
                                         className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
-                                        src="/mail2.png"
+                                        src="/happy_family2.jpg"
                                         alt="app screen"
                                         width="2700"
                                         height="1440" />
                                     <Image
                                         className="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
-                                        src="/mail2-light.png"
+                                        src="/happy_family3.jpg"
                                         alt="app screen"
                                         width="2700"
                                         height="1440" />

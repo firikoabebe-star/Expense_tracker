@@ -1,13 +1,15 @@
 'use client'
 import Link from 'next/link'
-import { Logo } from '@/components/logo'
 import { Menu, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '/components/ui/button'
 import React from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '/lib/utils'
+import { ModeToggle } from './ModeToggle'
+import Image from 'next/image'
 
 const menuItems = [
-    { name: 'Features', href: '#link' },
+    { name: 'Home', href: '/' },
+    { name: 'About Us', href: '/about' },
     { name: 'Solution', href: '#link' },
     { name: 'Pricing', href: '#link' },
     { name: 'About', href: '#link' },
@@ -35,9 +37,7 @@ export const HeroHeader = () => {
                     <div
                         className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
                         <div className="flex w-full justify-between lg:w-auto">
-                            <Link href="/" aria-label="home" className="flex items-center space-x-2">
-                                <Logo />
-                            </Link>
+                            <Link href='/'><Image src='/logoipsum-247.svg' alt='logo' width={40} height={40} className='mt-2' /></Link>
 
                             <button
                                 onClick={() => setMenuState(!menuState)}
@@ -81,6 +81,7 @@ export const HeroHeader = () => {
                             </div>
                             <div
                                 className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                                    <ModeToggle />
                                 <Button
                                     asChild
                                     variant="outline"
@@ -95,14 +96,17 @@ export const HeroHeader = () => {
                                         <span>Sign Up</span>
                                     </Link>
                                 </Button>
+                                
                                 <Button
                                     asChild
                                     size="sm"
                                     className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
                                     <Link href="#">
+                                        
                                         <span>Get Started</span>
                                     </Link>
                                 </Button>
+
                             </div>
                         </div>
                     </div>
