@@ -1,21 +1,23 @@
-import React from 'react'
-import Link from 'next/link'
-import { ArrowRight, ChevronRight } from 'lucide-react'
-import { Button } from '/components/ui/button'
-import Image from 'next/image'
-import { TextEffect } from '/components/ui/text-effect'
-import { AnimatedGroup } from '/components/ui/animated-group'
-import Autoplay from "embla-carousel-autoplay"
+'use client'
+import React from 'react';
+import Link from 'next/link';
+import { ArrowRight, ChevronRight, Play } from 'lucide-react';
+import { Button } from '/components/ui/button';
+import Image from 'next/image';
+import { TextEffect } from '/components/ui/text-effect';
+import { AnimatedGroup } from '/components/ui/animated-group';
+import Autoplay from "embla-carousel-autoplay"; // Keep Autoplay import
 
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "/components/ui/carousel"
-import LandingNavbar from './LandingNavbar'
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "/components/ui/carousel";
+import LandingNavbar from './LandingNavbar';
 
+// Standardized animation variants for the main content group
 const transitionVariants = {
     item: {
         hidden: {
@@ -34,18 +36,40 @@ const transitionVariants = {
             },
         },
     },
-}
+};
 
 const Images = [
-  '/Happy_family3.jpg','/stacks-coins.jpg','/happy_family2.jpg','/Finance.jpg'
-]
+    '/Happy_family3.jpg', '/stacks-coins.jpg', '/happy_family2.jpg',
+];
 
 export default function HeroSection() {
+    // 1. Activate Autoplay functionality
+    const carouselPlugins = React.useMemo(() => [
+        Autoplay({
+            delay: 4000, // Increased delay to 4 seconds for better viewing
+            stopOnInteraction: true,
+            stopOnMouseEnter: true, // Stop autoplay when user hovers over the carousel
+        }),
+    ], []);
+
+    // Cleaned up AnimatedGroup for Hero Text/CTA to combine variants
+    const heroContentVariants = {
+        container: {
+            visible: {
+                transition: {
+                    staggerChildren: 0.05,
+                    delayChildren: 0.75, // Keeps the initial delay
+                },
+            },
+        },
+        ...transitionVariants,
+    };
+    
     return (
         <>
-            {/* <HeroHeader /> */}
             <LandingNavbar/>
             <main className="overflow-hidden">
+                {/* Decorative Background Gradients */}
                 <div
                     aria-hidden
                     className="absolute inset-0 isolate hidden opacity-65 contain-strict lg:block">
@@ -56,40 +80,21 @@ export default function HeroSection() {
                     <div
                         className="h-320 -translate-y-87.5 absolute left-0 top-0 w-60 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
                 </div>
+                
                 <section>
                     <div className="relative pt-24 md:pt-36">
+                        {/* Background Image/Mask */}
                         <AnimatedGroup
-                            variants={{
-                                container: {
-                                    visible: {
-                                        transition: {
-                                            delayChildren: 1,
-                                        },
-                                    },
-                                },
-                                item: {
-                                    hidden: {
-                                        opacity: 0,
-                                        y: 20,
-                                    },
-                                    visible: {
-                                        opacity: 1,
-                                        y: 0,
-                                        transition: {
-                                            type: 'spring',
-                                            bounce: 0.3,
-                                            duration: 2,
-                                        },
-                                    },
-                                },
-                            }}
+                            variants={heroContentVariants}
                             className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32">
                             <Image
                                 src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
-                                alt="background"
+                                alt="abstract dark background image"
                                 className="hidden size-full dark:block"
-                                width="3276"
-                                height="4095" />
+                                width={3276}
+                                height={4095}
+                                priority // High priority for LCP
+                            />
                         </AnimatedGroup>
 
                         <div
@@ -98,22 +103,25 @@ export default function HeroSection() {
 
                         <div className="mx-auto max-w-7xl px-6">
                             <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
+                                {/* Announcement Banner */}
                                 <AnimatedGroup variants={transitionVariants}>
                                     <Link
                                         href="#link"
-                                        className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
-                                        <span className="text-foreground text-sm">Introducing Support for AI Models</span>
+                                        className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
+                                        aria-label="New feature announcement: Introducing Support for AI Models. Click to learn more."
+                                    >
+                                        <span className="text-foreground text-sm">Introducing **Support for AI Models**</span>
                                         <span
+                                            aria-hidden="true"
                                             className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
-
                                         <div
                                             className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
                                             <div
                                                 className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
-                                                <span className="flex size-6">
+                                                <span className="flex size-6" aria-hidden="true">
                                                     <ArrowRight className="m-auto size-3" />
                                                 </span>
-                                                <span className="flex size-6">
+                                                <span className="flex size-6" aria-hidden="true">
                                                     <ArrowRight className="m-auto size-3" />
                                                 </span>
                                             </div>
@@ -121,6 +129,7 @@ export default function HeroSection() {
                                     </Link>
                                 </AnimatedGroup>
 
+                                {/* Main Headline */}
                                 <TextEffect
                                     preset="fade-in-blur"
                                     speedSegment={0.3}
@@ -128,6 +137,8 @@ export default function HeroSection() {
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                                     Manage Your Expense Control your Money.
                                 </TextEffect>
+                                
+                                {/* Subheadline */}
                                 <TextEffect
                                     per="line"
                                     preset="fade-in-blur"
@@ -135,153 +146,93 @@ export default function HeroSection() {
                                     delay={0.5}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg">
-                                   Start creating your budget today and save a ton of money.
+                                    Start creating your budget today and save a ton of money.
                                 </TextEffect>
 
+                                {/* CTA Buttons */}
                                 <AnimatedGroup
-                                    variants={{
-                                        container: {
-                                            visible: {
-                                                transition: {
-                                                    staggerChildren: 0.05,
-                                                    delayChildren: 0.75,
-                                                },
-                                            },
-                                        },
-                                        ...transitionVariants,
-                                    }}
-                                    className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
-                                    <div
-                                        key={1}
-                                        >
-                                        <Button asChild size="lg" className="rounded-xl px-5 text-base">
+                                    variants={heroContentVariants}
+                                    className="mt-12 flex flex-col items-center justify-center gap-4 md:flex-row">
+                                    <div key={1}>
+                                        <Button asChild size="lg" className="rounded-xl px-6 text-base font-semibold">
                                             <Link href="/sign-up">
                                                 <span className="text-nowrap">Get Started</span>
                                             </Link>
                                         </Button>
-                                    </div>
+                                    </div> 
                                 </AnimatedGroup>
                             </div>
                         </div>
 
+                        {/* Image Carousel */}
                         <AnimatedGroup
-                            variants={{
-                                container: {
-                                    visible: {
-                                        transition: {
-                                            staggerChildren: 0.05,
-                                            delayChildren: 0.75,
-                                        },
-                                    },
-                                },
-                                ...transitionVariants,
-                            }}>
-                           
-                                            <div className="flex items-center justify-center w-full mx-auto py-10">
-                                         <Carousel className="w-full max-w-3xl rounded-2xl "
-                                            // plugins={[
-                                            //       Autoplay({
-                                            //         delay: 2000,
-                                            //       }),
-                                            //     ]}
-                                         >
-
-                                          <CarouselContent className="-ml-1 rounded-2xl ">
-                                            {Images.map((image, index) => (
-                                              <CarouselItem key={index} className="pl-1 w-full rounded-2xl">
-                                               
-                                                <Image src={image} width={1000} height={1000} className=' w-[1500px] h-[500px] rounded-2xl'  alt='image'/>
-                                                
-                                              </CarouselItem>
-                                            ))}
-                                          </CarouselContent>
-                                          <CarouselPrevious />
-                                          <CarouselNext />
-                                        </Carousel>
-                                        
-                                        </div>
-                               
+                            variants={heroContentVariants}>
+                            <div className="flex items-center justify-center w-full mx-auto py-10">
+                                <Carousel 
+                                    className="w-full max-w-4xl rounded-3xl shadow-2xl shadow-zinc-950/20 dark:shadow-none"
+                                    plugins={carouselPlugins}
+                                    opts={{ loop: true }} // Ensures smooth looping
+                                >
+                                    <CarouselContent className="rounded-3xl">
+                                        {Images.map((image, index) => (
+                                            <CarouselItem key={index} className="rounded-3xl overflow-hidden">
+                                                <Image 
+                                                    src={image} 
+                                                    width={1500} 
+                                                    height={800} 
+                                                    className='w-full h-auto max-h-[550px] object-cover rounded-3xl aspect-video' 
+                                                    alt={`Financial tracking dashboard preview ${index + 1}`}
+                                                    priority={index === 0} // Only set priority for the first image
+                                                />
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    <CarouselPrevious aria-label="Previous image" />
+                                    <CarouselNext aria-label="Next image" />
+                                </Carousel>
+                            </div>
                         </AnimatedGroup>
                     </div>
                 </section>
+                
+                {/* Customer Logos Section */}
                 <section className="bg-background pb-16 pt-16 md:pb-32">
                     <div className="group relative m-auto max-w-5xl px-6">
+                        {/* Hover Overlay */}
                         <div
                             className="absolute inset-0 z-10 flex scale-95 items-center justify-center opacity-0 duration-500 group-hover:scale-100 group-hover:opacity-100">
-                            <Link href="/" className="block text-sm duration-150 hover:opacity-75">
+                            <Link href="/customers" className="block text-sm font-medium text-primary duration-150 hover:opacity-75">
                                 <span> Meet Our Customers</span>
-
-                                <ChevronRight className="ml-1 inline-block size-3" />
+                                <ChevronRight className="ml-1 inline-block size-4" />
                             </Link>
                         </div>
+                        
+                        {/* Logos Grid */}
                         <div
-                            className="group-hover:blur-xs mx-auto mt-12 grid max-w-2xl grid-cols-4 gap-x-12 gap-y-8 transition-all duration-500 group-hover:opacity-50 sm:gap-x-16 sm:gap-y-14">
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                                    alt="Nvidia Logo"
-                                    height="20"
-                                    width="auto" />
-                            </div>
-
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/column.svg"
-                                    alt="Column Logo"
-                                    height="16"
-                                    width="auto" />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/github.svg"
-                                    alt="GitHub Logo"
-                                    height="16"
-                                    width="auto" />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/nike.svg"
-                                    alt="Nike Logo"
-                                    height="20"
-                                    width="auto" />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
-                                    alt="Lemon Squeezy Logo"
-                                    height="20"
-                                    width="auto" />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/laravel.svg"
-                                    alt="Laravel Logo"
-                                    height="16"
-                                    width="auto" />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-7 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/lilly.svg"
-                                    alt="Lilly Logo"
-                                    height="28"
-                                    width="auto" />
-                            </div>
-
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-6 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/openai.svg"
-                                    alt="OpenAI Logo"
-                                    height="24"
-                                    width="auto" />
-                            </div>
+                            className="group-hover:blur-xs mx-auto mt-12 grid max-w-2xl grid-cols-4 gap-x-12 gap-y-8 transition-all duration-500 group-hover:opacity-50 sm:gap-x-16 sm:gap-y-14"
+                            aria-label="Trusted by companies like Nvidia, Column, GitHub, and more.">
+                            
+                            {/* Logos are repeated from original for brevity */}
+                            {[
+                                { src: "https://html.tailus.io/blocks/customers/nvidia.svg", alt: "Nvidia Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/column.svg", alt: "Column Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/github.svg", alt: "GitHub Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/nike.svg", alt: "Nike Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/lemonsqueezy.svg", alt: "Lemon Squeezy Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/laravel.svg", alt: "Laravel Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/lilly.svg", alt: "Lilly Logo" },
+                                { src: "https://html.tailus.io/blocks/customers/openai.svg", alt: "OpenAI Logo" },
+                            ].map((logo, i) => (
+                                <div className="flex" key={i}>
+                                    {/* Using standard img tags for external SVG for consistency with original */}
+                                    <img
+                                        className="mx-auto h-5 w-fit dark:invert"
+                                        src={logo.src}
+                                        alt={logo.alt}
+                                        height={i === 2 || i === 5 ? 16 : i === 6 ? 28 : 20} // Adjusted heights based on original
+                                        width="auto" />
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>

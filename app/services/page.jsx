@@ -53,18 +53,15 @@ const serviceCardStyle = `
 
 const ServicesPage = () => {
     return (
+        <>
+            <LandingNavbar/>
+        
         <div className="min-h-screen text-gray-800 ">
             
             {/* Inject custom CSS for hover effect using dangerouslySetInnerHTML to fix the warning */}
             <style 
                 dangerouslySetInnerHTML={{ __html: serviceCardStyle }}
             />
-            
-            {/* Navigation Bar (Simple) */}
-            
-                <LandingNavbar/>
-           
-
             {/* Services Hero Section */}
             <section className="py-20 text-center shadow-lg">
                 <div className="max-w-4xl mx-auto px-4">
@@ -146,8 +143,10 @@ const ServicesPage = () => {
             </section>
 
             {/* Call to Action Footer */}
-            <Footer/>
+           
         </div>
+         <Footer/>
+        </>
     )
 }
 

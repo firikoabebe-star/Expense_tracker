@@ -12,6 +12,8 @@ const MENU_ITEMS = [
     { name: 'About Us', href: '/about' },
     { name: 'Services', href: '/services' },
     { name: 'Pricing', href: '#pricing' },
+    { name: 'Developers', href: '#Developers' },
+    
 ]
 
 const LandingNavbar = () => {
@@ -38,7 +40,7 @@ const LandingNavbar = () => {
 
             {/* Desktop Navigation Links - HIDDEN on small screens */}
             <nav className="hidden md:block">
-                <ul className="flex gap-6 text-sm">
+                <ul className="flex gap-6 text-lg">
                     {MENU_ITEMS.map((item) => (
                         <li key={item.name}>
                             <Link
