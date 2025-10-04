@@ -60,7 +60,7 @@ export default function Features() {
                         <div className="p-4 rounded-xl mb-6" style={{ backgroundColor: primaryLight }}>
                             <DashboardIcon />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3 dark:text-white">
                             Smart Dashboard Overview
                         </h3>
                         <p className="text-gray-600 dark:text-gray-300">
@@ -99,7 +99,7 @@ export default function Features() {
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-3">
                             Detailed Expense Logging
                         </h3>
-                        <p className="">
+                        <p className="dark:text-white">
                             Log every transaction instantly. Keep a meticulous record of all your spending, complete with name, amount, and date, making tax season and reconciliation stress-free.
                         </p>
                         <ul className="mt-4 text-sm text-gray-700 dark:text-gray-300 space-y-2 list-disc pl-5">
