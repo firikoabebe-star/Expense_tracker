@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Button } from '/components/ui/button';
 import LandingNavbar from '/components/LandingNavbar'; // Assuming relative path fix
+import FooterSection from '/components/footer';
 
 // Main App Component
 const About = () => {
@@ -13,7 +14,7 @@ const About = () => {
 
   // Define a reusable class for primary color text, adjusting for dark mode
   // This assumes 'text-indigo-600' is your primary color in light mode, and 'text-indigo-400' in dark mode.
-  const primaryText = "text-indigo-600 dark:text-indigo-400";
+  const primaryText = "text-primary dark:text-primary";
   // Define a reusable class for card background, adjusting for dark mode
   const cardBackground = "bg-gray-100 dark:bg-gray-800 transition duration-300 transform hover:scale-[1.01] hover:shadow-lg dark:hover:shadow-2xl hover:shadow-indigo-100 dark:hover:shadow-indigo-900/50";
 
@@ -68,7 +69,7 @@ const About = () => {
 
           {/* 1. Hero Section: What is it? */}
           <section className="text-center mb-20">
-            <h2 className="text-6xl md:text-8xl font-extrabold mb-4 leading-tight">
+            <h2 className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight">
               Financial <span className={primaryText}>Clarity.</span>
               <br />
               Total <span className={primaryText}>Control.</span>
@@ -81,7 +82,7 @@ const About = () => {
               // Assuming Button component uses 'bg-primary' which should be themeable.
               className="inline-block px-8 py-3 bg-primary text-white font-semibold rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
             >
-              Start Your Financial Journey Now 🚀
+              Start Your Financial Journey Now 
             </Button>
           </section>
 
@@ -171,7 +172,7 @@ const About = () => {
             </p>
             <Button
               onClick={() => router.push("/sign-in")}
-              className="inline-block px-10 py-4 bg-primary text-white font-bold text-lg rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
+              className="inline-block px-10 bg-primary text-white font-bold text-lg rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
             >
               Get Started Free 💰
             </Button>
@@ -179,11 +180,8 @@ const About = () => {
 
         </main>
 
-        {/* Footer */}
-        <footer className="py-6 border-t border-gray-200 dark:border-gray-800 text-center text-gray-600 dark:text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} BudgetFlow | All Rights Reserved.</p>
-        </footer>
       </div>
+      <FooterSection/>
     </>
   );
 };

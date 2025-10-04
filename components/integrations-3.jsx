@@ -1,5 +1,4 @@
-import { Gemini, Replit, MagicUI, VSCodium, MediaWiki, GooglePaLM } from '/components/logos'
-import { LogoIcon } from '/components/logo'
+import { Home, Car, Utensils, Shirt, Users, Hospital } from "lucide-react"; // using lucide-react icons
 import { cn } from '/lib/utils'
 import { Button } from '/components/ui/button'
 import Link from 'next/link'
@@ -14,42 +13,48 @@ export default function IntegrationsSection() {
                             <div
                                 aria-hidden
                                 className="bg-radial to-muted dark:to-background absolute inset-0 z-10 from-transparent to-75%" />
+                            
+                            {/* Row 1 */}
                             <div className="mx-auto mb-2 flex w-fit justify-center gap-2">
                                 <IntegrationCard>
-                                    <Gemini />
+                                    <Home />
                                 </IntegrationCard>
                                 <IntegrationCard>
-                                    <Replit />
+                                    <Utensils />
                                 </IntegrationCard>
                             </div>
+
+                            {/* Row 2 */}
                             <div className="mx-auto my-2 flex w-fit justify-center gap-2">
                                 <IntegrationCard>
-                                    <MagicUI />
-                                </IntegrationCard>
-                                <IntegrationCard
-                                    borderClassName="shadow-black-950/10 shadow-xl border-black/25 dark:border-white/25"
-                                    className="dark:bg-white/10">
-                                    <LogoIcon />
+                                    <Car />
                                 </IntegrationCard>
                                 <IntegrationCard>
-                                    <VSCodium />
+                                    <Shirt />
                                 </IntegrationCard>
                             </div>
 
+                            {/* Row 3 */}
                             <div className="mx-auto flex w-fit justify-center gap-2">
                                 <IntegrationCard>
-                                    <MediaWiki />
+                                    <Users />
                                 </IntegrationCard>
-
                                 <IntegrationCard>
-                                    <GooglePaLM />
+                                    <Hospital />
                                 </IntegrationCard>
                             </div>
                         </div>
+
+                        {/* Text section */}
                         <div
                             className="mx-auto mt-6 max-w-lg space-y-6 text-center sm:mt-0 sm:text-left">
-                            <h2 className="text-balance text-3xl font-semibold md:text-4xl">Integrate with your favorite tools</h2>
-                            <p className="text-muted-foreground">Connect seamlessly with popular platforms and services to enhance your workflow.</p>
+                            <h2 className="text-balance text-3xl font-semibold md:text-4xl">
+                                Track all your essential needs in one place
+                            </h2>
+                            <p className="text-muted-foreground">
+                                From housing and food to family, health, and more — 
+                                integrate all your expenses seamlessly with our tracker.
+                            </p>
 
                             <Button variant="outline" size="sm" asChild>
                                 <Link href="#">Get Started</Link>
@@ -70,7 +75,7 @@ const IntegrationCard = ({
     return (
         <div
             className={cn(
-                'bg-background relative flex size-20 rounded-xl dark:bg-transparent',
+                'bg-background relative flex size-70 rounded-xl dark:bg-transparent',
                 className
             )}>
             <div
@@ -79,7 +84,7 @@ const IntegrationCard = ({
                     'absolute inset-0 rounded-xl border border-black/20 dark:border-white/25',
                     borderClassName
                 )} />
-            <div className="relative z-20 m-auto size-fit *:size-8">{children}</div>
+            <div className="relative z-20 m-auto size-fit *:size-70">{children}</div>
         </div>
     );
 }

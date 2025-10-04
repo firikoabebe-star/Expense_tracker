@@ -86,7 +86,7 @@ export default function HeroSection() {
                         {/* Background Image/Mask */}
                         <AnimatedGroup
                             variants={heroContentVariants}
-                            className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32">
+                            className="mask-b-from-35% mask-b-to-90% absolute inset-0 -z-20">
                             <Image
                                 src="/Blacks.jpg"
                                 alt="abstract dark background image"
@@ -147,7 +147,7 @@ export default function HeroSection() {
                                     speedSegment={0.3}
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-black  dark:text-white font-bold
- text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+ text-3xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                                     Manage Your Expense Control your Money.
                                 </TextEffect>
                                 
@@ -214,7 +214,7 @@ export default function HeroSection() {
                         {/* Hover Overlay */}
                         <div
                             className="absolute inset-0 z-10 flex scale-95 items-center justify-center opacity-0 duration-500 group-hover:scale-100 group-hover:opacity-100">
-                            <Link href="/customers" className="block text-sm font-medium text-primary duration-150 hover:opacity-75">
+                            <Link href="#" className="block text-sm font-medium text-primary duration-150 hover:opacity-75">
                                 <span> Meet Our Customers</span>
                                 <ChevronRight className="ml-1 inline-block size-4" />
                             </Link>
@@ -222,8 +222,8 @@ export default function HeroSection() {
                         
                         {/* Logos Grid */}
                         <div
-                            className="group-hover:blur-xs mx-auto mt-12 grid max-w-2xl grid-cols-4 gap-x-12 gap-y-8 transition-all duration-500 group-hover:opacity-50 sm:gap-x-16 sm:gap-y-14"
-                            aria-label="Trusted by companies like Nvidia, Column, GitHub, and more.">
+                            className="group-hover:blur-xs mx-auto mt-12 grid max-w-8xl grid-cols-4 gap-x-12 gap-y-8 transition-all duration-500 group-hover:opacity-50 sm:gap-x-16 sm:gap-y-14"
+                            aria-label="Trusted by companies like Negd bank,Awash Bank,Ethio telecom and more.">
                             
                             {/* Logos are repeated from original for brevity */}
                             {[
