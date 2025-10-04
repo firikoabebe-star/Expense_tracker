@@ -39,7 +39,7 @@ const transitionVariants = {
 };
 
 const Images = [
-    '/Happy_family3.jpg', '/stacks-coins.jpg', '/happy_family2.jpg',
+    '/Happy_family3.jpg', '/stacks-coins.jpg', '/Birr.jpg',
 ];
 
 export default function HeroSection() {
@@ -88,11 +88,23 @@ export default function HeroSection() {
                             variants={heroContentVariants}
                             className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32">
                             <Image
-                                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
+                                src="/Blacks.jpg"
                                 alt="abstract dark background image"
-                                className="hidden size-full dark:block"
+                                className="hidden size-full blur-sm dark:block"
                                 width={3276}
                                 height={4095}
+                                priority // High priority for LCP
+                            />
+                        </AnimatedGroup>
+                        <AnimatedGroup
+                            variants={heroContentVariants}
+                            className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32">
+                            <Image
+                                src="/w2.png"
+                                alt="abstract dark background image"
+                                className="block blur-sm size-full dark:hidden"
+                                width={2000}
+                                height={1000}
                                 priority // High priority for LCP
                             />
                         </AnimatedGroup>
@@ -106,11 +118,11 @@ export default function HeroSection() {
                                 {/* Announcement Banner */}
                                 <AnimatedGroup variants={transitionVariants}>
                                     <Link
-                                        href="#link"
+                                        href="/about"
                                         className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                                         aria-label="New feature announcement: Introducing Support for AI Models. Click to learn more."
                                     >
-                                        <span className="text-foreground text-sm">Introducing **Support for AI Models**</span>
+                                        <span className="text-foreground text-sm">Introducing Expense Tracker</span>
                                         <span
                                             aria-hidden="true"
                                             className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
@@ -134,7 +146,8 @@ export default function HeroSection() {
                                     preset="fade-in-blur"
                                     speedSegment={0.3}
                                     as="h1"
-                                    className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                                    className="mx-auto mt-8 max-w-4xl text-black  dark:text-white font-bold
+ text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                                     Manage Your Expense Control your Money.
                                 </TextEffect>
                                 
@@ -214,14 +227,14 @@ export default function HeroSection() {
                             
                             {/* Logos are repeated from original for brevity */}
                             {[
-                                { src: "https://html.tailus.io/blocks/customers/nvidia.svg", alt: "Nvidia Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/column.svg", alt: "Column Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/github.svg", alt: "GitHub Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/nike.svg", alt: "Nike Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/lemonsqueezy.svg", alt: "Lemon Squeezy Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/laravel.svg", alt: "Laravel Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/lilly.svg", alt: "Lilly Logo" },
-                                { src: "https://html.tailus.io/blocks/customers/openai.svg", alt: "OpenAI Logo" },
+                                { src: "Negd.svg", alt: "Negd Bank" },
+                                { src: "Awash.svg", alt: "Awash Bank" },
+                                { src: "Dashen.svg", alt: "Dashen Bank" },
+                                { src: "Abbisinia.svg", alt: "Abbisinia Bank" },
+                                { src: "Oromia.svg", alt: "Oromia Bank" },
+                                { src: "Tele.svg", alt: "Ethio Telecom" },
+                                { src: "Flin.svg", alt: "Flinston" },
+                                { src: "Zemen.svg", alt: "Zemen Bank" },
                             ].map((logo, i) => (
                                 <div className="flex" key={i}>
                                     {/* Using standard img tags for external SVG for consistency with original */}

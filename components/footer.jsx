@@ -1,5 +1,8 @@
+import Image from 'next/image';
 import { Logo } from '/components/logo'
 import Link from 'next/link'
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 const links = [
     {
@@ -10,7 +13,7 @@ const links = [
                 href: '#',
             },
             {
-                title: 'Solution',
+                title: 'Developers',
                 href: '#',
             },
             {
@@ -22,98 +25,38 @@ const links = [
                 href: '#',
             },
             {
-                title: 'Help',
-                href: '#',
-            },
-            {
                 title: 'About',
                 href: '#',
             },
         ],
     },
     {
-        group: 'Solution',
+        group: 'Support',
         items: [
             {
-                title: 'Startup',
+                title: 'Help Center',
                 href: '#',
             },
             {
-                title: 'Freelancers',
+                title: 'Terms of Service',
                 href: '#',
             },
             {
-                title: 'Organizations',
+                title: 'Legal',
                 href: '#',
             },
             {
-                title: 'Students',
+                title: 'Privacy Policy',
                 href: '#',
             },
             {
-                title: 'Collaboration',
+                title: 'Status',
                 href: '#',
             },
-            {
-                title: 'Design',
-                href: '#',
-            },
-            {
-                title: 'Management',
-                href: '#',
-            },
+           
         ],
     },
-    {
-        group: 'Company',
-        items: [
-            {
-                title: 'About',
-                href: '#',
-            },
-            {
-                title: 'Careers',
-                href: '#',
-            },
-            {
-                title: 'Blog',
-                href: '#',
-            },
-            {
-                title: 'Press',
-                href: '#',
-            },
-            {
-                title: 'Contact',
-                href: '#',
-            },
-            {
-                title: 'Help',
-                href: '#',
-            },
-        ],
-    },
-    {
-        group: 'Legal',
-        items: [
-            {
-                title: 'Licence',
-                href: '#',
-            },
-            {
-                title: 'Privacy',
-                href: '#',
-            },
-            {
-                title: 'Cookies',
-                href: '#',
-            },
-            {
-                title: 'Security',
-                href: '#',
-            },
-        ],
-    },
+    
 ]
 
 export default function FooterSection() {
@@ -122,9 +65,7 @@ export default function FooterSection() {
             <div className="mx-auto max-w-5xl px-6">
                 <div className="grid gap-12 md:grid-cols-5">
                     <div className="md:col-span-2">
-                        <Link href="/" aria-label="go home" className="block size-fit">
-                            <Logo />
-                        </Link>
+                        <Link href='/'><Image src='/logoipsum-247.svg' alt='logo' width={50} height={50} /></Link>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 md:col-span-3">
@@ -141,12 +82,23 @@ export default function FooterSection() {
                                 ))}
                             </div>
                         ))}
+                        <div className='mt-2 '>
+                        <h2 className='text-black font-medium my-1 dark:text-white'>Stay Up to date</h2>
+                         <div className='flex flex-col gap-2'>                    
+                        <Input
+                            placeholder="Email" 
+                        />
+                        <Button>Subscribe</Button>
+                                    </div>     
+                        
+                                               </div>
                     </div>
                 </div>
+
                 <div
                     className="mt-12 flex flex-wrap items-end justify-between gap-6 border-t py-6">
                     <span
-                        className="text-muted-foreground order-last block text-center text-sm md:order-first">© {new Date().getFullYear()} Tailark, All rights reserved</span>
+                        className="text-muted-foreground order-last block text-center text-sm md:order-first">© {new Date().getFullYear()} Expense Tracker, All rights reserved</span>
                     <div
                         className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
                         <Link
@@ -256,6 +208,7 @@ export default function FooterSection() {
                                     d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path>
                             </svg>
                         </Link>
+                         
                     </div>
                 </div>
             </div>

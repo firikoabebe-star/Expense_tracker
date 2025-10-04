@@ -7,9 +7,9 @@ import { transitionVariants } from '/lib/utils'; // Reusing transition variants
 
 export default function StatsSection() {
     const stats = [
-        { value: '+1200', label: 'Stars on GitHub' },
+        { value: '+50,000', label: 'Users' },
         { value: '56%', label: 'Conversion rate' },
-        { value: '+500', label: 'Powered Apps' },
+        { value: '12,438', label: 'Organizations' },
     ];
 
     return (
