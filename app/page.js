@@ -1,11 +1,11 @@
 import { Button } from "../components/ui/button";
 import Image from "next/image";
-import Hero from "./_components/Hero";
+import Landing from "./_components/Landing";
 
 export default function Home() {
   return (
     <div>
-      <Hero />
+      <Landing />
     </div>
   );
 }

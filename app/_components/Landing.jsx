@@ -8,7 +8,7 @@ import Faqs from '/components/faqs-3'
 import Footer from '/components/footer'
 
 
-function Hero() {
+function Landing() {
   return (
     <div>
       <HeroSection/>
@@ -21,4 +21,4 @@ function Hero() {
   )
 }
 
-export default Hero
+export default Landing

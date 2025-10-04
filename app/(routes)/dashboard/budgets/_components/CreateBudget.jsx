@@ -20,7 +20,7 @@ import { Budgets } from '/utils/schema';
 import { toast } from 'sonner';
 
 function CreateBudget({refreshData}) {
-  const [emojiIcon, setEmojiIcon] = useState('😊');
+  const [emojiIcon, setEmojiIcon] = useState('🏡');
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [name,setName]=useState();
   const [amount,setAmount]=useState();
