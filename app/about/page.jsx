@@ -78,7 +78,7 @@ const About = () => {
               BudgetFlow is your intuitive, smart expense tracker and budgeting web app. Stop guessing where your money goes and start building a future with confidence.
             </p>
             <Button
-              onClick={() => router.push("/sign-in")}
+              onClick={() => router.push("/sign-up")}
               // Assuming Button component uses 'bg-primary' which should be themeable.
               className="inline-block px-8 py-3 bg-primary text-white font-semibold rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
             >
@@ -171,7 +171,7 @@ const About = () => {
               Ready to stop worrying about money? Join the movement toward financial confidence.
             </p>
             <Button
-              onClick={() => router.push("/sign-in")}
+              onClick={() => router.push("/sign-up")}
               className="inline-block px-10 bg-primary text-white font-bold text-lg rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
             >
               Get Started Free 💰
