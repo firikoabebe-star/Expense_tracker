@@ -91,8 +91,8 @@ export default function HeroSection() {
                                 src="/Blacks.jpg"
                                 alt="abstract dark background image"
                                 className="hidden size-full blur-sm dark:block"
-                                width={3276}
-                                height={4095}
+                                width={2000}
+                                height={1000}
                                 priority // High priority for LCP
                             />
                         </AnimatedGroup>

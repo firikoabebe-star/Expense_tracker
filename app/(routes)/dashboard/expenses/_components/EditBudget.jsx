@@ -100,7 +100,6 @@ const [emojiIcon, setEmojiIcon] = useState();
                     <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
                       <Button 
-                       disabled={!(name&&amount)}
                        className='mt-5 w-full dark:text-white hover:bg-[#05766c]'
                        onClick={()=>onUpdateBudget()}>Update Budget</Button>
                     </DialogClose>

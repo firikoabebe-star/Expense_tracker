@@ -69,7 +69,7 @@ const About = () => {
 
           {/* 1. Hero Section: What is it? */}
           <section className="text-center mb-20">
-            <h2 className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight">
+            <h2 className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight pt-6">
               Financial <span className={primaryText}>Clarity.</span>
               <br />
               Total <span className={primaryText}>Control.</span>
