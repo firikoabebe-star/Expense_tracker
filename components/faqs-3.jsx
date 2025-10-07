@@ -8,20 +8,20 @@ export default function FAQsThree() {
         {
             id: 'item-1',
             icon: 'clock',
-            question: 'What are your business hours?',
-            answer: 'Our customer service team is available Monday through Friday from 9:00 AM to 8:00 PM EST, and weekends from 10:00 AM to 6:00 PM EST. During holidays, hours may vary and will be posted on our website.',
+            question: 'How do I create budgets?',
+            answer: 'Go to budgets, in the navigation bar and click on the button that says create budget and there you can choose an emoji that you want to represent that budget and then give the name of the budget and the amount and click the button that says create budget.',
         },
         {
             id: 'item-2',
             icon: 'credit-card',
-            question: 'How do subscription payments work?',
-            answer: 'Subscription payments are automatically charged to your default payment method on the same day each month or year, depending on your billing cycle. You can update your payment information and view billing history in your account dashboard.',
+            question: 'How do I add expenses?',
+            answer: 'You can click the budget card that you want to specifically add expenses to and the on the right side you are going to find the add Expense there you can add expense name and amount and click on add expense and then you can see the list of your expense down there.',
         },
         {
             id: 'item-3',
             icon: 'truck',
             question: 'Can I edit my Budget?',
-            answer: 'Yes, we offer several expedited shipping options at checkout. Next-day and 2-day shipping are available for most U.S. addresses if orders are placed before 2:00 PM EST. International expedited shipping options vary by destination.',
+            answer: 'Yes, go to the specific budget you want to edit and click the edit button next to the delete budget above the add expense and a dialog will come up whith your current budget detail, then you can edit however you want.',
         },
         {
             id: 'item-4',
@@ -33,7 +33,7 @@ export default function FAQsThree() {
             id: 'item-5',
             icon: 'package',
             question: 'How do I track my Progress?',
-            answer: 'Once your order ships, you\'ll receive a confirmation email with a tracking number. You can use this number on our website or the carrier\'s website to track your package. You can also view order status and tracking information in your account dashboard under "Order History".',
+            answer: 'once you create a budget you can track the your progress from the card specific to that budget and at the buttom of the card you can see how much you spent and the remaining you have and there is your progress bar that you can see easly.',
         },
     ]
 

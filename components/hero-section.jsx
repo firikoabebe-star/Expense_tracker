@@ -242,7 +242,7 @@ export default function HeroSection() {
                                         className="mx-auto h-5 w-fit dark:invert"
                                         src={logo.src}
                                         alt={logo.alt}
-                                        height={i === 2 || i === 5 ? 16 : i === 6 ? 28 : 20} // Adjusted heights based on original
+                                        height={i === 2 || i === 5 ? 24 : i === 6 ? 42 : 30} // Adjusted heights based on original
                                         width="auto" />
                                 </div>
                             ))}

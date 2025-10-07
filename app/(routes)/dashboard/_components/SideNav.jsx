@@ -46,7 +46,6 @@ function SideNav() {
               <IconComponent />
               <h2>{menu.name}</h2>
             </Link>
-
           );
         })}
       </div>
