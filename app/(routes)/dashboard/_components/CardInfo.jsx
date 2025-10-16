@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 
 function CardInfo({budgetList}) {
 
+  //totalBudget and totalSpend
+
    const [totalBudget,setTotalBudget]=useState();
    const [totalSpend,setTotalSpend]=useState();
     useEffect(()=>{
@@ -17,9 +19,9 @@ function CardInfo({budgetList}) {
           totalSpend_=totalSpend_+element.totalSpend
         });
 
-        setTotalBudget(totalBudget_)
-        setTotalSpend(totalSpend_)
-        console.log(totalBudget_,totalSpend_)
+        setTotalBudget(totalBudget_);
+        setTotalSpend(totalSpend_);
+        console.log(totalBudget_,totalSpend_);
     }
   return (
     <div>

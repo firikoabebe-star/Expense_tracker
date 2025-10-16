@@ -22,14 +22,14 @@ function Budgetitem({budget}) {
                 </div>
         </div>
         <h2 className='font-bold text-primary text-lg whitespace-nowrap 
-  max-w-[120px] sm:max-w-[100px] xs:max-w-[80px]'>${budget?.amount}</h2>
+  max-w-[120px] sm:max-w-[100px] xs:max-w-[80px]'>ETB{budget?.amount}</h2>
         </div>
         <div className='mt-5'>
             <div className='flex items-center justify-between mb-3'>
              <h2 className='text-xs text-slate-400'>
-             ${budget?.totalSpend ? budget.totalSpend : 0} Spend</h2>
+             ETB{budget?.totalSpend ? budget.totalSpend : 0} Spend</h2>
              <h2 className='text-xs text-slate-400'>
-             ${Math.max(0, budget.amount - (budget.totalSpend || 0))} Remaining</h2>
+             ETB{Math.max(0, budget.amount - (budget.totalSpend || 0))} Remaining</h2>
  
             </div>
             <div className='w-full bg-slate-300 h-2 rounded-full'>

@@ -10,6 +10,7 @@ import Footer from '/components/footer'
 
 function Landing() {
   return (
+    // component Rendering
     <div>
       <HeroSection/>
       <Features/>
