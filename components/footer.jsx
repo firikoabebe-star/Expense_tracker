@@ -1,217 +1,370 @@
-import Image from 'next/image';
-import { Logo } from '/components/logo'
-import Link from 'next/link'
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+"use client";
+// ─────────────────────────────────────────────────────────────────
+// components/footer.jsx
+// grey.co pattern:
+//   • Dark green (#0D530E) background — full-bleed
+//   • Logo + tagline column, 4 link columns, newsletter column
+//   • Bottom bar: copyright left, legal links right
+// ─────────────────────────────────────────────────────────────────
+import React, { useState } from "react";
+import Link from "next/link";
+import { ArrowRight, Instagram, Youtube, Twitter } from "lucide-react";
 
-const links = [
-    {
-        group: 'Product',
-        items: [
-            {
-                title: 'Features',
-                href: '#',
-            },
-            {
-                title: 'Developers',
-                href: '#',
-            },
-            {
-                title: 'Customers',
-                href: '#',
-            },
-            {
-                title: 'Pricing',
-                href: '#',
-            },
-            {
-                title: 'About',
-                href: '#',
-            },
-        ],
-    },
-    {
-        group: 'Support',
-        items: [
-            {
-                title: 'Help Center',
-                href: '#',
-            },
-            {
-                title: 'Terms of Service',
-                href: '#',
-            },
-            {
-                title: 'Legal',
-                href: '#',
-            },
-            {
-                title: 'Privacy Policy',
-                href: '#',
-            },
-            {
-                title: 'Status',
-                href: '#',
-            },
-           
-        ],
-    },
-    
-]
+const COLS = {
+  Product: [
+    ["Features", "/services"],
+    ["Pricing", "/pricing"],
+    ["About", "/about"],
+    ["Developers", "/developers"],
+  ],
+  Company: [
+    ["Blog", "#"],
+    ["Careers", "#"],
+    ["Press", "#"],
+    ["Contact", "#"],
+  ],
+  Resources: [
+    ["Help Center", "#"],
+    ["FAQ", "#"],
+    ["Video Guides", "#"],
+    ["Status", "#"],
+  ],
+  Legal: [
+    ["Privacy Policy", "#"],
+    ["Terms of Service", "#"],
+    ["Cookie Policy", "#"],
+  ],
+};
+
+const SOCIALS = [
+  { Icon: Instagram, href: "#", label: "Instagram" },
+  { Icon: Youtube, href: "#", label: "YouTube" },
+  { Icon: Twitter, href: "#", label: "Twitter" },
+];
 
 export default function FooterSection() {
-    return (
-        <footer className="border-b dark:border-t bg-white pt-20 dark:bg-transparent">
-            <div className="mx-auto max-w-5xl px-6">
-                <div className="grid gap-12 md:grid-cols-5">
-                    <div className="md:col-span-2">
-                        <Link href='/'><Image src='/logoipsum-247.svg' alt='logo' width={50} height={50} /></Link>
-                    </div>
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
 
-                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 md:col-span-3">
-                        {links.map((link, index) => (
-                            <div key={index} className="space-y-4 text-sm">
-                                <span className="block font-medium">{link.group}</span>
-                                {link.items.map((item, index) => (
-                                    <Link
-                                        key={index}
-                                        href={item.href}
-                                        className="text-muted-foreground hover:text-primary block duration-150">
-                                        <span>{item.title}</span>
-                                    </Link>
-                                ))}
-                            </div>
-                        ))}
-                        <div className='mt-2 '>
-                        <h2 className='text-black font-medium my-1 dark:text-white'>Stay Up to date</h2>
-                         <div className='flex flex-col gap-2'>                    
-                        <Input
-                            placeholder="Email" 
-                        />
-                        <Button>Subscribe</Button>
-                                    </div>     
-                        
-                                               </div>
-                    </div>
-                </div>
+  const handleSub = (e) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSent(true);
+      setEmail("");
+    }
+  };
 
-                <div
-                    className="mt-12 flex flex-wrap items-end justify-between gap-6 border-t py-6">
-                    <span
-                        className="text-muted-foreground order-last block text-center text-sm md:order-first">© {new Date().getFullYear()} Expense Tracker, All rights reserved</span>
-                    <div
-                        className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
-                        <Link
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="X/Twitter"
-                            className="text-muted-foreground hover:text-primary block">
-                            <svg
-                                className="size-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="1em"
-                                height="1em"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M10.488 14.651L15.25 21h7l-7.858-10.478L20.93 3h-2.65l-5.117 5.886L8.75 3h-7l7.51 10.015L2.32 21h2.65zM16.25 19L5.75 5h2l10.5 14z"></path>
-                            </svg>
-                        </Link>
-                        <Link
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="LinkedIn"
-                            className="text-muted-foreground hover:text-primary block">
-                            <svg
-                                className="size-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="1em"
-                                height="1em"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93zM6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37z"></path>
-                            </svg>
-                        </Link>
-                        <Link
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Facebook"
-                            className="text-muted-foreground hover:text-primary block">
-                            <svg
-                                className="size-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="1em"
-                                height="1em"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95"></path>
-                            </svg>
-                        </Link>
-                        <Link
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Threads"
-                            className="text-muted-foreground hover:text-primary block">
-                            <svg
-                                className="size-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="1em"
-                                height="1em"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.5"
-                                    d="M19.25 8.505c-1.577-5.867-7-5.5-7-5.5s-7.5-.5-7.5 8.995s7.5 8.996 7.5 8.996s4.458.296 6.5-3.918c.667-1.858.5-5.573-6-5.573c0 0-3 0-3 2.5c0 .976 1 2 2.5 2s3.171-1.027 3.5-3c1-6-4.5-6.5-6-4"
-                                    color="currentColor"></path>
-                            </svg>
-                        </Link>
-                        <Link
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Instagram"
-                            className="text-muted-foreground hover:text-primary block">
-                            <svg
-                                className="size-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="1em"
-                                height="1em"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3"></path>
-                            </svg>
-                        </Link>
-                        <Link
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="TikTok"
-                            className="text-muted-foreground hover:text-primary block">
-                            <svg
-                                className="size-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="1em"
-                                height="1em"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path>
-                            </svg>
-                        </Link>
-                         
-                    </div>
-                </div>
+  const linkStyle = {
+    fontFamily: "var(--font-body)",
+    fontWeight: 300,
+    fontSize: "0.9rem",
+    color: "rgba(255,255,255,0.55)",
+    textDecoration: "none",
+    transition: "color 0.15s",
+  };
+
+  return (
+    <footer style={{ background: "var(--clr-brand)" }}>
+      <div
+        style={{
+          maxWidth: "78rem",
+          margin: "0 auto",
+          padding: "clamp(3rem,5vw,4.5rem) clamp(1.25rem,5vw,3rem) 0",
+        }}
+      >
+        {/* ── Top grid ── */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+            gap: "clamp(2rem,4vw,3.5rem)",
+            paddingBottom: "clamp(2.5rem,4vw,4rem)",
+            borderBottom: "1px solid rgba(255,255,255,0.12)",
+          }}
+        >
+          {/* Brand col */}
+          <div style={{ gridColumn: "span 1" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginBottom: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  background: "#E7E1B1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--clr-brand)",
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  flexShrink: 0,
+                }}
+              >
+                E
+              </div>
+              <span
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  color: "#E7E1B1",
+                }}
+              >
+                Montra
+              </span>
             </div>
-        </footer>
-    );
+
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 300,
+                fontSize: "0.875rem",
+                color: "rgba(255,255,255,0.5)",
+                lineHeight: 1.7,
+                maxWidth: "22ch",
+                marginBottom: "1.375rem",
+              }}
+            >
+              Smart budgeting for everyone. Take control of your money today.
+            </p>
+
+            {/* Socials */}
+            <div style={{ display: "flex", gap: "0.625rem" }}>
+              {SOCIALS.map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "rgba(255,255,255,0.55)",
+                    textDecoration: "none",
+                    transition: "border-color 0.15s, color 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
+                    e.currentTarget.style.color = "#fff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.15)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+                  }}
+                >
+                  <Icon size={14} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Link columns */}
+          {Object.entries(COLS).map(([cat, links]) => (
+            <div key={cat}>
+              <h4
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.35)",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                {cat}
+              </h4>
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  margin: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.7rem",
+                }}
+              >
+                {links.map(([name, href]) => (
+                  <li key={name}>
+                    <Link
+                      href={href}
+                      style={linkStyle}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
+                      }
+                    >
+                      {name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          {/* Newsletter */}
+          <div>
+            <h4
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.35)",
+                marginBottom: "1.25rem",
+              }}
+            >
+              STAY UPDATED
+            </h4>
+            {sent ? (
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.875rem",
+                  color: "#a8e6a9",
+                  fontWeight: 500,
+                }}
+              >
+                ✓ You're subscribed!
+              </p>
+            ) : (
+              <form
+                onSubmit={handleSub}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  style={{
+                    padding: "0.625rem 0.875rem",
+                    borderRadius: 10,
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    background: "rgba(255,255,255,0.07)",
+                    color: "#fff",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.875rem",
+                    outline: "none",
+                    transition: "border-color 0.15s",
+                  }}
+                  onFocus={(e) =>
+                    (e.target.style.borderColor = "rgba(231,225,177,0.5)")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.borderColor = "rgba(255,255,255,0.15)")
+                  }
+                />
+                <button
+                  type="submit"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.375rem",
+                    padding: "0.625rem",
+                    borderRadius: 10,
+                    border: "none",
+                    background: "#E7E1B1",
+                    color: "var(--clr-brand)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 600,
+                    fontSize: "0.875rem",
+                    cursor: "pointer",
+                    transition: "opacity 0.15s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                >
+                  Subscribe <ArrowRight size={13} />
+                </button>
+              </form>
+            )}
+
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 300,
+                fontSize: "0.75rem",
+                color: "rgba(255,255,255,0.3)",
+                marginTop: "0.75rem",
+                lineHeight: 1.6,
+              }}
+            >
+              By subscribing, you agree to our Privacy Policy. Unsubscribe
+              anytime.
+            </p>
+          </div>
+        </div>
+
+        {/* ── Bottom bar ── */}
+        <div
+          style={{
+            padding: "1.5rem 0",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.875rem",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontWeight: 300,
+              fontSize: "0.8rem",
+              color: "rgba(255,255,255,0.3)",
+            }}
+          >
+            © {new Date().getFullYear()} Montra. All rights reserved.
+          </p>
+          <div style={{ display: "flex", gap: "1.375rem", flexWrap: "wrap" }}>
+            {["Privacy", "Terms", "Cookies"].map((t) => (
+              <Link
+                key={t}
+                href="#"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 300,
+                  fontSize: "0.8rem",
+                  color: "rgba(255,255,255,0.3)",
+                  textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.3)")
+                }
+              >
+                {t}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

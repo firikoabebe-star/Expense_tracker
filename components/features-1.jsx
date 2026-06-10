@@ -1,116 +1,222 @@
-"use client"
+"use client";
+// ─────────────────────────────────────────────────────────────────
+// components/features-1.jsx
+// grey.co "Go global" pattern:
+//   • Section eyebrow + big italic headline centered at top
+//   • Then three large rounded-corner blocks stacked vertically
+//     (or in a 2-col grid on large screens)
+//   • Each block has its own soft background color
+//   • Inside: ALL-CAPS tag, bold title, desc, arrow CTA, photo
+// ─────────────────────────────────────────────────────────────────
+import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
-import React from 'react'
-
-
-const DashboardIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#047857]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-    </svg>
-);
-
-const BudgetIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#047857]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 5H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"></path>
-        <path d="M14 15V9"></path>
-        <path d="M10 15V9"></path>
-        <path d="M12 22a7 7 0 0 0 7-7"></path>
-    </svg>
-);
-
-const ExpenseIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#047857]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-    </svg>
-);
-
-// --- Component Setup (Simulating Tailwind Config for colors/styles) ---
-
-// Define colors used in the original HTML file's style block
-const primaryAccent = '#047857'; // A deep teal/forest green
-const primaryLight = '#D1FAE5';  // Light green background
-
-const serviceCardStyle = `
-.service-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px -10px rgba(4, 120, 87, 0.15);
-}
-`;
+const FEATURES = [
+  {
+    tag: "SMART DASHBOARD",
+    title: "Your finances, clear at a glance",
+    desc: "One screen that tells the full story. Compare budgets vs. actual spending with intuitive charts and a real-time activity feed — no spreadsheets, no confusion.",
+    cta: "Explore dashboard",
+    href: "/services",
+    bg: "var(--block-sage)",
+    img: "/stacks-coins.jpg",
+    imgAlt: "Stacked coins representing savings and wealth",
+  },
+  {
+    tag: "CATEGORY BUDGETING",
+    title: "Set limits. Stay in control.",
+    desc: "Create budgets for every spending category. Color-coded progress bars make it effortless to see exactly where you stand — before you overspend.",
+    cta: "Set your budgets",
+    href: "/services",
+    bg: "var(--block-blush)",
+    img: "/Birr.jpg",
+    imgAlt: "Ethiopian Birr currency notes representing local money management",
+  },
+  {
+    tag: "EXPENSE LOGGING",
+    title: "Every transaction. Logged instantly.",
+    desc: "Add expenses in seconds — name, amount, date, and category. Build a meticulous record that makes year-end reconciliation completely stress-free.",
+    cta: "Start tracking",
+    href: "/services",
+    bg: "var(--block-sky)",
+    img: "/Happy_family3.jpg",
+    imgAlt: "Family reviewing their budget together on a smartphone",
+  },
+];
 
 export default function Features() {
-    return (
-        <section id="services" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-gray-300 mb-16">
-                    Core Features Designed For Financial Freedom
-                </h2>
+  return (
+    <section
+      id="services"
+      style={{
+        background: "#fff",
+        padding: "clamp(4rem, 7vw, 7rem) 0",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "78rem",
+          margin: "0 auto",
+          padding: "0 clamp(1.25rem,5vw,3rem)",
+        }}
+      >
+        {/* Section header — centered, grey.co style */}
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "clamp(2.5rem, 5vw, 4.5rem)",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--clr-text-muted)",
+              marginBottom: "0.875rem",
+            }}
+          >
+            CORE FEATURES
+          </p>
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 700,
+              fontSize: "clamp(2rem, 4.5vw, 3.5rem)",
+              letterSpacing: "-0.03em",
+              color: "var(--clr-text)",
+              lineHeight: 1.08,
+            }}
+          >
+            No limits, no borders.
+            <br />
+            <em style={{ fontStyle: "italic", color: "var(--clr-brand)" }}>
+              Go financial.
+            </em>
+          </h2>
+        </div>
 
-                <div className="grid md:grid-cols-3 gap-10">
-                    
-                    {/* Service 1: Smart Dashboard */}
-                    <div className="service-card  p-8 rounded-2xl shadow-xl border border-gray-100 flex flex-col items-start text-left">
-                        <div className="p-4 rounded-xl mb-6" style={{ backgroundColor: primaryLight }}>
-                            <DashboardIcon />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3 dark:text-white">
-                            Smart Dashboard Overview
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
-                            Get an instant, high-level view of your financial health. Compare allocated budgets against actual spending with intuitive charts and real-time activity feeds. Your money, simplified.
-                        </p>
-                        <ul className="mt-4 text-sm text-gray-700 dark:text-gray-300 space-y-2 list-disc pl-5">
-                            <li>Budget vs. Spending Visualization</li>
-                            <li>Total Budget & Spending Metrics</li>
-                            <li>Latest Activity Highlights</li>
-                        </ul>
-                    </div>
-
-                    {/* Service 2: Budget Management */}
-                    <div className="service-card  p-8 rounded-2xl shadow-xl border border-gray-100 flex flex-col items-start text-left">
-                        <div className="p-4 rounded-xl mb-6" style={{ backgroundColor: primaryLight }}>
-                            <BudgetIcon />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-3">
-                            Category Budgeting
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
-                            Set clear financial boundaries. Easily create, modify, and track budgets for different categories like Food, Clothing, and House, ensuring you stay within your limits.
-                        </p>
-                        <ul className="mt-4 text-sm text-gray-700 dark:text-gray-300 space-y-2 list-disc pl-5">
-                            <li>Unlimited Budget Creation</li>
-                            <li>Real-time Remaining Balance</li>
-                            <li>Budget History and Comparison</li>
-                        </ul>
-                    </div>
-
-                    {/* Service 3: Expense Tracking */}
-                    <div className="service-card  p-8 rounded-2xl shadow-xl border border-gray-100 flex flex-col items-start text-left">
-                        <div className="p-4 rounded-xl mb-6" style={{ backgroundColor: primaryLight }}>
-                            <ExpenseIcon />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-3">
-                            Detailed Expense Logging
-                        </h3>
-                        <p className="dark:text-white">
-                            Log every transaction instantly. Keep a meticulous record of all your spending, complete with name, amount, and date, making tax season and reconciliation stress-free.
-                        </p>
-                        <ul className="mt-4 text-sm text-gray-700 dark:text-gray-300 space-y-2 list-disc pl-5">
-                            <li>Easy Expense Deletion/Management</li>
-                            <li>Date and Category Tagging</li>
-                            <li>Comprehensive Spending Records</li>
-                        </ul>
-                    </div>
-
-                </div>
-            </section>
-    );
+        {/* Feature cards */}
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+        >
+          {FEATURES.map((f, i) => (
+            <FeatureCard key={i} {...f} flip={i % 2 !== 0} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
+function FeatureCard({ tag, title, desc, cta, href, bg, img, imgAlt, flip }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%,300px), 1fr))",
+        borderRadius: "var(--r-xl)",
+        overflow: "hidden",
+        background: bg,
+        minHeight: 380,
+      }}
+    >
+      {/* ── Text panel ── */}
+      <div
+        style={{
+          padding: "clamp(2rem,5vw,3.5rem)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          gap: "1.125rem",
+          order: flip ? 2 : 1,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "0.68rem",
+            fontWeight: 700,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "var(--clr-text-muted)",
+          }}
+        >
+          {tag}
+        </span>
+
+        <h3
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            fontSize: "clamp(1.375rem, 3vw, 2rem)",
+            letterSpacing: "-0.025em",
+            color: "var(--clr-text)",
+            lineHeight: 1.15,
+          }}
+        >
+          {title}
+        </h3>
+
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontWeight: 300,
+            fontSize: "1rem",
+            color: "var(--clr-text-2)",
+            lineHeight: 1.75,
+            maxWidth: "40ch",
+          }}
+        >
+          {desc}
+        </p>
+
+        <Link
+          href={href}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: hovered ? "0.625rem" : "0.375rem",
+            fontFamily: "var(--font-body)",
+            fontWeight: 600,
+            fontSize: "0.9375rem",
+            color: "var(--clr-brand)",
+            textDecoration: "none",
+            transition: "gap 0.2s var(--ease-spring)",
+          }}
+        >
+          {cta} <ArrowRight size={15} />
+        </Link>
+      </div>
+
+      {/* ── Photo panel ── */}
+      <div style={{ order: flip ? 1 : 2, overflow: "hidden", minHeight: 280 }}>
+        <Image
+          src={img}
+          width={680}
+          height={460}
+          alt={imgAlt}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+            transition: "transform 0.5s var(--ease-spring)",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.transform = "scale(1.03)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        />
+      </div>
+    </div>
+  );
+}

@@ -1,25 +1,30 @@
-import Link from 'next/link'
-import React from 'react'
-import HeroSection from '/components/hero-section'
-import Features from '/components/features-1'
-import IntegrationSection from '/components/integrations-3'
-import StatsSection from '/components/stats-3'
-import Faqs from '/components/faqs-3'
-import Footer from '/components/footer'
+// ─────────────────────────────────────────────────────────────────
+// app/_components/Landing.jsx
+// Root landing page — assembles all sections in grey.co order.
+// Background stays pure #fff (light) / #0A1A0B (dark).
+// ─────────────────────────────────────────────────────────────────
+import React from "react";
+import HeroSection from "/components/hero-section";
+import Features from "/components/features-1";
+import IntegrationsSection from "/components/integrations-3";
+import StatsSection from "/components/stats-3";
+import Testimonials from "/components/testimonials";
+import FAQsThree from "/components/faqs-3";
+import CTABanner from "/components/cta-banner";
+import FooterSection from "/components/footer";
 
-
-function Landing() {
+export default function Landing() {
   return (
-    // component Rendering
-    <div>
-      <HeroSection/>
-      <Features/>
-      <IntegrationSection/>
+    <div style={{ background: "var(--clr-bg)" }}>
+      {/* HeroSection renders LandingNavbar inside itself */}
+      <HeroSection />
+      <Features />
+      <IntegrationsSection />
       <StatsSection />
-      <Faqs/>
-      <Footer/>
+      <Testimonials />
+      <FAQsThree />
+      <CTABanner />
+      <FooterSection />
     </div>
-  )
+  );
 }
-
-export default Landing

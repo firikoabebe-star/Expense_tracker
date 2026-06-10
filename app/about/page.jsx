@@ -1,189 +1,710 @@
-"use client"
-import React from 'react';
-import { useRouter } from "next/navigation";
-import Link from 'next/link';
-import { Button } from '/components/ui/button';
-import LandingNavbar from '/components/LandingNavbar'; // Assuming relative path fix
-import FooterSection from '/components/footer';
+"use client";
 
-// Main App Component
-const About = () => {
-  // Mock User ID for demonstration purposes
-  const userId = "user_746b1c8a";
-  const router = useRouter();
+import React from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Target,
+  Shield,
+  Sparkles,
+  TrendingUp,
+  CheckCircle2,
+  Users,
+  Star,
+  Lock,
+  Wallet,
+  PiggyBank,
+  Leaf,
+  Award,
+} from "lucide-react";
 
-  // Define a reusable class for primary color text, adjusting for dark mode
-  // This assumes 'text-indigo-600' is your primary color in light mode, and 'text-indigo-400' in dark mode.
-  const primaryText = "text-primary dark:text-primary";
-  // Define a reusable class for card background, adjusting for dark mode
-  const cardBackground = "bg-gray-100 dark:bg-gray-800 transition duration-300 transform hover:scale-[1.01] hover:shadow-lg dark:hover:shadow-2xl hover:shadow-indigo-100 dark:hover:shadow-indigo-900/50";
+import LandingNavbar from "/components/LandingNavbar";
+import FooterSection from "/components/footer";
 
-  const features = [
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 ${primaryText}`}>
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      ),
-      title: "Real-Time Tracking",
-      description: "Log transactions instantly across custom categories. See where every dollar goes the moment you spend it."
-    },
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 ${primaryText}`}>
-          <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM2 12s2 2 10 2 10-2 10-2M12 18V6" />
-        </svg>
-      ),
-      title: "Smart Budget Allocation",
-      description: "Set personalized monthly budgets for different categories and receive alerts before you overspend."
-    },
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 ${primaryText}`}>
-          <path d="M3 3v18h18M18 17l-4.2-4.2M9 13.8L5 17m11-9V6h2M18 6l-5.2 5.2" />
-        </svg>
-      ),
-      title: "Visual Data Analytics",
-      description: "Understand your habits with interactive charts and reports. Identify leaks and savings opportunities instantly."
-    },
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 ${primaryText}`}>
-          <path d="M20.8 13.8L12 20.8 3.2 13.8M12 3v18M12 12l8.8-7.2M12 12l-8.8-7.2" />
-        </svg>
-      ),
-      title: "Goal Setting & Saving",
-      description: "Link expenses to specific savings goals, like a vacation or a new home, and track progress automatically."
-    }
-  ];
+const VALUES = [
+  {
+    icon: Target,
+    title: "Clarity over complexity",
+    desc: "Money management should be understandable. We remove unnecessary complexity and focus on the information that actually helps people make better decisions.",
+  },
+  {
+    icon: Shield,
+    title: "Privacy first",
+    desc: "Your financial information belongs to you. Security, transparency, and trust guide every product decision we make.",
+  },
+  {
+    icon: Sparkles,
+    title: "Progress over perfection",
+    desc: "Building healthy financial habits is a journey. Small improvements made consistently create meaningful long-term results.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Designed for growth",
+    desc: "Montra grows with you—from tracking daily spending to managing larger financial goals and milestones.",
+  },
+];
 
+const STATS = [
+  { value: "50K+", label: "Active Users", icon: Users },
+  { value: "$12M+", label: "Tracked expenses", icon: TrendingUp },
+  { value: "1M+", label: "Transactions logged", icon: CheckCircle2 },
+  { value: "99.9%", label: "Platform uptime", icon: Lock },
+];
+
+export default function AboutPage() {
   return (
     <>
       <LandingNavbar />
 
-      {/* Main Container - Full dark/light theme support */}
-      <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-inter">
-        
-        {/* Main Content Container */}
-        <main className="max-w-7xl mx-auto px-6 py-12 md:py-20">
-
-          {/* 1. Hero Section: What is it? */}
-          <section className="text-center mb-20">
-            <h2 className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight pt-6">
-              Financial <span className={primaryText}>Clarity.</span>
-              <br />
-              Total <span className={primaryText}>Control.</span>
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
-              BudgetFlow is your intuitive, smart expense tracker and budgeting web app. Stop guessing where your money goes and start building a future with confidence.
-            </p>
-            <Button
-              onClick={() => router.push("/sign-up")}
-              // Assuming Button component uses 'bg-primary' which should be themeable.
-              className="inline-block px-8 py-3 bg-primary text-white font-semibold rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
+      <main style={{ background: "#fff", minHeight: "100vh" }}>
+        {/* ───────────────── HERO WITH VISIBLE FLOATING CARDS ───────────────── */}
+        <section
+          style={{
+            paddingTop: "clamp(6rem, 12vw, 10rem)",
+            paddingBottom: "clamp(4rem, 8vw, 6rem)",
+            borderBottom: "1px solid var(--clr-border)",
+            background:
+              "linear-gradient(180deg, #fff 30%, var(--clr-bg-off) 100%)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Floating card - LEFT */}
+          <div
+            style={{
+              position: "absolute",
+              left: "max(2rem, 5%)",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "white",
+              borderRadius: "24px",
+              padding: "1rem 1.25rem",
+              boxShadow: "var(--shadow-lg)",
+              border: "1px solid var(--clr-border)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.5rem",
+              zIndex: 3,
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
             >
-              Start Your Financial Journey Now 
-            </Button>
-          </section>
-
-          <hr className="my-10 border-gray-200 dark:border-gray-800" />
-
-          {/* 2. Benefits Section: What is it good for? */}
-          <section className="mb-20">
-            <h3 className="text-4xl font-bold text-center mb-12">
-              Why an Expense Tracker is <span className={primaryText}>Essential</span>
-            </h3>
-            <div className="grid md:grid-cols-2 gap-8">
-
-              {/* Benefit 1 */}
-              <div className={`p-8 rounded-xl border border-gray-200 dark:border-gray-700 ${cardBackground}`}>
-                <div className="flex items-center mb-4">
-                  <span className="text-4xl mr-3 text-emerald-600 dark:text-emerald-400">💡</span>
-                  <h4 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Gain True Spending Clarity</h4>
-                </div>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Most people underestimate their spending. An expense tracker gives you an unbiased, consolidated view of every transaction, exposing hidden spending habits and leaks you didn't know existed. It's financial X-ray vision.
-                </p>
-              </div>
-
-              {/* Benefit 2 */}
-              <div className={`p-8 rounded-xl border border-gray-200 dark:border-gray-700 ${cardBackground}`}>
-                <div className="flex items-center mb-4">
-                  <span className="text-4xl mr-3 text-amber-600 dark:text-amber-400">🎯</span>
-                  <h4 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Achieve Financial Goals Faster</h4>
-                </div>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Whether saving for a deposit, paying off debt, or planning a big trip, an effective budget and tracker ensures you allocate funds correctly, turning abstract goals into concrete, achievable steps.
-                </p>
-              </div>
-
-              {/* Benefit 3 */}
-              <div className={`p-8 rounded-xl border border-gray-200 dark:border-gray-700 ${cardBackground}`}>
-                <div className="flex items-center mb-4">
-                  <span className="text-4xl mr-3 text-red-600 dark:text-red-400">🧘</span>
-                  <h4 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Reduce Financial Stress</h4>
-                </div>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Knowledge is power, and with power comes peace. By removing the uncertainty around your money, you eliminate the single largest cause of financial anxiety. You'll always know your standing.
-                </p>
-              </div>
-
-              {/* Benefit 4 */}
-              <div className={`p-8 rounded-xl border border-gray-200 dark:border-gray-700 ${cardBackground}`}>
-                <div className="flex items-center mb-4">
-                  <span className="text-4xl mr-3 text-sky-600 dark:text-sky-400">🚀</span>
-                  <h4 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Make Smarter Life Decisions</h4>
-                </div>
-                <p className="text-gray-700 dark:text-gray-300">
-                  When you understand your cash flow, decisions about changing jobs, making investments, or taking on a new recurring expense become calculated moves, not fearful risks.
-                </p>
-              </div>
-
+              <Wallet size={18} color="var(--clr-brand)" />
+              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                Total Saved
+              </span>
             </div>
-          </section>
+            <strong style={{ fontSize: "1.5rem", color: "var(--clr-brand)" }}>
+              $12,480
+            </strong>
+            <div style={{ fontSize: "0.7rem", color: "var(--clr-text-muted)" }}>
+              +32% this year
+            </div>
+          </div>
 
-          <hr className="my-10 border-gray-200 dark:border-gray-800" />
+          {/* Floating card - RIGHT */}
+          <div
+            style={{
+              position: "absolute",
+              right: "max(2rem, 5%)",
+              top: "40%",
+              transform: "translateY(-50%)",
+              background: "var(--block-sage)",
+              borderRadius: "24px",
+              padding: "1rem 1.25rem",
+              boxShadow: "var(--shadow-lg)",
+              border: "1px solid var(--clr-border)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.5rem",
+              zIndex: 3,
+            }}
+          >
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <PiggyBank size={18} color="var(--clr-brand)" />
+              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                Savings Rate
+              </span>
+            </div>
+            <strong style={{ fontSize: "1.5rem", color: "var(--clr-brand)" }}>
+              72%
+            </strong>
+            <div style={{ fontSize: "0.7rem", color: "var(--clr-text-muted)" }}>
+              Above average
+            </div>
+          </div>
 
-          {/* 3. Features Section: How it works */}
-          <section className="mb-20">
-            <h3 className="text-4xl font-bold text-center mb-12">
-              Packed with <span className={primaryText}>Powerful Features</span>
-            </h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => (
-                <div key={index} className={`p-6 rounded-xl text-center flex flex-col items-center border border-gray-200 dark:border-gray-700 ${cardBackground}`}>
-                  <div className={`p-4 rounded-full mb-4 bg-white dark:bg-black border border-gray-200 dark:border-gray-700`}>
-                    {feature.icon}
-                  </div>
-                  <h4 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">{feature.title}</h4>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">{feature.description}</p>
+          {/* Decorative leaf - top left */}
+          <div
+            style={{
+              position: "absolute",
+              top: "15%",
+              left: "8%",
+              opacity: 0.15,
+              transform: "rotate(-15deg)",
+              pointerEvents: "none",
+            }}
+          >
+            <Leaf size={80} color="var(--clr-brand)" strokeWidth={1} />
+          </div>
+
+          {/* Decorative award - bottom right */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "15%",
+              right: "10%",
+              opacity: 0.12,
+              transform: "rotate(10deg)",
+              pointerEvents: "none",
+            }}
+          >
+            <Award size={100} color="var(--clr-brand)" strokeWidth={1} />
+          </div>
+
+          {/* Subtle dot patterns (still there for texture) */}
+          <div
+            style={{
+              position: "absolute",
+              top: "20%",
+              left: "2%",
+              width: "100px",
+              height: "100px",
+              backgroundImage:
+                "radial-gradient(var(--clr-brand) 1.5px, transparent 1.5px)",
+              backgroundSize: "16px 16px",
+              opacity: 0.1,
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "30%",
+              right: "3%",
+              width: "120px",
+              height: "120px",
+              backgroundImage:
+                "radial-gradient(var(--clr-brand) 1.5px, transparent 1.5px)",
+              backgroundSize: "20px 20px",
+              opacity: 0.08,
+              pointerEvents: "none",
+            }}
+          />
+
+          {/* Main centered content */}
+          <div
+            style={{
+              maxWidth: "900px",
+              margin: "0 auto",
+              padding: "0 clamp(1.25rem, 5vw, 3rem)",
+              textAlign: "center",
+              position: "relative",
+              zIndex: 2,
+            }}
+          >
+            <p
+              style={{
+                fontSize: ".75rem",
+                fontWeight: 700,
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+                color: "var(--clr-text-muted)",
+                marginBottom: "1rem",
+              }}
+            >
+              ABOUT Montra
+            </p>
+
+            <h1
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "clamp(3rem, 8vw, 5.5rem)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.04em",
+                color: "var(--clr-text)",
+                margin: "0 auto",
+                maxWidth: "14ch",
+              }}
+            >
+              Financial confidence
+              <br />
+              <em
+                style={{
+                  color: "var(--clr-brand)",
+                  fontStyle: "italic",
+                }}
+              >
+                for everyone.
+              </em>
+            </h1>
+
+            <p
+              style={{
+                maxWidth: "48rem",
+                margin: "1.5rem auto 2rem auto",
+                fontSize: "1.125rem",
+                lineHeight: 1.7,
+                color: "var(--clr-text-muted)",
+              }}
+            >
+              Montra was built to help people understand, control, and
+              improve their financial lives. We believe managing money should
+              feel empowering—not overwhelming.
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem",
+                flexWrap: "wrap",
+                marginBottom: "3rem",
+              }}
+            >
+              <Link
+                href="/sign-up"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: ".5rem",
+                  padding: "0.9rem 2rem",
+                  borderRadius: "var(--r-pill)",
+                  background: "var(--clr-brand)",
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  boxShadow: "var(--shadow-md)",
+                }}
+              >
+                Get Started Free
+                <ArrowRight size={18} />
+              </Link>
+
+              <Link
+                href="/pricing"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.9rem 2rem",
+                  borderRadius: "var(--r-pill)",
+                  border: "1px solid var(--clr-border)",
+                  textDecoration: "none",
+                  color: "var(--clr-text)",
+                  background: "white",
+                }}
+              >
+                View Pricing
+              </Link>
+            </div>
+
+            {/* Trust chips */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem",
+                flexWrap: "wrap",
+              }}
+            >
+              {[
+                { icon: Users, text: "50,000+ users" },
+                { icon: Star, text: "4.9/5 rating" },
+                { icon: Lock, text: "Bank-level security" },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "999px",
+                    background: "white",
+                    border: "1px solid var(--clr-border)",
+                    boxShadow: "var(--shadow-sm)",
+                    fontSize: "0.85rem",
+                    color: "var(--clr-text-muted)",
+                  }}
+                >
+                  <item.icon size={14} color="var(--clr-brand)" />
+                  {item.text}
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          <hr className="my-10 border-gray-200 dark:border-gray-800" />
-          
-          {/* Call to Action */}
-          <section className="text-center pt-10">
-            <h3 className="text-3xl font-bold mb-4">Take Control of Your Money Today.</h3>
-            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-xl mx-auto mb-6">
-              Ready to stop worrying about money? Join the movement toward financial confidence.
-            </p>
-            <Button
-              onClick={() => router.push("/sign-up")}
-              className="inline-block px-10 bg-primary text-white font-bold text-lg rounded-full shadow-lg transition duration-300 transform hover:scale-[1.05]"
+        {/* Rest of the page unchanged (mission, values, stats, philosophy, cta) */}
+        {/* ... (keep exactly the same as previous version) ... */}
+
+        {/* ───────────────── MISSION ───────────────── */}
+        <section
+          style={{
+            padding: "clamp(4rem, 6vw, 7rem) clamp(1.25rem, 5vw, 3rem)",
+            borderBottom: "1px solid var(--clr-border)",
+            background: "var(--clr-bg-off)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1400px",
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "4rem",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  fontSize: ".75rem",
+                  fontWeight: 700,
+                  letterSpacing: ".12em",
+                  textTransform: "uppercase",
+                  color: "var(--clr-text-muted)",
+                  marginBottom: "1rem",
+                }}
+              >
+                OUR MISSION
+              </p>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                Money should feel
+                <br />
+                simple.
+              </h2>
+            </div>
+
+            <div>
+              <p
+                style={{
+                  fontSize: "1.05rem",
+                  lineHeight: 1.8,
+                  color: "var(--clr-text-muted)",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                Most people don't have a spending problem. They have a
+                visibility problem.
+              </p>
+              <p
+                style={{
+                  fontSize: "1.05rem",
+                  lineHeight: 1.8,
+                  color: "var(--clr-text-muted)",
+                }}
+              >
+                Banks show transactions. Spreadsheets demand discipline.
+                Montra bridges the gap with a simple, beautiful system
+                that makes financial awareness effortless.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────── VALUES ───────────────── */}
+        <section
+          style={{
+            padding: "clamp(4rem, 6vw, 7rem) clamp(1.25rem, 5vw, 3rem)",
+            borderBottom: "1px solid var(--clr-border)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1400px",
+              margin: "0 auto",
+            }}
+          >
+            <h2
+              style={{
+                textAlign: "center",
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "clamp(2rem, 4vw, 3rem)",
+                letterSpacing: "-0.03em",
+                marginBottom: "3rem",
+              }}
             >
-              Get Started Free 💰
-            </Button>
-          </section>
+              What we believe.
+            </h2>
 
-        </main>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: "2rem",
+              }}
+            >
+              {VALUES.map(({ icon: Icon, title, desc }, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: "2rem",
+                    borderRadius: "28px",
+                    background:
+                      i % 2 === 0 ? "var(--block-sage)" : "var(--block-cream)",
+                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                    cursor: "default",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-lg)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 16,
+                      background: "var(--clr-brand-light)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "var(--clr-brand)",
+                      marginBottom: "1.25rem",
+                    }}
+                  >
+                    <Icon size={22} />
+                  </div>
+                  <h3
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "1.25rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    {title}
+                  </h3>
+                  <p
+                    style={{
+                      color: "var(--clr-text-muted)",
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      </div>
-      <FooterSection/>
+        {/* ───────────────── STATS ───────────────── */}
+        <section
+          style={{
+            padding: "clamp(4rem, 6vw, 7rem) clamp(1.25rem, 5vw, 3rem)",
+            borderBottom: "1px solid var(--clr-border)",
+            background: "var(--clr-bg-off)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1400px",
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "2rem",
+              textAlign: "center",
+            }}
+          >
+            {STATS.map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  background: "white",
+                  borderRadius: "32px",
+                  padding: "2rem 1rem",
+                  boxShadow: "var(--shadow-sm)",
+                  border: "1px solid var(--clr-border)",
+                }}
+              >
+                <item.icon
+                  size={28}
+                  color="var(--clr-brand)"
+                  style={{ marginBottom: "1rem" }}
+                />
+                <div
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 700,
+                    fontSize: "clamp(2rem, 6vw, 3.5rem)",
+                    color: "var(--clr-brand)",
+                    letterSpacing: "-0.03em",
+                  }}
+                >
+                  {item.value}
+                </div>
+                <div
+                  style={{
+                    marginTop: "0.5rem",
+                    color: "var(--clr-text-muted)",
+                    fontWeight: 500,
+                  }}
+                >
+                  {item.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ───────────────── PHILOSOPHY ───────────────── */}
+        <section
+          style={{
+            padding: "clamp(4rem, 6vw, 7rem) clamp(1.25rem, 5vw, 3rem)",
+            borderBottom: "1px solid var(--clr-border)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1400px",
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "4rem",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                Built for
+                <br />
+                real life.
+              </h2>
+            </div>
+            <div>
+              <div
+                style={{
+                  background: "var(--block-cream)",
+                  borderRadius: "28px",
+                  padding: "2rem",
+                  marginBottom: "1.5rem",
+                  border: "1px solid var(--clr-border)",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "1.1rem",
+                    lineHeight: 1.7,
+                    color: "var(--clr-text-muted)",
+                  }}
+                >
+                  No financial jargon.
+                  <br />
+                  No complicated setup.
+                  <br />
+                  No unnecessary dashboards.
+                </p>
+              </div>
+              <p
+                style={{
+                  fontSize: "1.05rem",
+                  lineHeight: 1.7,
+                  color: "var(--clr-text-muted)",
+                }}
+              >
+                Just thoughtful tools that help people make better financial
+                decisions every day.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────── CTA ───────────────── */}
+        <section
+          style={{
+            padding: "clamp(5rem, 8vw, 8rem) clamp(1.25rem, 5vw, 3rem)",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "56rem",
+              margin: "0 auto",
+              background: "var(--block-sage)",
+              borderRadius: "48px",
+              padding: "clamp(3rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem)",
+              border: "1px solid var(--clr-border)",
+              boxShadow: "var(--shadow-lg)",
+            }}
+          >
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "clamp(2rem, 6vw, 4rem)",
+                lineHeight: 1.1,
+                letterSpacing: "-0.04em",
+                marginBottom: "1rem",
+              }}
+            >
+              Ready to take control
+              <br />
+              of your finances?
+            </h2>
+            <p
+              style={{
+                color: "var(--clr-text-muted)",
+                fontSize: "1.1rem",
+                lineHeight: 1.6,
+                marginBottom: "2rem",
+                maxWidth: "36rem",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
+              Start tracking, budgeting, and building better financial habits
+              today.
+            </p>
+            <Link
+              href="/sign-up"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: ".5rem",
+                padding: "1rem 2rem",
+                borderRadius: "var(--r-pill)",
+                background: "var(--clr-brand)",
+                color: "#fff",
+                textDecoration: "none",
+                fontWeight: 600,
+                boxShadow: "var(--shadow-md)",
+              }}
+            >
+              Get Started Free
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      <FooterSection />
     </>
   );
-};
-
-export default About;
+}
