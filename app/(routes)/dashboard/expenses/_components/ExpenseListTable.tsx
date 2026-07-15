@@ -1,10 +1,9 @@
+"use client"
 import { Trash } from 'lucide-react'
 import React from 'react'
-import { db } from '/utils/dbConfig'
-import { Expenses } from '/utils/schema'
 import { toast } from 'sonner'
-import { eq } from 'drizzle-orm'
 import type { ExpenseSummary, RefreshData } from '/types'
+import { deleteExpense } from '../../actions';
 
 interface ExpenseListTableProps {
   expensesList: ExpenseSummary[];
@@ -12,10 +11,8 @@ interface ExpenseListTableProps {
 }
 
 function ExpenseListTable({expensesList, refreshData}: ExpenseListTableProps) {
-     const deleteExpense=async(expense: { id: number })=>{
-        const result=await db.delete(Expenses)
-        .where(eq(Expenses.id,expense.id))
-        .returning();
+     const handleDeleteExpense=async(expense: { id: number })=>{
+        const result=await deleteExpense(expense.id);
         if(result){
             toast('Expense Deleted!');
             refreshData()
@@ -37,7 +34,7 @@ function ExpenseListTable({expensesList, refreshData}: ExpenseListTableProps) {
           <h2>{expenses.createdAt}</h2>
           <h2>
             <Trash className=' hover:text-red-700 text-red-600 cursor pointer text-center' 
-            onClick={()=>deleteExpense(expenses)}/>
+            onClick={()=>handleDeleteExpense(expenses)}/>
           </h2>
         </div>
       ))}

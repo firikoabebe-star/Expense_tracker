@@ -13,13 +13,10 @@ import {
   DialogClose,
 } from "/components/ui/dialog"
 import EmojiPicker from 'emoji-picker-react'
-import { useUser } from '@clerk/nextjs'
 import { Input } from '/components/ui/input'
-import { Budgets } from '/utils/schema'
-import { db } from '/utils/dbConfig'
-import { eq } from 'drizzle-orm'
 import { toast } from 'sonner'
 import type { BudgetSummary, RefreshData } from '/types'
+import { updateBudget } from '../../actions';
 
 interface EditBudgetProps {
   budgetInfo?: BudgetSummary;
@@ -32,20 +29,18 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
   const [name,setName]=useState<string | undefined>();
   const [amount,setAmount]=useState<string | undefined>();
 
-  const {user}=useUser();
-
   useEffect(()=>{
     if(budgetInfo){
     setEmojiIcon(budgetInfo?.icon)
     }
   },[budgetInfo])
   const onUpdateBudget=async()=>{
-     const result=await db.update(Budgets).set({
-        name:name,
-        amount:amount,
-        icon:emojiIcon,
-     }).where(eq(Budgets.id, (budgetInfo as BudgetSummary).id))
-     .returning();
+     const result = await updateBudget(
+       (budgetInfo as BudgetSummary).id,
+       name,
+       amount,
+       emojiIcon
+     );
 
      if(result){
         refreshData()

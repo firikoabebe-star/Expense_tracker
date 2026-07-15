@@ -1,45 +1,32 @@
 "use client"
-import { ArrowLeft, Router, Trash } from 'lucide-react'
+import { ArrowLeft, Trash } from 'lucide-react'
 import React, { useState ,useEffect} from 'react'
-import { db } from '/utils/dbConfig'
-import { Expenses } from '/utils/schema'
-import { eq,desc } from 'drizzle-orm'
-import { useUser } from '@clerk/nextjs';
-import { Budgets } from '/utils/schema'
+import { authClient } from '/lib/auth-client';
 import { Button } from '/components/ui/button'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import type { ExpenseSummary } from '/types'
+import { getAllExpenses, deleteExpense } from '../actions';
+
 function ExpenseList() {
 const [expensesList,setExpensesList]=useState<ExpenseSummary[]>([]);
-const {user}=useUser();
+const { data: session } = authClient.useSession();
+const user = session?.user;
 const router=useRouter();
   useEffect(()=>{
-        user&&getAllExpenses();
+        user&&getAllExpensesAction();
     },[user])
-/**
-     * Used to get All Expenses that belong to users
-     */
-    const getAllExpenses=async()=>{
-      const result=await db.select({
-        id:Expenses.id,
-        name:Expenses.name,
-        amount:Expenses.amount,
-        createdAt:Expenses.createdAt
-      }).from(Budgets)
-      .rightJoin(Expenses,eq(Budgets.id,Expenses.budgetId))
-    .where(eq(Budgets.createdBy,user?.primaryEmailAddress?.emailAddress as string))
-    .orderBy(desc(Expenses.id));
-    setExpensesList(result);
-   
+
+    const getAllExpensesAction=async()=>{
+      const result=await getAllExpenses();
+      setExpensesList(result);
     }
-    const deleteExpense=async(expense: { id: number })=>{
-        const result=await db.delete(Expenses)
-        .where(eq(Expenses.id,expense.id))
-        .returning();
+
+    const handleDeleteExpense=async(expense: { id: number })=>{
+        const result=await deleteExpense(expense.id);
         if(result){
             toast('Expense Deleted!');
-            getAllExpenses();
+            getAllExpensesAction();
      }
     }
   return (
@@ -58,7 +45,7 @@ const router=useRouter();
           <h2>{expenses.createdAt}</h2>
           <h2>
             <Trash className=' hover:text-red-700 text-red-500 cursor pointer' 
-            onClick={()=>deleteExpense(expenses)}/>
+            onClick={()=>handleDeleteExpense(expenses)}/>
           </h2>
         </div>
       ))}

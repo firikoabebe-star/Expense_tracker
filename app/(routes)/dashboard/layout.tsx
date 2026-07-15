@@ -2,11 +2,9 @@
 import React from 'react'
 import SideNav from './_components/SideNav'
 import DashboardHeader from './_components/DashboardHeader'
-import { db } from '/utils/dbConfig'
-import { Budgets } from '/utils/schema'
-import { useUser } from '@clerk/nextjs'
-import { eq } from "drizzle-orm"; // <-- make sure this import exists
+import { authClient } from '/lib/auth-client'
 import { useRouter } from 'next/navigation';
+import { checkUserBudgets } from './actions';
 
 
 interface DashboardLayoutProps {
@@ -14,26 +12,21 @@ interface DashboardLayoutProps {
 }
 
 function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user } = useUser();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   const router = useRouter();
 
-  const checkUserBudgets = async () => {
-    const result = await db
-      .select()
-      .from(Budgets)
-      .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress as string)); // <-- pass correct value
-
+  const checkBudgets=async()=>{
+    const result = await checkUserBudgets();
     console.log(result);
     if(result?.length==0){
       router.replace('/dashboard/budgets')
     }
-    return result;
   };
 
-  // Optionally call it when needed
   React.useEffect(() => {
     if (user) {
-      checkUserBudgets();
+      checkBudgets();
     }
   }, [user]);
 
@@ -52,4 +45,3 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 }
 
 export default DashboardLayout;
-

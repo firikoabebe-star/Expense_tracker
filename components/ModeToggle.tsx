@@ -16,7 +16,12 @@ const OPTIONS = [
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -58,11 +63,11 @@ export function ModeToggle() {
           e.currentTarget.style.background = "transparent";
         }}
       >
-        <CurrentIcon size={15} />
+        {mounted ? <CurrentIcon size={15} /> : <Monitor size={15} />}
       </button>
 
       {/* Dropdown */}
-      {open && (
+      {mounted && open && (
         <ul
           role="listbox"
           aria-label="Theme options"

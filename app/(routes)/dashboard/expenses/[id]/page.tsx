@@ -1,16 +1,13 @@
 "use client";
 import React, { useEffect,useState } from "react";
-import { db } from "/utils/dbConfig";
-import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
-import { Budgets, Expenses } from "/utils/schema";
-import { useUser } from "@clerk/nextjs";
-import { use } from "react"; // 👈 import use
+import { use } from "react";
+import { authClient } from "/lib/auth-client";
 import BudgetItem from "../../budgets/_components/Budgetitem";
 import AddExpense from '../_components/AddExpense'
 import EditBudget from '../_components/EditBudget'
 import ExpenseListTable from '../_components/ExpenseListTable'
 import { Button } from "/components/ui/button";
-import { ArrowLeft, PenBox, Router, Trash } from "lucide-react";
+import { ArrowLeft, PenBox, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,63 +22,34 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import type { BudgetSummary, Expense } from "/types";
+import { getBudgetInfo, getExpensesForBudget, deleteBudget } from '../../actions';
 
 interface ExpensesScreenProps {
   params: Promise<{ id: string }>;
 }
 
 function ExpensesScreen({ params }: ExpensesScreenProps) {
-  const { user } = useUser();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   const [budgetInfo,setBudgetInfo]=useState<BudgetSummary>();
   const[expensesList,setExpensesList]=useState<Expense[]>([]);
   const unwrappedParams = use(params);
   const route=useRouter();
 
   useEffect(() => {
-    if (user) getBudgetInfo();
+    if (user) getBudgetInfoAction();
   }, [user]);
   
-  /**
-   * Get Budget Information
-   */
-  const getBudgetInfo = async () => {
-    const result = await db
-      .select({
-        ...getTableColumns(Budgets),
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
-        totalItem: sql`count(${Expenses.id})`.mapWith(Number),
-      })
-      .from(Budgets)
-      .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
-      .where(and(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress as string), eq(Budgets.id, Number(unwrappedParams.id))))
-      .groupBy(Budgets.id);
-
-    setBudgetInfo(result[0]);
-    getExpensesList();
+  const getBudgetInfoAction = async () => {
+    const budgetId = Number(unwrappedParams.id);
+    const info = await getBudgetInfo(budgetId);
+    setBudgetInfo(info);
+    const expenses = await getExpensesForBudget(budgetId);
+    setExpensesList(expenses);
   };
-  /**
-   * Get Latest Expenses
-   */
-  const getExpensesList=async()=>{
-   const result=await db.select().from(Expenses)
-   .where(eq(Expenses.budgetId,Number(unwrappedParams.id)))
-   .orderBy(desc(Expenses.id))
-   setExpensesList(result)
-   console.log(result)
-  }
 
-  /**
-   * Used to Delete budget
-   */
-  const deleteBudget=async()=>{
-    const deleteExpenseResult=await db.delete(Expenses)
-   .where(eq(Expenses.budgetId,Number(unwrappedParams.id)))
-    .returning()
-    if(deleteExpenseResult){
-      const result=await db.delete(Budgets)
-    .where(eq(Budgets.id,Number(unwrappedParams.id)))
-    .returning();
-    }
+  const handleDeleteBudget=async()=>{
+    await deleteBudget(Number(unwrappedParams.id));
     toast('Budget Deleted!')
     route.replace('/dashboard/budgets');
   }
@@ -94,7 +62,7 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
         </div>
        <div className='flex gap-2 items-center'>
         <EditBudget budgetInfo={budgetInfo}
-        refreshData={()=>getBudgetInfo()}/>
+        refreshData={()=>getBudgetInfoAction()}/>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button className='flex gap-2 hover:bg-red-700 dark:bg-red-700  dark:hover:bg-red-800 dark:text-black' variant='destructive'> 
@@ -109,7 +77,7 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction className="hover:bg-[#107c73]" onClick={()=>deleteBudget()}>Continue</AlertDialogAction>
+                        <AlertDialogAction className="hover:bg-[#107c73]" onClick={()=>handleDeleteBudget()}>Continue</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                     </AlertDialog>
@@ -119,13 +87,12 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
        {budgetInfo? <BudgetItem budget={budgetInfo}/>:
        <div className='h-[150px] w-full bg-slate-200 rounded-lg animate-pulse'></div>}
         <AddExpense budgetId={Number(unwrappedParams.id)}
-       user={user}
        refreshData={
-        ()=>getBudgetInfo()}/>
+        ()=>getBudgetInfoAction()}/>
       </div>
       <div className='mt-4'>
          <ExpenseListTable expensesList={expensesList}
-         refreshData={()=>getBudgetInfo()} />
+         refreshData={()=>getBudgetInfoAction()} />
       </div>
     </div>
   );

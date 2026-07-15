@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react'
-import { useUser } from "@clerk/nextjs";
+import { authClient } from '/lib/auth-client';
 
 import {
   Dialog,
@@ -15,10 +15,9 @@ import {
 import EmojiPicker from 'emoji-picker-react'
 import { Button } from '/components/ui/button';
 import { Input } from "/components/ui/input"
-import { db } from '/utils/dbConfig';
-import { Budgets } from '/utils/schema';
 import { toast } from 'sonner';
 import type { RefreshData } from '/types';
+import { createBudget } from '../../actions';
 
 interface CreateBudgetProps {
   refreshData: RefreshData;
@@ -30,18 +29,11 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
   const [name,setName]=useState('');
   const [amount,setAmount]=useState('');
 
-  const {user}=useUser();
-  /**
-   * used to create new budget
-   */
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   const onCreateBudget=async()=>{
-     const result=await db.insert(Budgets)
-     .values({
-      name:name,
-      amount:amount,
-      createdBy:user?.primaryEmailAddress?.emailAddress as string,
-      icon:emojiIcon
-     }).returning({insertedId:Budgets.id})
+     const result = await createBudget(name, amount, emojiIcon);
 
      if(result){
       refreshData()

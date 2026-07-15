@@ -1,9 +1,9 @@
 'use client'
-import { UserButton } from '@clerk/nextjs';
-import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck } from 'lucide-react';
+import { authClient } from '/lib/auth-client';
+import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 function SideNav() {
@@ -29,6 +29,7 @@ function SideNav() {
 
   ];
   const path=usePathname();
+  const router = useRouter();
   useEffect(()=>{
     console.log(path)
   }),[path]
@@ -50,8 +51,14 @@ function SideNav() {
         })}
       </div>
       <div className='fixed bottom-10 p-5 flex gap-2 items-center'>
-        <UserButton/>
-        Profile 
+        <button
+          onClick={() => authClient.signOut().then(() => router.push('/'))}
+          className='flex gap-2 items-center text-gray-500 hover:text-red-600 transition-colors'
+          title="Sign out"
+        >
+          <LogOut className='w-5 h-5' />
+          Sign Out
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client"
-import { UserButton } from '@clerk/nextjs'
 import React from 'react'
+import { authClient } from '/lib/auth-client'
 import { ModeToggle }  from "/components/ModeToggle"
 import {
   Sheet,
@@ -11,13 +11,16 @@ import {
   SheetDescription,
   SheetClose,
 } from "/components/ui/sheet"
-import { Menu, LayoutGrid, PiggyBank, ReceiptText, ShieldCheck } from 'lucide-react'
+import { Menu, LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 function DashboardHeader() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
 
   return (
     <div className=' p-5 shadow-sm border-b flex justify-between items-center dark:bg-[#1B1B1F]'>
@@ -94,7 +97,16 @@ function DashboardHeader() {
 
       <div className='flex items-center gap-4'>
         <ModeToggle/>
-        <UserButton/>
+        <div className='flex items-center gap-2'>
+          <span className='text-sm text-gray-600 dark:text-gray-400 hidden sm:block'>{user?.email}</span>
+          <button
+            onClick={() => authClient.signOut().then(() => router.push('/'))}
+            className='p-2 rounded-md hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-600 transition-colors'
+            title="Sign out"
+          >
+            <LogOut className='w-4 h-4' />
+          </button>
+        </div>
       </div>
     </div>
   )

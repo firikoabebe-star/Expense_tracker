@@ -119,11 +119,11 @@ export default function LandingNavbar() {
           </span>
         </Link>
 
-        {/* ── Desktop Nav (hidden < 768px) ── */}
+        {/* ── Desktop Nav (hidden < 1024px) ── */}
         <nav
           aria-label="Main"
-          style={{ display: "flex", alignItems: "center", gap: "2rem" }}
-          className="hidden md:flex"
+          style={{ alignItems: "center", gap: "2rem" }}
+          className="hidden lg:flex"
         >
           {NAV_LINKS.map(({ label, href }) => (
             <Link
@@ -142,10 +142,10 @@ export default function LandingNavbar() {
           ))}
         </nav>
 
-        {/* ── Desktop Actions (hidden < 768px) ── */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          {/* ── Desktop Actions (hidden < 1024px) ── */}
           <div
-            className="hidden md:flex"
+            className="hidden lg:flex"
             style={{ alignItems: "center", gap: "0.375rem" }}
           >
             <Link
@@ -205,16 +205,15 @@ export default function LandingNavbar() {
 
           <ModeToggle />
 
-          {/* Hamburger — visible < 768px */}
+          {/* Hamburger — visible < 1024px */}
           <button
             aria-label={drawerOpen ? "Close menu" : "Open menu"}
             aria-expanded={drawerOpen}
             onClick={() => setDrawerOpen(!drawerOpen)}
-            className="flex md:hidden"
+            className="flex lg:hidden"
             style={{
               width: 38,
               height: 38,
-              display: "flex",
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 10,

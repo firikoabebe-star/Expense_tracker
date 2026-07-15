@@ -1,65 +1,38 @@
+"use client"
 import React, {useState} from "react";
 import { Input } from "/components/ui/input";
 import { Button } from "/components/ui/button";
-import { Budgets, Expenses } from "/utils/schema";
 import { toast } from "sonner";
-import { db } from "/utils/dbConfig";
-import moment from "moment";
-import { eq, getTableColumns, sql } from "drizzle-orm";
 import { Loader } from "lucide-react";
-import type { UserResource } from "@clerk/types";
 import type { RefreshData } from "/types";
+import { getBudgetInfo, createExpense } from '../../actions';
 
 interface AddExpenseProps {
   budgetId: number;
-  user: UserResource | null | undefined;
   refreshData: RefreshData;
 }
 
-function AddExpense({budgetId,user, refreshData}: AddExpenseProps) {
+function AddExpense({budgetId, refreshData}: AddExpenseProps) {
 
     const [name,setName]=useState("");
     const [amount,setAmount]=useState("");
     const [loading,setLoading]=useState(false);
-    //**use state is used so that we can convert from false to true for loading
-    // then from true to false when done */
-    /**
-     * Used to add new expense
-     */
+
     const addNewExpense=async()=>{
       setLoading(true);
-      // 1. Get Budget Info (Amount & Spend)
-      const budgetInfoResult = await db.select({
-        ...getTableColumns(Budgets),
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
-      }).from(Budgets)
-        .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
-        .where(eq(Budgets.id, budgetId))
-        .groupBy(Budgets.id);
-
-      const budgetInfo = budgetInfoResult[0];
+      const budgetInfo = await getBudgetInfo(budgetId);
       const remainingBudget = Number(budgetInfo.amount || 0) - (budgetInfo.totalSpend || 0);
-
-      // 2. Validate new expense amount toast and stop if exceeds remaining budget
 
       if (Number(amount) > remainingBudget) {
         setLoading(false);
         toast.error(`Expense exceeds remaining budget of ${remainingBudget.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}.`);
-        return; // Stop execution
+        return;
       }
 
-
-      // 3. Insert Expense if valid
-        const result=await db.insert(Expenses).values({
-            name:name,
-            amount:amount,
-            budgetId:budgetId,
-            createdAt:moment().format("DD/MM/YYYY")
-        }).returning({insertedId:Budgets.id});
+        const result = await createExpense(name, amount, budgetId);
 
         setAmount('');
         setName('');
-        console.log(result);
         if(result){
           setLoading(false)
             refreshData()

@@ -1,39 +1,24 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import CreateBudget from './CreateBudget'
-import { db } from '/utils/dbConfig'
-import { desc, eq, getTableColumns, sql } from 'drizzle-orm'
-import { Budgets, Expenses } from '/utils/schema'
-import { useUser } from "@clerk/nextjs";
+import { authClient } from '/lib/auth-client';
 import BudgetItem from './Budgetitem'
 import type { BudgetSummary } from '/types';
+import { getBudgetList } from '../../actions';
 
 function BudgetList() {
   const [budgetList, setBudgetList] = useState<BudgetSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useUser();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
 
   useEffect(() => {
-    user && getBudgetList();
+    user && getBudgetListAction();
   }, [user]);
 
-  /**
-   * Used to get budget list
-   */
-  const getBudgetList = async () => {
+  const getBudgetListAction = async () => {
     setLoading(true);
-    const result = await db
-      .select({
-        ...getTableColumns(Budgets),
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
-        totalItem: sql`count(${Expenses.id})`.mapWith(Number),
-      })
-      .from(Budgets)
-      .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
-      .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress as string))
-      .groupBy(Budgets.id)
-      .orderBy(desc(Budgets.id));
-
+    const result = await getBudgetList();
     setBudgetList(result);
     setLoading(false);
   };
@@ -41,7 +26,7 @@ function BudgetList() {
   return (
     <div className="mt-7">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <CreateBudget refreshData={getBudgetList}/>
+        <CreateBudget refreshData={getBudgetListAction}/>
 
         {/* Skeletons only while loading */}
         {loading ? (
