@@ -9,7 +9,8 @@ import moment from "moment";
 
 async function getUserEmail() {
   const session = await auth.api.getSession({ headers: await headers() });
-  return session?.user?.email as string;
+  if (!session) throw new Error("Unauthorized");
+  return session.user.email;
 }
 
 export async function getBudgetList() {
@@ -58,6 +59,12 @@ export async function getBudgetInfo(budgetId: number) {
 }
 
 export async function getExpensesForBudget(budgetId: number) {
+  const email = await getUserEmail();
+  const [budget] = await db
+    .select({ id: Budgets.id })
+    .from(Budgets)
+    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)));
+  if (!budget) throw new Error("Budget not found");
   return db
     .select()
     .from(Expenses)
@@ -84,6 +91,12 @@ export async function updateBudget(
   amount: string | undefined,
   icon: string | null | undefined
 ) {
+  const email = await getUserEmail();
+  const [budget] = await db
+    .select({ id: Budgets.id })
+    .from(Budgets)
+    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)));
+  if (!budget) throw new Error("Budget not found");
   return db
     .update(Budgets)
     .set({ name, amount, icon })
@@ -103,10 +116,25 @@ export async function createExpense(
 }
 
 export async function deleteExpense(expenseId: number) {
+  const email = await getUserEmail();
+  const [expense] = await db
+    .select({ id: Expenses.id })
+    .from(Expenses)
+    .innerJoin(Budgets, eq(Expenses.budgetId, Budgets.id))
+    .where(and(eq(Expenses.id, expenseId), eq(Budgets.createdBy, email)));
+  if (!expense) throw new Error("Expense not found");
   return db.delete(Expenses).where(eq(Expenses.id, expenseId)).returning();
 }
 
 export async function deleteBudget(budgetId: number) {
-  await db.delete(Expenses).where(eq(Expenses.budgetId, budgetId)).returning();
-  return db.delete(Budgets).where(eq(Budgets.id, budgetId)).returning();
+  const email = await getUserEmail();
+  const [budget] = await db
+    .select({ id: Budgets.id })
+    .from(Budgets)
+    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)));
+  if (!budget) throw new Error("Budget not found");
+  return db.transaction(async (tx) => {
+    await tx.delete(Expenses).where(eq(Expenses.budgetId, budgetId));
+    return tx.delete(Budgets).where(eq(Budgets.id, budgetId)).returning();
+  });
 }

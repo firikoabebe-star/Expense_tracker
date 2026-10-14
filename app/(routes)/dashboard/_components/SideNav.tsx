@@ -2,12 +2,15 @@
 import { authClient } from '/lib/auth-client';
 import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 function SideNav() {
-  const menuList = [    //objects inside 
+  const { data: session } = authClient.useSession();
+  const userRole = (session?.user as Record<string, unknown> | undefined)?.role as string | undefined;
+
+  const menuList = [
     {
       id: 1,
       name: 'Dashboard',
@@ -23,18 +26,20 @@ function SideNav() {
     {
       id: 3,
       name: 'Expenses',
-      icon: ReceiptText, // Corrected spelling
+      icon: ReceiptText,
       path:'/dashboard/expenses',
     },
-
+    ...(userRole === 'admin' ? [{
+      id: 4,
+      name: 'Admin',
+      icon: ShieldCheck,
+      path: '/admin',
+    }] : []),
   ];
   const path=usePathname();
   const router = useRouter();
-  useEffect(()=>{
-    console.log(path)
-  }),[path]
   return (
-    <div className='h-screen p-5 border shadow-sm dark:bg-[#1B1B1F]'>
+    <div className='h-screen p-5 border border-border shadow-sm bg-background'>
      <Link href='/'> <Image src='/logoipsum-247.svg' alt='logo' height={50} width={50} /></Link>   
       <div className='mt-5'>
         {menuList.map((menu) => {
@@ -65,4 +70,3 @@ function SideNav() {
 }
 
 export default SideNav;
-

@@ -35,23 +35,27 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
     }
   },[budgetInfo])
   const onUpdateBudget=async()=>{
-     const result = await updateBudget(
-       (budgetInfo as BudgetSummary).id,
-       name,
-       amount,
-       emojiIcon
-     );
+    try {
+      const result = await updateBudget(
+        (budgetInfo as BudgetSummary).id,
+        name,
+        amount,
+        emojiIcon
+      );
 
-     if(result){
-        refreshData()
-        toast("Budget Updated")
-     }
+      if(result){
+        refreshData();
+        toast("Budget Updated");
+      }
+    } catch {
+      toast.error('Failed to update budget');
+    }
   }
   return (
     <div>
         <Dialog>
               <DialogTrigger asChild>
-               <Button className='flex gap-2 dark:bg-[#15a095] dark:hover:bg-[#0a6f67] hover:bg-[#107c73]'> <PenBox/> Edit</Button>
+               <Button className='flex gap-2 hover:bg-[#107c73]'> <PenBox/> Edit</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -61,7 +65,6 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                     <div>
                       <Button
                         variant="outline"
-                         className="dark:border-white"
                         onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
                       >
                         {emojiIcon}
@@ -101,7 +104,7 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                     <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
                       <Button 
-                       className='mt-5 w-full dark:text-white hover:bg-[#05766c]'
+                       className='mt-5 w-full hover:bg-[#05766c]'
                        onClick={()=>onUpdateBudget()}>Update Budget</Button>
                     </DialogClose>
                   </DialogFooter>

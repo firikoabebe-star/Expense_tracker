@@ -37,8 +37,8 @@ function BudgetList() {
             />
           ))
         ) : budgetList.length > 0 ? (
-          budgetList.map((budget, index) => (
-            <BudgetItem key={index} budget={budget} />
+          budgetList.map((budget) => (
+            <BudgetItem key={budget.id} budget={budget} />
           ))
         ) : (
           <p className="text-gray-500 col-span-full">

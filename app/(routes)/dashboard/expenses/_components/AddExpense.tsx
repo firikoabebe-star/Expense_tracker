@@ -20,29 +20,32 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
 
     const addNewExpense=async()=>{
       setLoading(true);
-      const budgetInfo = await getBudgetInfo(budgetId);
-      const remainingBudget = Number(budgetInfo.amount || 0) - (budgetInfo.totalSpend || 0);
+      try {
+        const budgetInfo = await getBudgetInfo(budgetId);
+        const remainingBudget = Number(budgetInfo.amount || 0) - (budgetInfo.totalSpend || 0);
 
-      if (Number(amount) > remainingBudget) {
-        setLoading(false);
-        toast.error(`Expense exceeds remaining budget of ${remainingBudget.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}.`);
-        return;
-      }
+        if (Number(amount) > remainingBudget) {
+          toast.error(`Expense exceeds remaining budget of ${remainingBudget.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}.`);
+          return;
+        }
 
         const result = await createExpense(name, amount, budgetId);
 
         setAmount('');
         setName('');
         if(result){
-          setLoading(false)
-            refreshData()
-            toast('New Expense Added')
+          refreshData();
+          toast('New Expense Added');
         }
-        setLoading(false);  
+      } catch {
+        toast.error('Failed to add expense');
+      } finally {
+        setLoading(false);
+      }
     }
 
   return (
-    <div className='border p-5 rounded-lg hover:shadow-md'>
+    <div className='border border-border p-5 rounded-lg hover:shadow-md'>
       <h2 className="font-bold text-lg">AddExpense</h2>
       <div className="mt-2">
         <h2 className="text-black font-medium my-1 dark:text-white">Expense Name</h2>
@@ -62,7 +65,7 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
         />
       </div>
       <Button 
-  disabled={(!name && !amount ) || loading}
+  disabled={!name || !amount || loading}
   className="mt-3 w-full hover:bg-[#107c73]"
   onClick={() => addNewExpense()}
 >

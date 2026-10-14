@@ -33,18 +33,22 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
   const user = session?.user;
 
   const onCreateBudget=async()=>{
-     const result = await createBudget(name, amount, emojiIcon);
+    try {
+      const result = await createBudget(name, amount, emojiIcon);
 
-     if(result){
-      refreshData()
-      toast('New Budget Created!')
-     }
+      if(result){
+        refreshData();
+        toast('New Budget Created!');
+      }
+    } catch {
+      toast.error('Failed to create budget');
+    }
   }
   return (
     <div> 
       <Dialog>
         <DialogTrigger asChild>
-          <div className='dark:bg-[#009689] dark:hover:bg-[#05766c] bg-slate-100 p-10 rounded-md 
+          <div className='bg-slate-100 p-10 rounded-md 
           items-center flex flex-col border-2 border-dashed cursor-pointer hover:shadow-md whitespace-nowrap'>
             <h2 className='text-3xl'>+</h2>
             <h2>Create New Budget</h2>
@@ -59,8 +63,7 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
               <div>
                 <Button
                   variant="outline"
-                  className="dark:border-white"
-                  onClick={() => setOpenEmojiPicker(!openEmojiPicker)}//toggles b/n true and false wich opens and closes the emoji picker
+                  onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
                 >
                   {emojiIcon}
                 </Button>
@@ -91,7 +94,7 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
               <DialogClose asChild>
                 <Button 
                  disabled={!(name&&amount)}
-                 className='mt-5 w-full dark:text-white hover:bg-[#107c73]'
+                 className='mt-5 w-full hover:bg-[#107c73]'
                  onClick={()=>onCreateBudget()}>Create Budget</Button>
               </DialogClose>
             </DialogFooter>

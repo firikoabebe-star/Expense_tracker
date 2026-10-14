@@ -18,7 +18,6 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const checkBudgets=async()=>{
     const result = await checkUserBudgets();
-    console.log(result);
     if(result?.length==0){
       router.replace('/dashboard/budgets')
     }
