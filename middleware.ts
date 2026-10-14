@@ -13,6 +13,8 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/')
+
   try {
     const response = await fetch(
       new URL('/api/auth/get-session', request.url),
@@ -20,6 +22,9 @@ export default async function middleware(request: NextRequest) {
     )
     const data = await response.json()
     if (data.session) {
+      if (isAdminRoute && data.user?.role !== 'admin') {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+      }
       return NextResponse.next()
     }
   } catch {

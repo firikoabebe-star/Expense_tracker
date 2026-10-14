@@ -1,7 +1,7 @@
 "use client"
 
-import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import React, { useEffect, useState } from 'react'
+import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts"
+import React, { useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -9,31 +9,56 @@ import {
   CardHeader,
   CardTitle,
 } from "/components/ui/card"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "/components/ui/chart"
 import type { BudgetSummary } from "/types"
 
 interface BarChartDashboardProps {
   budgetList: BudgetSummary[];
 }
 
-interface ChartData {
-  name: string;
-  totalSpend: number;
-  amount: number;
-}
+const chartConfig = {
+  totalSpend: {
+    label: "Total Spend",
+    color: "hsl(var(--chart-1))",
+  },
+  amount: {
+    label: "Budget Amount",
+    color: "hsl(var(--chart-2))",
+  },
+} satisfies ChartConfig
 
 export default function BarChartDashboard({ budgetList }: BarChartDashboardProps) {
-  const [chartData, setChartData] = useState<ChartData[]>([]);
-
-  useEffect(() => {
-    if (budgetList) {
-      const data = budgetList.map((budget) => ({
-        name: budget.name,
-        totalSpend: budget.totalSpend || 0,
-        amount: Number(budget.amount)
-      }));
-      setChartData(data);
-    }
+  const chartData = useMemo(() => {
+    if (!budgetList) return [];
+    return budgetList.map((budget) => ({
+      name: budget.name,
+      totalSpend: budget.totalSpend || 0,
+      amount: Number(budget.amount),
+    }));
   }, [budgetList]);
+
+  if (chartData.length === 0) {
+    return (
+      <Card className="h-[400px]">
+        <CardHeader>
+          <CardTitle>Activity</CardTitle>
+          <CardDescription>
+            Comparison of your allocated budget vs. actual spending.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[300px]">
+          <p className="text-muted-foreground text-sm">No budget data yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="h-[400px]">
@@ -44,15 +69,10 @@ export default function BarChartDashboard({ budgetList }: BarChartDashboardProps
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <BarChart
             data={chartData}
-            margin={{
-              top: 5,
-              right: 20,
-              left: 0,
-              bottom: 5,
-            }}
+            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
           >
             <XAxis
               dataKey="name"
@@ -64,22 +84,20 @@ export default function BarChartDashboard({ budgetList }: BarChartDashboardProps
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip />
-            <Legend />
+            <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "hsl(var(--muted))" }} />
+            <ChartLegend content={<ChartLegendContent />} />
             <Bar
               dataKey="totalSpend"
-              name="Total Spend"
-              fill="#8884d8"
+              fill="var(--color-totalSpend)"
               radius={[4, 4, 0, 0]}
             />
             <Bar
               dataKey="amount"
-              name="Budget Amount"
-              fill="#82ca9d"
+              fill="var(--color-amount)"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   )

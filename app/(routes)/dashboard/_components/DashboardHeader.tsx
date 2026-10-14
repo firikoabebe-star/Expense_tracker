@@ -21,9 +21,10 @@ function DashboardHeader() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  const userRole = (user as Record<string, unknown> | undefined)?.role as string | undefined;
 
   return (
-    <div className=' p-5 shadow-sm border-b flex justify-between items-center dark:bg-[#1B1B1F]'>
+    <div className=' p-5 shadow-sm border-b flex justify-between items-center bg-background'>
 
       <div>
         <Sheet>
@@ -90,6 +91,19 @@ function DashboardHeader() {
                   <ReceiptText className="w-5 h-5" /> Expenses
                 </Link>
               </SheetClose>
+
+              {userRole === 'admin' && (
+                <SheetClose asChild>
+                  <Link
+                    href="/admin"
+                    className={`hover:text-primary w-full p-3 px-10 rounded-sm  dark:hover:bg-green-100 hover:bg-green-100 flex items-center gap-2 ${
+                      pathname === "/admin" || pathname.startsWith("/admin/") ? "text-primary bg-green-100 dark:text-primary dark:bg-green-100" : ""
+                    }`}
+                  >
+                    <ShieldCheck className="w-5 h-5" /> Admin
+                  </Link>
+                </SheetClose>
+              )}
             </div>
           </SheetContent>
         </Sheet>

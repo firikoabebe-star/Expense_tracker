@@ -1,22 +1,32 @@
 import React from 'react'
 import Link from "next/link";
 import type { BudgetSummary } from '/types';
+import { formatCurrency } from '/lib/utils';
 
 interface BudgetItemProps {
   budget: BudgetSummary;
 }
 
+function getHealthColor(perc: number): string {
+  if (perc > 90) return 'bg-red-500';
+  if (perc >= 70) return 'bg-yellow-500';
+  return 'bg-primary';
+}
+
 function Budgetitem({budget}: BudgetItemProps) {
 
   const calculateProgressPerc = () => {
-  if (!budget?.amount || Number(budget.amount) <= 0) return 0; // prevent NaN
+  if (!budget?.amount || Number(budget.amount) <= 0) return 0;
   const perc = (budget.totalSpend / Number(budget.amount)) * 100;
-  return Math.min(100, perc).toFixed(2); // cap at 100%
+  return Math.min(100, perc);
 };
+
+  const pct = calculateProgressPerc();
+  const barColor = getHealthColor(pct);
 
   return (
     <Link href={'/dashboard/expenses/'+budget?.id} >
-      <div className='p-5 border rounded-lg hover:shadow-md dark:hover:shadow-[0_1px_1px_white] dark:border-[#3d3f3f] cursor-pointer h-[170px] '>
+      <div className='p-5 border border-border rounded-lg hover:shadow-md cursor-pointer h-[170px] '>
       <div className='flex gap-2 items-center justify-between'>
         <div className='flex gap-2 items-center'>
             <h2 className='text-2xl p-3 px-4
@@ -28,23 +38,24 @@ function Budgetitem({budget}: BudgetItemProps) {
                 </div>
         </div>
         <h2 className='font-bold text-primary text-lg whitespace-nowrap 
-  max-w-[120px] sm:max-w-[100px] xs:max-w-[80px]'>ETB{budget?.amount}</h2>
+  max-w-[120px] sm:max-w-[100px] xs:max-w-[80px]'>{formatCurrency(budget?.amount)}</h2>
         </div>
         <div className='mt-5'>
             <div className='flex items-center justify-between mb-3'>
              <h2 className='text-xs text-slate-400'>
-             ETB{budget?.totalSpend ? budget.totalSpend : 0} Spend</h2>
+             {formatCurrency(budget?.totalSpend ? budget.totalSpend : 0)} Spend</h2>
              <h2 className='text-xs text-slate-400'>
-             ETB{Math.max(0, Number(budget.amount) - (budget.totalSpend || 0))} Remaining</h2>
- 
+             {formatCurrency(Math.max(0, Number(budget.amount) - (budget.totalSpend || 0)))} Remaining</h2>
             </div>
-            <div className='w-full bg-slate-300 h-2 rounded-full'>
-            <div className=' bg-primary h-2 rounded-full'
-            style={{
-              width:`${calculateProgressPerc()}%`
-            }}>
-
-            </div>
+            <div className='flex items-center gap-2'>
+              <div className='w-full bg-slate-300 h-2 rounded-full'>
+                <div className={`${barColor} h-2 rounded-full transition-colors`}
+                style={{
+                  width:`${pct}%`
+                }}>
+                </div>
+              </div>
+              <span className='text-xs text-slate-400 whitespace-nowrap'>{pct.toFixed(0)}%</span>
             </div>
         </div>
         </div>

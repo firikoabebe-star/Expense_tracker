@@ -35,37 +35,50 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
   const[expensesList,setExpensesList]=useState<Expense[]>([]);
   const unwrappedParams = use(params);
   const route=useRouter();
+  const [loading,setLoading]=useState(true);
 
   useEffect(() => {
     if (user) getBudgetInfoAction();
   }, [user]);
   
   const getBudgetInfoAction = async () => {
-    const budgetId = Number(unwrappedParams.id);
-    const info = await getBudgetInfo(budgetId);
-    setBudgetInfo(info);
-    const expenses = await getExpensesForBudget(budgetId);
-    setExpensesList(expenses);
+    try {
+      setLoading(true);
+      const budgetId = Number(unwrappedParams.id);
+      const info = await getBudgetInfo(budgetId);
+      setBudgetInfo(info);
+      const expenses = await getExpensesForBudget(budgetId);
+      setExpensesList(expenses);
+    } catch {
+      toast.error('Failed to load budget details');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteBudget=async()=>{
-    await deleteBudget(Number(unwrappedParams.id));
-    toast('Budget Deleted!')
-    route.replace('/dashboard/budgets');
+    try {
+      await deleteBudget(Number(unwrappedParams.id));
+      toast('Budget Deleted!')
+      route.replace('/dashboard/budgets');
+    } catch {
+      toast.error('Failed to delete budget');
+    }
   }
+
   return (
-    <div className="p-10 dark:bg-[#1B1B1F] h-screen">
+    <div className="p-6">
       <h2 className="text-2xl font-bold flex justify-between items-center">
         <div className='gap-2 flex items-center'>
-       <Button  className="dark:hover:bg-[#05766c] hover:bg-[#05766c]" onClick={() => route.back()}><ArrowLeft className="w-5 h-5" /></Button>
-        My Expenses
+       <Button className="hover:bg-[#05766c]" onClick={() => route.back()}><ArrowLeft className="w-5 h-5" /></Button>
+        {budgetInfo ? <span>{budgetInfo.name} — Expenses</span> : <span>My Expenses</span>}
         </div>
        <div className='flex gap-2 items-center'>
         <EditBudget budgetInfo={budgetInfo}
         refreshData={()=>getBudgetInfoAction()}/>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button className='flex gap-2 hover:bg-red-700 dark:bg-red-700  dark:hover:bg-red-800 dark:text-black' variant='destructive'> 
+                        <Button className='flex gap-2 hover:bg-red-700' variant='destructive'> 
                         <Trash/> Delete</Button>
                    </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -84,14 +97,16 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
         </div>
       </h2>
       <div className='grid grid-cols-1 md:grid-cols-2 mt-6 gap-5'>
-       {budgetInfo? <BudgetItem budget={budgetInfo}/>:
+       {loading ? (
+         <div className='h-[150px] w-full bg-slate-200 rounded-lg animate-pulse'></div>
+       ) : budgetInfo ? <BudgetItem budget={budgetInfo}/> :
        <div className='h-[150px] w-full bg-slate-200 rounded-lg animate-pulse'></div>}
         <AddExpense budgetId={Number(unwrappedParams.id)}
        refreshData={
         ()=>getBudgetInfoAction()}/>
       </div>
       <div className='mt-4'>
-         <ExpenseListTable expensesList={expensesList}
+         <ExpenseListTable expensesList={expensesList.map(e => ({...e, createdAt: e.createdAt ?? ''}))}
          refreshData={()=>getBudgetInfoAction()} />
       </div>
     </div>
