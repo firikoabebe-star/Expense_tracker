@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "/components/ui/chart"
+import { formatCurrency } from "/lib/utils"
 
 interface DailyExpense {
   date: string;
@@ -88,7 +89,7 @@ export default function DailyExpensesBarChart({ data }: DailyExpensesBarChartPro
                   }}
                   formatter={(value, name, item) => (
                     <span className="font-mono font-medium tabular-nums text-foreground">
-                      {Number(value).toLocaleString()}
+                      {formatCurrency(Number(value))}
                     </span>
                   )}
                 />

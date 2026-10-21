@@ -70,15 +70,15 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
     <div className="p-6">
       <h2 className="text-2xl font-bold flex justify-between items-center">
         <div className='gap-2 flex items-center'>
-       <Button className="hover:bg-[#05766c]" onClick={() => route.back()}><ArrowLeft className="w-5 h-5" /></Button>
-        {budgetInfo ? <span>{budgetInfo.name} — Expenses</span> : <span>My Expenses</span>}
+       <Button onClick={() => route.back()}><ArrowLeft className="w-5 h-5" /></Button>
+        {budgetInfo ? <span>{budgetInfo.name} - Expenses</span> : <span>My Expenses</span>}
         </div>
        <div className='flex gap-2 items-center'>
         <EditBudget budgetInfo={budgetInfo}
         refreshData={()=>getBudgetInfoAction()}/>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button className='flex gap-2 hover:bg-red-700' variant='destructive'> 
+                        <Button className='flex gap-2' variant='destructive'> 
                         <Trash/> Delete</Button>
                    </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -90,7 +90,7 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction className="hover:bg-[#107c73]" onClick={()=>handleDeleteBudget()}>Continue</AlertDialogAction>
+                        <AlertDialogAction className="bg-destructive hover:opacity-90" onClick={()=>handleDeleteBudget()}>Continue</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                     </AlertDialog>
@@ -98,16 +98,18 @@ function ExpensesScreen({ params }: ExpensesScreenProps) {
       </h2>
       <div className='grid grid-cols-1 md:grid-cols-2 mt-6 gap-5'>
        {loading ? (
-         <div className='h-[150px] w-full bg-slate-200 rounded-lg animate-pulse'></div>
+         <div className='h-[150px] w-full bg-accent rounded-lg animate-pulse'></div>
        ) : budgetInfo ? <BudgetItem budget={budgetInfo}/> :
-       <div className='h-[150px] w-full bg-slate-200 rounded-lg animate-pulse'></div>}
+       <div className='h-[150px] w-full bg-accent rounded-lg animate-pulse'></div>}
         <AddExpense budgetId={Number(unwrappedParams.id)}
        refreshData={
         ()=>getBudgetInfoAction()}/>
       </div>
       <div className='mt-4'>
-         <ExpenseListTable expensesList={expensesList.map(e => ({...e, createdAt: e.createdAt ?? ''}))}
-         refreshData={()=>getBudgetInfoAction()} />
+         <ExpenseListTable
+          expensesList={expensesList.map(e => ({...e, createdAt: e.createdAt ?? ''}))}
+          loading={loading}
+          refreshData={()=>getBudgetInfoAction()} />
       </div>
     </div>
   );

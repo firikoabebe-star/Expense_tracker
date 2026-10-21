@@ -48,8 +48,8 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
     <div> 
       <Dialog>
         <DialogTrigger asChild>
-          <div className='bg-slate-100 p-10 rounded-md 
-          items-center flex flex-col border-2 border-dashed cursor-pointer hover:shadow-md whitespace-nowrap'>
+          <div className='bg-accent text-accent-foreground p-10 rounded-md 
+          items-center flex flex-col border-2 border-dashed border-border cursor-pointer hover:shadow-md whitespace-nowrap'>
             <h2 className='text-3xl'>+</h2>
             <h2>Create New Budget</h2>
           </div>
@@ -68,12 +68,12 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
                   {emojiIcon}
                 </Button>
                 <div className='mt-2'>
-                 <h2 className='text-black font-medium my-1 dark:text-white'>Budget Name</h2>
+                 <h2 className='text-foreground font-medium my-1'>Budget Name</h2>
                 <Input placeholder="e.g home decor"
                 onChange={(e)=>setName(e.target.value)}/>
                  </div>
                  <div className='mt-2'>
-                 <h2 className='text-black font-medium my-1 dark:text-white'>Budget Amount</h2>
+                 <h2 className='text-foreground font-medium my-1'>Budget Amount</h2>
                 <Input type='Number' placeholder="e.g 5000$"
                  onChange={(e)=>setAmount(e.target.value)}/>
                  </div>
@@ -94,7 +94,7 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
               <DialogClose asChild>
                 <Button 
                  disabled={!(name&&amount)}
-                 className='mt-5 w-full hover:bg-[#107c73]'
+                 className='mt-5 w-full'
                  onClick={()=>onCreateBudget()}>Create Budget</Button>
               </DialogClose>
             </DialogFooter>

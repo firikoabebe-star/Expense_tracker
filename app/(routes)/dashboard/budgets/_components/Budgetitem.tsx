@@ -26,15 +26,15 @@ function Budgetitem({budget}: BudgetItemProps) {
 
   return (
     <Link href={'/dashboard/expenses/'+budget?.id} >
-      <div className='p-5 border border-border rounded-lg hover:shadow-md cursor-pointer h-[170px] '>
+      <div className='p-5 border border-border bg-card rounded-lg hover:shadow-md cursor-pointer h-[170px] '>
       <div className='flex gap-2 items-center justify-between'>
         <div className='flex gap-2 items-center'>
             <h2 className='text-2xl p-3 px-4
-            bg-slate-100 rounded-full'>
+            bg-accent rounded-full'>
                 {budget?.icon}</h2>
                 <div>
                     <h2 className='font-bold'>{budget?.name}</h2>
-                    <h2 className='text-sm text-gray-500'>{budget?.totalItem} Item</h2>
+                    <h2 className='text-sm text-muted-foreground'>{budget?.totalItem} Item</h2>
                 </div>
         </div>
         <h2 className='font-bold text-primary text-lg whitespace-nowrap 
@@ -42,20 +42,20 @@ function Budgetitem({budget}: BudgetItemProps) {
         </div>
         <div className='mt-5'>
             <div className='flex items-center justify-between mb-3'>
-             <h2 className='text-xs text-slate-400'>
+             <h2 className='text-xs text-muted-foreground'>
              {formatCurrency(budget?.totalSpend ? budget.totalSpend : 0)} Spend</h2>
-             <h2 className='text-xs text-slate-400'>
+             <h2 className='text-xs text-muted-foreground'>
              {formatCurrency(Math.max(0, Number(budget.amount) - (budget.totalSpend || 0)))} Remaining</h2>
             </div>
             <div className='flex items-center gap-2'>
-              <div className='w-full bg-slate-300 h-2 rounded-full'>
+              <div className='w-full bg-accent h-2 rounded-full'>
                 <div className={`${barColor} h-2 rounded-full transition-colors`}
                 style={{
                   width:`${pct}%`
                 }}>
                 </div>
               </div>
-              <span className='text-xs text-slate-400 whitespace-nowrap'>{pct.toFixed(0)}%</span>
+              <span className='text-xs text-muted-foreground whitespace-nowrap'>{pct.toFixed(0)}%</span>
             </div>
         </div>
         </div>

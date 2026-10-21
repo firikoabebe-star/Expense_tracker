@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import type { ReactNode } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { Input } from "/components/ui/input";
 import { cn } from "/lib/utils";
+import { PasswordInput } from "./PasswordInput";
 
 export const AUTH_INPUT_CLASS =
   "h-11 rounded-lg border-[var(--clr-border-mid)] bg-transparent px-3 text-sm placeholder:text-[var(--clr-text-muted)] focus-visible:ring-[var(--ring)] focus-visible:ring-offset-0";
@@ -88,9 +86,7 @@ export function PasswordField({
   below,
   describedBy,
 }: PasswordFieldProps) {
-  const [visible, setVisible] = useState(false);
   const errorId = `${id}-error`;
-  const toggleLabel = visible ? `Hide ${label}` : `Show ${label}`;
 
   return (
     <div>
@@ -98,44 +94,20 @@ export function PasswordField({
         {label}
       </FieldLabel>
 
-      <div className="relative">
-        <Input
-          id={id}
-          name={id}
-          type={visible ? "text" : "password"}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          disabled={disabled}
-          required={required}
-          aria-required={required}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={
-            [error ? errorId : undefined, describedBy]
-              .filter(Boolean)
-              .join(" ") || undefined
-          }
-          className={cn(authInputClass(Boolean(error)), "pr-11")}
-        />
-        <button
-          type="button"
-          onClick={() => setVisible((current) => !current)}
-          aria-label={toggleLabel}
-          aria-pressed={visible}
-          aria-controls={id}
-          disabled={disabled}
-          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg text-[var(--clr-text-muted)] transition-colors hover:text-[var(--clr-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {visible ? (
-            <EyeOff className="h-4 w-4" aria-hidden="true" />
-          ) : (
-            <Eye className="h-4 w-4" aria-hidden="true" />
-          )}
-        </button>
-      </div>
+      <PasswordInput
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        disabled={disabled}
+        required={required}
+        invalid={Boolean(error)}
+        describedBy={describedBy}
+        className={authInputClass(Boolean(error))}
+      />
 
       {error && (
         <p id={errorId} role="alert" className="mt-1 text-xs text-destructive">

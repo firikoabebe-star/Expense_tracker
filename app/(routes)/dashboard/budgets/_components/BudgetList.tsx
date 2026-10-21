@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import CreateBudget from './CreateBudget'
 import { authClient } from '/lib/auth-client';
+import { toast } from 'sonner';
 import BudgetItem from './Budgetitem'
 import type { BudgetSummary } from '/types';
 import { getBudgetList } from '../../actions';
@@ -17,10 +18,15 @@ function BudgetList() {
   }, [user]);
 
   const getBudgetListAction = async () => {
-    setLoading(true);
-    const result = await getBudgetList();
-    setBudgetList(result);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const result = await getBudgetList();
+      setBudgetList(result);
+    } catch {
+      toast.error('Failed to load budgets');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,7 +39,7 @@ function BudgetList() {
           [1, 2, 3, 4, 5].map((item, index) => (
             <div
               key={index}
-              className="w-full bg-slate-200 rounded-lg h-[145px] animate-pulse"
+              className="w-full bg-accent rounded-lg h-[170px] animate-pulse"
             />
           ))
         ) : budgetList.length > 0 ? (
@@ -41,7 +47,7 @@ function BudgetList() {
             <BudgetItem key={budget.id} budget={budget} />
           ))
         ) : (
-          <p className="text-gray-500 col-span-full">
+          <p className="text-muted-foreground col-span-full">
             No budgets yet. Create one to get started!
           </p>
         )}

@@ -1,6 +1,6 @@
 "use client"
 import { ArrowLeft, Trash, Search, ArrowUp, ArrowDown, ArrowUpDown, Download } from 'lucide-react'
-import React, { useState ,useEffect, useMemo, useRef, useCallback} from 'react'
+import React, { useState ,useEffect, useMemo, useCallback} from 'react'
 import { authClient } from '/lib/auth-client';
 import { Button } from '/components/ui/button'
 import { Input } from '/components/ui/input'
@@ -8,7 +8,26 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import type { ExpenseSummary } from '/types'
 import { getAllExpenses, deleteExpense } from '../actions';
-import { formatCurrency } from '/lib/utils';
+import ExpenseTableSkeleton from '../_components/ExpenseTableSkeleton';
+import { formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
+import {
+  UNDO_WINDOW_MS,
+  cancelExpenseDelete,
+  getPendingDeleteIds,
+  scheduleExpenseDelete,
+  subscribePendingDeletes,
+} from './pendingDelete';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '/components/ui/alert-dialog';
 
 type SortField = 'name' | 'amount' | 'date';
 type SortDir = 'asc' | 'desc';
@@ -17,8 +36,6 @@ function SortIcon({ field, activeField, dir }: { field: SortField; activeField: 
   if (field !== activeField) return <ArrowUpDown className='inline h-3 w-3 ml-1 opacity-40' />;
   return dir === 'asc' ? <ArrowUp className='inline h-3 w-3 ml-1' /> : <ArrowDown className='inline h-3 w-3 ml-1' />;
 }
-
-const UNDO_DELAY = 5000;
 
 function ExpenseList() {
 const [expensesList,setExpensesList]=useState<ExpenseSummary[]>([]);
@@ -29,7 +46,15 @@ const [loading,setLoading]=useState(true);
 const [search,setSearch]=useState('');
 const [sortField,setSortField]=useState<SortField | null>(null);
 const [sortDir,setSortDir]=useState<SortDir>('asc');
-const timersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+const [pendingDeletes,setPendingDeletes]=useState<Set<number>>(new Set());
+
+useEffect(
+  () =>
+    subscribePendingDeletes(() => {
+      setPendingDeletes(new Set(getPendingDeleteIds()));
+    }),
+  []
+);
 
 const toggleSort = (field: SortField) => {
   if (sortField === field) {
@@ -41,7 +66,7 @@ const toggleSort = (field: SortField) => {
 };
 
 const displayedExpenses = useMemo(() => {
-  let list = expensesList;
+  let list = expensesList.filter((e) => !pendingDeletes.has(e.id));
   if (search.trim()) {
     const term = search.toLowerCase();
     list = list.filter((e) => e.name.toLowerCase().includes(term));
@@ -49,14 +74,14 @@ const displayedExpenses = useMemo(() => {
   if (sortField) {
     list = [...list].sort((a, b) => {
       let cmp = 0;
-      if (sortField === 'name') cmp = a.name.localeCompare(b.name);
-      else if (sortField === 'amount') cmp = Number(a.amount) - Number(b.amount);
-      else cmp = a.createdAt.localeCompare(b.createdAt);
+          if (sortField === 'name') cmp = a.name.localeCompare(b.name);
+          else if (sortField === 'amount') cmp = Number(a.amount) - Number(b.amount);
+          else cmp = compareExpenseDates(a.createdAt, b.createdAt);
       return sortDir === 'asc' ? cmp : -cmp;
     });
   }
   return list;
-}, [expensesList, search, sortField, sortDir]);
+}, [expensesList, search, sortField, sortDir, pendingDeletes]);
 
   useEffect(()=>{
         user&&getAllExpensesAction();
@@ -74,86 +99,68 @@ const displayedExpenses = useMemo(() => {
       }
     }
 
-    const confirmDelete = useCallback(async (expense: ExpenseSummary) => {
-      try {
-        const result = await deleteExpense(expense.id);
-        if (result) {
-          getAllExpensesAction();
-        }
-      } catch {
-        toast.error('Failed to delete expense');
-      } finally {
-        timersRef.current.delete(expense.id);
-      }
-    }, []);
-
-    const handleDeleteExpense=(expense: ExpenseSummary)=>{
-      setExpensesList((prev) => prev.filter((e) => e.id !== expense.id));
-      const timer = setTimeout(() => {
-        confirmDelete(expense);
-      }, UNDO_DELAY);
-      timersRef.current.set(expense.id, timer);
-
-      toast('Expense deleted', {
-        description: `"${expense.name}" will be permanently removed.`,
-        action: {
-          label: 'Undo',
-          onClick: () => {
-            clearTimeout(timer);
-            timersRef.current.delete(expense.id);
-            setExpensesList((prev) => {
-              const exists = prev.some((e) => e.id === expense.id);
-              if (exists) return prev;
-              return [...prev, expense];
-            });
+    const handleDeleteExpense = useCallback(
+      (expense: ExpenseSummary) => {
+        const toastId = toast('Expense deleted', {
+          description: `"${expense.name}" is removed. You can undo this for ${UNDO_WINDOW_MS / 1000} seconds.`,
+          duration: UNDO_WINDOW_MS,
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              cancelExpenseDelete(expense.id);
+              toast.dismiss(toastId);
+            },
           },
-        },
-      });
-    };
+        });
+
+        scheduleExpenseDelete(expense.id, async () => {
+          try {
+            const result = await deleteExpense(expense.id);
+            if (result) {
+              await getAllExpensesAction();
+              toast.dismiss(toastId);
+            } else {
+              toast.error('Failed to delete expense');
+            }
+          } catch {
+            toast.error('Failed to delete expense');
+          }
+        });
+      },
+      []
+    );
 
     const exportCsv = () => {
-      const header = 'Name,Amount,Date';
-      const rows = displayedExpenses.map((e) => `"${e.name.replace(/"/g, '""')}",${e.amount},${e.createdAt}`);
-      const csv = [header, ...rows].join('\n');
+      const rows = displayedExpenses.map((e) => [e.name, e.amount, e.createdAt]);
+      const csv = toCsv([['Name', 'Amount', 'Date'], ...rows]);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = 'expenses.csv';
+      document.body.appendChild(link);
       link.click();
-      URL.revokeObjectURL(url);
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
     };
 
     if (loading) {
       return (
         <div className='p-6'>
           <h2 className='font-bold text-lg mb-2 flex gap-2 items-center'>
-            <Button className="dark:hover:bg-[#05766c] hover:bg-[#05766c]" onClick={() => router.back()}>
+            <Button onClick={() => router.back()}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             Latest Expenses
           </h2>
-          <div className='grid grid-cols-4 bg-slate-200 p-2'>
-            <h2 className='font-bold'>Name</h2>
-            <h2 className='font-bold'>Amount</h2>
-            <h2 className='font-bold'>Date</h2>
-            <h2 className='font-bold'>Action</h2>
-          </div>
-          {[1, 2, 3, 4, 5].map((item) => (
-            <div key={item} className='grid grid-cols-4 p-2'>
-              <div className='h-4 bg-slate-200 animate-pulse rounded'></div>
-              <div className='h-4 bg-slate-200 animate-pulse rounded'></div>
-              <div className='h-4 bg-slate-200 animate-pulse rounded'></div>
-              <div className='h-4 bg-slate-200 animate-pulse rounded w-4'></div>
-            </div>
-          ))}
+          <ExpenseTableSkeleton />
         </div>
       );
     }
 
     return (
     <div className='p-6'>
-      <h2 className='font-bold text-lg mb-2 flex gap-2 items-center '><Button className="dark:hover:bg-[#05766c] hover:bg-[#05766c]" onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>Latest Expenses</h2>
+      <h2 className='font-bold text-lg mb-2 flex gap-2 items-center '><Button onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>Latest Expenses</h2>
       {expensesList.length > 0 && (
         <div className='flex gap-2 mb-3'>
           <div className='relative flex-1'>
@@ -172,7 +179,7 @@ const displayedExpenses = useMemo(() => {
       )}
       {displayedExpenses.length > 0 ? (
         <>
-          <div className='grid grid-cols-4 bg-slate-200 p-2'>
+          <div className='grid grid-cols-4 gap-3 bg-accent text-accent-foreground p-2 rounded-t-md'>
             <button className='font-bold text-left cursor-pointer' onClick={() => toggleSort('name')}>
               Name <SortIcon field='name' activeField={sortField} dir={sortDir} />
             </button>
@@ -185,21 +192,38 @@ const displayedExpenses = useMemo(() => {
             <h2 className='font-bold'>Action</h2>
           </div>
           {displayedExpenses.map((expenses) => (
-            <div key={expenses.id} className='grid grid-cols-4 bg-slate-50 p-2'>
+            <div key={expenses.id} className='grid grid-cols-4 bg-card p-2 border-b border-border'>
               <h2>{expenses.name}</h2>
               <h2>{formatCurrency(expenses.amount)}</h2>
               <h2>{expenses.createdAt}</h2>
               <h2>
-                <Trash className='hover:text-red-700 text-red-500 cursor-pointer'
-                  onClick={() => handleDeleteExpense(expenses)} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className='text-destructive hover:opacity-70 cursor-pointer'>
+                      <Trash />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will delete "{expenses.name}" ({formatCurrency(expenses.amount)}). You can undo it for {UNDO_WINDOW_MS / 1000} seconds afterwards.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction className="bg-destructive hover:opacity-90" onClick={() => handleDeleteExpense(expenses)}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </h2>
             </div>
           ))}
         </>
       ) : expensesList.length > 0 ? (
-        <p className="text-gray-500 mt-4">No expenses match "{search}".</p>
+        <p className="text-muted-foreground mt-4">No expenses match "{search}".</p>
       ) : (
-        <p className="text-gray-500 mt-4">No expenses yet. Add one to get started!</p>
+        <p className="text-muted-foreground mt-4">No expenses yet. Add one to get started!</p>
       )}
     </div>
   )
