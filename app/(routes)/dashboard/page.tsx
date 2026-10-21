@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { authClient } from '/lib/auth-client';
+import { getFirstName } from '/lib/name';
 import CardInfo from './_components/CardInfo'
 import BarChartDashboard from './_components/BarChartDashboard'
 import PieChartDashboard from './_components/PieChartDashboard'
@@ -36,7 +37,7 @@ function page() {
     
   return (
     <div className='p-6'>
-      <h2 className='font-bold text-3xl'>Hi, {user?.name}✌️</h2>
+      <h2 className='font-bold text-3xl'>Hi, {getFirstName(user?.name)}✌️</h2>
       <p className='text-gray-500'>Your money, simplified. Let's manage your expenses smarter.</p>
 
       <CardInfo budgetList={budgetList}/>

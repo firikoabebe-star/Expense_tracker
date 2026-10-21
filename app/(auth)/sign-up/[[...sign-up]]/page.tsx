@@ -1,134 +1,312 @@
-"use client"
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { authClient } from '/lib/auth-client'
-import Link from 'next/link'
-import { Button } from '/components/ui/button'
-import { Input } from '/components/ui/input'
+"use client";
 
-export default function SignUpPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { authClient } from "/lib/auth-client";
+import { PASSWORD_ERROR_MESSAGE, validatePassword } from "/lib/password";
+import { validateFullName } from "/lib/name";
+import { Button } from "/components/ui/button";
+import { Input } from "/components/ui/input";
+import {
+  AUTH_BUTTON_CLASS,
+  FieldLabel,
+  PasswordField,
+  authInputClass,
+} from "../../_components/AuthField";
+import { AuthDivider } from "../../_components/AuthDivider";
+import { BrandLogo } from "../../_components/BrandLogo";
+import { GoogleButton } from "../../_components/GoogleButton";
+import { PasswordChecklist } from "../../_components/PasswordChecklist";
+import { VerifyEmailStep } from "../../_components/VerifyEmailStep";
+import { useOAuthError } from "../../_components/useOAuthError";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+type FieldName = "fullName" | "email" | "password" | "confirmPassword";
+type FieldErrors = Partial<Record<FieldName, string>>;
 
-    const { error: signUpError } = await authClient.signUp.email({
-      email,
-      password,
-      name,
-    })
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (signUpError) {
-      setError(signUpError.message || 'Failed to sign up')
-      setLoading(false)
-      return
+function validate(values: {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}): FieldErrors {
+  const errors: FieldErrors = {};
+  const email = values.email.trim();
+
+  if (!values.fullName.trim()) {
+    errors.fullName = "Enter your first and last name";
+  } else {
+    const nameCheck = validateFullName(values.fullName);
+    if (!nameCheck.valid) {
+      errors.fullName = nameCheck.message ?? "Enter your first and last name";
     }
-
-    router.push('/dashboard')
   }
 
-  const handleGoogle = async () => {
-    await authClient.signIn.social({ provider: 'google', callbackURL: '/dashboard' })
+  if (!email) {
+    errors.email = "Email is required.";
+  } else if (!EMAIL_PATTERN.test(email)) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  if (!values.password) {
+    errors.password = "Password is required.";
+  } else if (!validatePassword(values.password).valid) {
+    errors.password = PASSWORD_ERROR_MESSAGE;
+  }
+
+  if (!values.confirmPassword) {
+    errors.confirmPassword = "Please confirm your password.";
+  } else if (values.confirmPassword !== values.password) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+}
+
+export default function SignUpPage() {
+  const [step, setStep] = useState<"form" | "verify">("form");
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  useOAuthError(setError);
+
+  const values = { fullName, email, password, confirmPassword };
+  const passwordRulesOk = validatePassword(password).valid;
+  const confirmMatches =
+    confirmPassword.length > 0 && confirmPassword === password;
+
+  const setFieldValue = (field: FieldName, value: string) => {
+    switch (field) {
+      case "fullName":
+        setFullName(value);
+        break;
+      case "email":
+        setEmail(value);
+        break;
+      case "password":
+        setPassword(value);
+        setPasswordTouched(true);
+        break;
+      case "confirmPassword":
+        setConfirmPassword(value);
+        break;
+    }
+
+    setErrors((current) =>
+      current[field] ? { ...current, [field]: undefined } : current
+    );
+    if (error) setError("");
+  };
+
+  const validateField = (field: FieldName) => {
+    const nextErrors = validate(values);
+    setErrors((current) => ({ ...current, [field]: nextErrors[field] }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const nextErrors = validate(values);
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setLoading(true);
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const nameCheck = validateFullName(fullName);
+
+    const { error: signUpError } = await authClient.signUp.email({
+      name: nameCheck.normalized,
+      email: normalizedEmail,
+      password,
+    });
+
+    if (signUpError) {
+      setError(signUpError.message || "Failed to sign up");
+      setLoading(false);
+      return;
+    }
+
+    // Sign-up requires email verification. Keep the user here and show the
+    // OTP screen instead of sending them to sign-in or the dashboard.
+    setRegisteredEmail(normalizedEmail);
+    setPassword("");
+    setConfirmPassword("");
+    setStep("verify");
+    setLoading(false);
+  };
+
+  if (step === "verify") {
+    return (
+      <VerifyEmailStep
+        email={registeredEmail}
+        initialCooldown={60}
+        onVerified={() => router.replace("/post-login")}
+        onBack={() => {
+          setStep("form");
+          setPasswordTouched(false);
+          setError("");
+        }}
+      />
+    );
   }
 
   return (
-    <section className="">
-      <img
-        alt=""
-        src="/Finance.jpg"
-        className="absolute inset-0 h-full w-full object-cover blur-xs"
-      />
-      <div className="flex place-content-center justify-center items-center flex-col h-screen">
-        <div className="bg-white dark:bg-[#1B1B1F] p-8 rounded-lg shadow-lg w-full max-w-md z-10">
-          <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
-          {error && (
-            <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
-              <Input
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <Input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full hover:bg-[#107c73]"
+    <div>
+      <BrandLogo className="mb-5" />
+
+      <h1 className="text-center text-2xl font-bold">Create your account</h1>
+      <p className="mb-6 mt-1 text-center text-sm text-[var(--clr-text-muted)]">
+        Sign up to start tracking your expenses
+      </p>
+
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <div>
+          <FieldLabel htmlFor="fullName" required>
+            Full Name
+          </FieldLabel>
+          <Input
+            id="fullName"
+            name="name"
+            type="text"
+            placeholder="Enter your full name"
+            autoComplete="name"
+            value={fullName}
+            onChange={(e) => setFieldValue("fullName", e.target.value)}
+            onBlur={() => validateField("fullName")}
+            required
+            aria-required="true"
+            aria-invalid={errors.fullName ? true : undefined}
+            aria-describedby={
+              errors.fullName ? "fullName-error" : undefined
+            }
+            className={authInputClass(Boolean(errors.fullName))}
+          />
+          {errors.fullName && (
+            <p
+              id="fullName-error"
+              role="alert"
+              className="mt-1 text-xs text-destructive"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
-            </Button>
-          </form>
-          <div className="flex items-center my-4">
-            <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
-            <span className="mx-3 text-sm text-gray-500">or continue with</span>
-            <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
-          </div>
-          <Button
-            type="button"
-            onClick={handleGoogle}
-            variant="outline"
-            className="w-full"
-          >
-            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            Google
-          </Button>
-          <p className="text-center mt-4 text-sm">
-            Already have an account?{' '}
-            <Link href="/sign-in" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </p>
+              {errors.fullName}
+            </p>
+          )}
         </div>
-      </div>
-    </section>
-  )
+
+        <div>
+          <FieldLabel htmlFor="email" required>
+            Email
+          </FieldLabel>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            inputMode="email"
+            placeholder="Enter your email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setFieldValue("email", e.target.value)}
+            onBlur={() => validateField("email")}
+            required
+            aria-required="true"
+            aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className={authInputClass(Boolean(errors.email))}
+          />
+          {errors.email && (
+            <p
+              id="email-error"
+              role="alert"
+              className="mt-1 text-xs text-destructive"
+            >
+              {errors.email}
+            </p>
+          )}
+        </div>
+
+        <PasswordField
+          id="password"
+          label="Password"
+          value={password}
+          onChange={(value) => setFieldValue("password", value)}
+          onBlur={() => validateField("password")}
+          onFocus={() => setPasswordTouched(true)}
+          placeholder="Enter your password"
+          autoComplete="new-password"
+          error={errors.password}
+          disabled={loading}
+          required
+          describedBy={passwordTouched ? "password-checklist" : undefined}
+          below={
+            <PasswordChecklist
+              password={password}
+              visible={passwordTouched}
+            />
+          }
+        />
+
+        <PasswordField
+          id="confirmPassword"
+          label="Confirm Password"
+          value={confirmPassword}
+          onChange={(value) => setFieldValue("confirmPassword", value)}
+          onBlur={() => validateField("confirmPassword")}
+          placeholder="Confirm your password"
+          autoComplete="new-password"
+          error={errors.confirmPassword}
+          disabled={loading}
+          required
+        />
+
+        {error && (
+          <p role="alert" className="text-center text-sm text-destructive">
+            {error}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          disabled={
+            loading ||
+            !passwordRulesOk ||
+            !confirmMatches ||
+            !validateFullName(fullName).valid
+          }
+          aria-busy={loading}
+          className={AUTH_BUTTON_CLASS}
+        >
+          {loading ? "Signing up..." : "Sign up"}
+        </Button>
+      </form>
+
+      <AuthDivider />
+
+      <GoogleButton
+        errorCallbackURL="/sign-up"
+        onError={setError}
+        disabled={loading}
+      />
+
+      <p className="mt-4 text-center text-sm text-[var(--clr-text-muted)]">
+        Already have an account?{" "}
+        <Link href="/sign-in" className="text-primary hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </div>
+  );
 }
