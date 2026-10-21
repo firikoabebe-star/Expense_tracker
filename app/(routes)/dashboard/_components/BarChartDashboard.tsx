@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
 import React, { useMemo } from 'react'
 import {
   Card,
@@ -18,6 +18,7 @@ import {
   type ChartConfig,
 } from "/components/ui/chart"
 import type { BudgetSummary } from "/types"
+import { formatCurrency } from "/lib/utils"
 
 interface BarChartDashboardProps {
   budgetList: BudgetSummary[];
@@ -26,11 +27,11 @@ interface BarChartDashboardProps {
 const chartConfig = {
   totalSpend: {
     label: "Total Spend",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-1)",
   },
   amount: {
     label: "Budget Amount",
-    color: "hsl(var(--chart-2))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -74,18 +75,37 @@ export default function BarChartDashboard({ budgetList }: BarChartDashboardProps
             data={chartData}
             margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
           >
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              stroke="var(--clr-border-mid)"
+            />
             <XAxis
               dataKey="name"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              tick={{ style: { fill: "var(--clr-text-2)" } }}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
+              tick={{ style: { fill: "var(--clr-text-2)" } }}
             />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "hsl(var(--muted))" }} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  className="border-border bg-background text-foreground"
+                  formatter={(value, name) => (
+                    <span className="font-mono font-medium tabular-nums text-foreground">
+                      {formatCurrency(Number(value))}
+                    </span>
+                  )}
+                />
+              }
+              cursor={{ fill: "var(--muted)" }}
+            />
+            <ChartLegend content={<ChartLegendContent className="text-foreground" />} />
             <Bar
               dataKey="totalSpend"
               fill="var(--color-totalSpend)"

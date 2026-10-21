@@ -5,6 +5,7 @@ import { Button } from "/components/ui/button";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import type { RefreshData } from "/types";
+import { formatCurrency } from "/lib/utils";
 import { getBudgetInfo, createExpense } from '../../actions';
 
 interface AddExpenseProps {
@@ -25,7 +26,7 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
         const remainingBudget = Number(budgetInfo.amount || 0) - (budgetInfo.totalSpend || 0);
 
         if (Number(amount) > remainingBudget) {
-          toast.error(`Expense exceeds remaining budget of ${remainingBudget.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}.`);
+          toast.error(`Expense exceeds remaining budget of ${formatCurrency(remainingBudget)}.`);
           return;
         }
 
@@ -45,10 +46,10 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
     }
 
   return (
-    <div className='border border-border p-5 rounded-lg hover:shadow-md'>
+    <div className='border border-border bg-card p-5 rounded-lg hover:shadow-md'>
       <h2 className="font-bold text-lg">AddExpense</h2>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1 dark:text-white">Expense Name</h2>
+        <h2 className="text-foreground font-medium my-1">Expense Name</h2>
         <Input
           placeholder="e.g bedroom decor"
           value={name}
@@ -56,7 +57,7 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
         />
       </div>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1 dark:text-white">Expense Amount</h2>
+        <h2 className="text-foreground font-medium my-1">Expense Amount</h2>
         <Input
           type='Number'
           placeholder="e.g 1000"
@@ -66,7 +67,7 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
       </div>
       <Button 
   disabled={!name || !amount || loading}
-  className="mt-3 w-full hover:bg-[#107c73]"
+  className="mt-3 w-full"
   onClick={() => addNewExpense()}
 >
   {loading ? (

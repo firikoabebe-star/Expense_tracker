@@ -1,12 +1,31 @@
 "use client"
 import { Trash, Search, ArrowUp, ArrowDown, ArrowUpDown, Download } from 'lucide-react'
-import React, { useState, useMemo, useRef, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import type { ExpenseSummary, RefreshData } from '/types'
 import { deleteExpense } from '../../actions';
-import { formatCurrency } from '/lib/utils';
+import { formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
 import { Input } from '/components/ui/input';
 import { Button } from '/components/ui/button';
+import ExpenseTableSkeleton from '../../_components/ExpenseTableSkeleton';
+import {
+  UNDO_WINDOW_MS,
+  cancelExpenseDelete,
+  getPendingDeleteIds,
+  scheduleExpenseDelete,
+  subscribePendingDeletes,
+} from '../pendingDelete';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '/components/ui/alert-dialog';
 
 type SortField = 'name' | 'amount' | 'date';
 type SortDir = 'asc' | 'desc';
@@ -14,6 +33,7 @@ type SortDir = 'asc' | 'desc';
 interface ExpenseListTableProps {
   expensesList: ExpenseSummary[];
   refreshData: RefreshData;
+  loading?: boolean;
 }
 
 function SortIcon({ field, activeField, dir }: { field: SortField; activeField: SortField | null; dir: SortDir }) {
@@ -21,14 +41,19 @@ function SortIcon({ field, activeField, dir }: { field: SortField; activeField: 
   return dir === 'asc' ? <ArrowUp className='inline h-3 w-3 ml-1' /> : <ArrowDown className='inline h-3 w-3 ml-1' />;
 }
 
-const UNDO_DELAY = 5000;
-
-function ExpenseListTable({expensesList, refreshData}: ExpenseListTableProps) {
+function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseListTableProps) {
     const [search, setSearch] = useState('');
     const [sortField, setSortField] = useState<SortField | null>(null);
     const [sortDir, setSortDir] = useState<SortDir>('asc');
     const [pendingDeletes, setPendingDeletes] = useState<Set<number>>(new Set());
-    const timersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+
+    useEffect(
+      () =>
+        subscribePendingDeletes(() => {
+          setPendingDeletes(new Set(getPendingDeleteIds()));
+        }),
+      []
+    );
 
     const toggleSort = (field: SortField) => {
       if (sortField === field) {
@@ -50,65 +75,64 @@ function ExpenseListTable({expensesList, refreshData}: ExpenseListTableProps) {
           let cmp = 0;
           if (sortField === 'name') cmp = a.name.localeCompare(b.name);
           else if (sortField === 'amount') cmp = Number(a.amount) - Number(b.amount);
-          else cmp = a.createdAt.localeCompare(b.createdAt);
+          else cmp = compareExpenseDates(a.createdAt, b.createdAt);
           return sortDir === 'asc' ? cmp : -cmp;
         });
       }
       return list;
     }, [expensesList, search, sortField, sortDir, pendingDeletes]);
 
-    const confirmDelete = useCallback(async (id: number) => {
-      try {
-        const result = await deleteExpense(id);
-        if (result) {
-          refreshData();
-        }
-      } catch {
-        toast.error('Failed to delete expense');
-      } finally {
-        timersRef.current.delete(id);
-      }
-    }, [refreshData]);
-
-    const handleDeleteExpense = (expense: ExpenseSummary) => {
-      setPendingDeletes((prev) => new Set(prev).add(expense.id));
-      const timer = setTimeout(() => {
-        confirmDelete(expense.id);
-      }, UNDO_DELAY);
-      timersRef.current.set(expense.id, timer);
-
-      toast('Expense deleted', {
-        description: `"${expense.name}" will be permanently removed.`,
-        action: {
-          label: 'Undo',
-          onClick: () => {
-            clearTimeout(timer);
-            timersRef.current.delete(expense.id);
-            setPendingDeletes((prev) => {
-              const next = new Set(prev);
-              next.delete(expense.id);
-              return next;
-            });
+    const handleDeleteExpense = useCallback(
+      (expense: ExpenseSummary) => {
+        const toastId = toast('Expense deleted', {
+          description: `"${expense.name}" is removed. You can undo this for ${UNDO_WINDOW_MS / 1000} seconds.`,
+          duration: UNDO_WINDOW_MS,
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              cancelExpenseDelete(expense.id);
+              toast.dismiss(toastId);
+            },
           },
-        },
-      });
-    };
+        });
+
+        scheduleExpenseDelete(expense.id, async () => {
+          try {
+            const result = await deleteExpense(expense.id);
+            if (result) {
+              await refreshData();
+              toast.dismiss(toastId);
+            } else {
+              toast.error('Failed to delete expense');
+            }
+          } catch {
+            toast.error('Failed to delete expense');
+          }
+        });
+      },
+      [refreshData]
+    );
 
     const exportCsv = () => {
-      const header = 'Name,Amount,Date';
-      const rows = displayedExpenses.map((e) => `"${e.name.replace(/"/g, '""')}",${e.amount},${e.createdAt}`);
-      const csv = [header, ...rows].join('\n');
+      const rows = displayedExpenses.map((e) => [e.name, e.amount, e.createdAt]);
+      const csv = toCsv([['Name', 'Amount', 'Date'], ...rows]);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = 'expenses.csv';
+      document.body.appendChild(link);
       link.click();
-      URL.revokeObjectURL(url);
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
     };
   return (
     <div className='mt-3'>
       <h2 className='font-bold text-lg mb-2'>Latest Expenses</h2>
+      {loading ? (
+        <ExpenseTableSkeleton />
+      ) : (
+        <>
       {expensesList.length > 0 && (
         <div className='flex gap-2 mb-3'>
           <div className='relative flex-1'>
@@ -127,7 +151,7 @@ function ExpenseListTable({expensesList, refreshData}: ExpenseListTableProps) {
       )}
       {displayedExpenses.length > 0 ? (
         <>
-          <div className='grid grid-cols-4 bg-slate-200 p-2'>
+          <div className='grid grid-cols-4 gap-3 bg-accent text-accent-foreground p-2 rounded-t-md'>
             <button className='font-bold text-left cursor-pointer' onClick={() => toggleSort('name')}>
               Name <SortIcon field='name' activeField={sortField} dir={sortDir} />
             </button>
@@ -140,21 +164,40 @@ function ExpenseListTable({expensesList, refreshData}: ExpenseListTableProps) {
             <h2 className='font-bold'>Action</h2>
           </div>
           {displayedExpenses.map((expenses) => (
-            <div key={expenses.id} className='grid grid-cols-4 bg-slate-50 p-2 items-center gap-3 md:gap-4'>
+            <div key={expenses.id} className='grid grid-cols-4 bg-card p-2 items-center gap-3 border-b border-border md:gap-4'>
               <h2>{expenses.name}</h2>
               <h2>{formatCurrency(expenses.amount)}</h2>
               <h2>{expenses.createdAt}</h2>
               <h2>
-                <Trash className='hover:text-red-700 text-red-600 cursor-pointer text-center'
-                  onClick={() => handleDeleteExpense(expenses)} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className='text-destructive hover:opacity-70 cursor-pointer text-center'>
+                      <Trash />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will delete "{expenses.name}" ({formatCurrency(expenses.amount)}). You can undo it for {UNDO_WINDOW_MS / 1000} seconds afterwards.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction className="bg-destructive hover:opacity-90" onClick={() => handleDeleteExpense(expenses)}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </h2>
             </div>
           ))}
         </>
       ) : expensesList.length > 0 ? (
-        <p className="text-gray-500 mt-2">No expenses match "{search}".</p>
+        <p className="text-muted-foreground mt-4">No expenses match "{search}".</p>
       ) : (
-        <p className="text-gray-500 mt-2">No expenses yet. Add one to get started!</p>
+        <p className="text-muted-foreground mt-4">No expenses yet. Add one to get started!</p>
+      )}
+        </>
       )}
     </div>
   )

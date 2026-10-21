@@ -1,6 +1,6 @@
 "use client"
 
-import { Pie, PieChart, Cell, ResponsiveContainer } from "recharts"
+import { Pie, PieChart, Cell } from "recharts"
 import {
   Card,
   CardContent,
@@ -12,25 +12,23 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "/components/ui/chart"
 import type { BudgetSummary } from "/types"
+import { formatCurrency } from "/lib/utils"
 
 interface PieChartDashboardProps {
   budgetList: BudgetSummary[];
 }
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
-];
-
-const FALLBACK_COLORS = [
-  "#8884d8", "#82ca9d", "#ffc658", "#ff7f50", "#a4de6c",
-  "#d0ed57", "#8dd1e1", "#83a6ed", "#f97316", "#06b6d4",
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
 ];
 
 export default function PieChartDashboard({ budgetList }: PieChartDashboardProps) {
@@ -45,7 +43,7 @@ export default function PieChartDashboard({ budgetList }: PieChartDashboardProps
           <CardTitle>Spend Distribution</CardTitle>
           <CardDescription>How your spending is split across budgets.</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-[300px]">
+        <CardContent className="flex items-center justify-center h-[278px]">
           <p className="text-muted-foreground text-sm">No spending data yet.</p>
         </CardContent>
       </Card>
@@ -66,15 +64,18 @@ export default function PieChartDashboard({ budgetList }: PieChartDashboardProps
         <CardDescription>How your spending is split across budgets.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[240px] w-full">
           <PieChart>
             <ChartTooltip
               content={
                 <ChartTooltipContent
                   formatter={(value, name) => (
-                    <span className="font-mono font-medium tabular-nums text-foreground">
-                      {Number(value).toLocaleString()}
-                    </span>
+                    <div className="flex w-full items-center justify-between gap-3">
+                      <span className="text-muted-foreground">{name}</span>
+                      <span className="font-mono font-medium tabular-nums text-foreground">
+                        {formatCurrency(Number(value))}
+                      </span>
+                    </div>
                   )}
                 />
               }
@@ -83,8 +84,8 @@ export default function PieChartDashboard({ budgetList }: PieChartDashboardProps
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={110}
+              innerRadius={55}
+              outerRadius={100}
               paddingAngle={2}
               dataKey="value"
               nameKey="name"
@@ -93,11 +94,14 @@ export default function PieChartDashboard({ budgetList }: PieChartDashboardProps
               {data.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={FALLBACK_COLORS[index % FALLBACK_COLORS.length]}
-                  className="stroke-background"
+                  fill={COLORS[index % COLORS.length]}
+                  className="stroke-card"
                 />
               ))}
             </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="name" className="flex-wrap gap-x-4 gap-y-2" />}
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>

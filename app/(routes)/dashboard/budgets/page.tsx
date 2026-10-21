@@ -9,14 +9,12 @@ import { ArrowLeft } from 'lucide-react';
 function Budgets() {
   const router=useRouter();
   return (
-    <div>
-    <div className='p-6 flex gap-2'>
-      <Button  className="hover:bg-[#05766c]" onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>
-      <h2 className='font-bold text-3xl '>My Budgets</h2>
+    <div className='p-6'>
+      <div className='flex gap-2 items-center'>
+        <Button onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>
+        <h2 className='font-bold text-3xl '>My Budgets</h2>
       </div>
-      <div className='p-6'>
       <BudgetList/>
-    </div>
     </div>
   )
 }

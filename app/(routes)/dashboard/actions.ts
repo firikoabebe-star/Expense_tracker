@@ -9,8 +9,19 @@ import moment from "moment";
 
 async function getUserEmail() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) throw new Error("Unauthorized");
+  if (!session?.user?.email) throw new Error("Unauthorized");
   return session.user.email;
+}
+
+async function assertBudgetOwner(budgetId: number, email?: string) {
+  const owner = email ?? (await getUserEmail());
+  const [budget] = await db
+    .select({ id: Budgets.id, createdBy: Budgets.createdBy })
+    .from(Budgets)
+    .where(eq(Budgets.id, budgetId));
+  if (!budget) throw new Error("Not found");
+  if (budget.createdBy !== owner) throw new Error("Forbidden");
+  return { email: owner, budget };
 }
 
 export async function getBudgetList() {
@@ -59,12 +70,7 @@ export async function getBudgetInfo(budgetId: number) {
 }
 
 export async function getExpensesForBudget(budgetId: number) {
-  const email = await getUserEmail();
-  const [budget] = await db
-    .select({ id: Budgets.id })
-    .from(Budgets)
-    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)));
-  if (!budget) throw new Error("Budget not found");
+  await assertBudgetOwner(budgetId);
   return db
     .select()
     .from(Expenses)
@@ -91,16 +97,11 @@ export async function updateBudget(
   amount: string | undefined,
   icon: string | null | undefined
 ) {
-  const email = await getUserEmail();
-  const [budget] = await db
-    .select({ id: Budgets.id })
-    .from(Budgets)
-    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)));
-  if (!budget) throw new Error("Budget not found");
+  const { email } = await assertBudgetOwner(budgetId);
   return db
     .update(Budgets)
     .set({ name, amount, icon })
-    .where(eq(Budgets.id, budgetId))
+    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)))
     .returning();
 }
 
@@ -109,32 +110,32 @@ export async function createExpense(
   amount: string,
   budgetId: number
 ) {
+  await assertBudgetOwner(budgetId);
   return db
     .insert(Expenses)
     .values({ name, amount, budgetId, createdAt: moment().format("DD/MM/YYYY") })
-    .returning({ insertedId: Budgets.id });
+    .returning({ insertedId: Expenses.id });
 }
 
 export async function deleteExpense(expenseId: number) {
   const email = await getUserEmail();
   const [expense] = await db
-    .select({ id: Expenses.id })
+    .select({ id: Expenses.id, budgetId: Expenses.budgetId })
     .from(Expenses)
-    .innerJoin(Budgets, eq(Expenses.budgetId, Budgets.id))
-    .where(and(eq(Expenses.id, expenseId), eq(Budgets.createdBy, email)));
-  if (!expense) throw new Error("Expense not found");
+    .where(eq(Expenses.id, expenseId));
+  if (!expense) throw new Error("Not found");
+  if (expense.budgetId === null) throw new Error("Forbidden");
+  await assertBudgetOwner(expense.budgetId, email);
   return db.delete(Expenses).where(eq(Expenses.id, expenseId)).returning();
 }
 
 export async function deleteBudget(budgetId: number) {
-  const email = await getUserEmail();
-  const [budget] = await db
-    .select({ id: Budgets.id })
-    .from(Budgets)
-    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)));
-  if (!budget) throw new Error("Budget not found");
-  return db.transaction(async (tx) => {
-    await tx.delete(Expenses).where(eq(Expenses.budgetId, budgetId));
-    return tx.delete(Budgets).where(eq(Budgets.id, budgetId)).returning();
-  });
+  const { email } = await assertBudgetOwner(budgetId);
+  const deleteExpenses = db.delete(Expenses).where(eq(Expenses.budgetId, budgetId));
+  const deleteBudgetRow = db
+    .delete(Budgets)
+    .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)))
+    .returning();
+  const [, deletedBudgets] = await db.batch([deleteExpenses, deleteBudgetRow]);
+  return deletedBudgets;
 }

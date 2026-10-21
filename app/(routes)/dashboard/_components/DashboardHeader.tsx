@@ -24,12 +24,12 @@ function DashboardHeader() {
   const userRole = (user as Record<string, unknown> | undefined)?.role as string | undefined;
 
   return (
-    <div className=' p-5 shadow-sm border-b flex justify-between items-center bg-background'>
+    <div className=' p-5 shadow-sm border-b border-border flex justify-between items-center bg-background'>
 
       <div>
         <Sheet>
           <SheetTrigger>
-            <Menu className="cursor-pointer dark:hover:text-gray-400 flex lg:hidden" />
+            <Menu className="cursor-pointer hover:text-primary flex lg:hidden" />
           </SheetTrigger>
 
           <SheetContent
@@ -62,8 +62,8 @@ function DashboardHeader() {
               <SheetClose asChild>
                 <Link
                   href="/dashboard"
-                  className={`hover:text-primary w-full p-3 px-10 rounded-sm  dark:hover:bg-green-100 hover:bg-green-100 flex items-center gap-2 ${
-                    pathname === "/dashboard" ? 'text-primary bg-green-100 dark:text-primary dark:bg-green-100' : ""
+                  className={`hover:text-primary w-full p-3 px-10 rounded-sm hover:bg-accent flex items-center gap-2 ${
+                    pathname === "/dashboard" ? 'text-primary bg-accent' : ""
                   }`}
                 >
                   <LayoutGrid className="w-5 h-5" /> Dashboard
@@ -73,8 +73,8 @@ function DashboardHeader() {
               <SheetClose asChild>
                 <Link
                   href="/dashboard/budgets"
-                  className={` hover:text-primary w-full p-3 px-10 rounded-sm  dark:hover:bg-green-100 hover:bg-green-100 flex items-center gap-2 ${
-                    pathname === "/dashboard/budgets" ? "text-primary bg-green-100 dark:text-primary dark:bg-green-100" : ""
+                  className={` hover:text-primary w-full p-3 px-10 rounded-sm hover:bg-accent flex items-center gap-2 ${
+                    pathname === "/dashboard/budgets" ? "text-primary bg-accent" : ""
                   }`}
                 >
                   <PiggyBank className="w-5 h-5" /> Budget
@@ -84,8 +84,8 @@ function DashboardHeader() {
               <SheetClose asChild>
                 <Link
                   href="/dashboard/expenses"
-                  className={`hover:text-primary w-full p-3 px-10 rounded-sm  dark:hover:bg-green-100 hover:bg-green-100 flex items-center gap-2 ${
-                    pathname === "/dashboard/expenses" ? "text-primary bg-green-100 dark:text-primary dark:bg-green-100" : ""
+                  className={`hover:text-primary w-full p-3 px-10 rounded-sm hover:bg-accent flex items-center gap-2 ${
+                    pathname === "/dashboard/expenses" ? "text-primary bg-accent" : ""
                   }`}
                 >
                   <ReceiptText className="w-5 h-5" /> Expenses
@@ -96,8 +96,8 @@ function DashboardHeader() {
                 <SheetClose asChild>
                   <Link
                     href="/admin"
-                    className={`hover:text-primary w-full p-3 px-10 rounded-sm  dark:hover:bg-green-100 hover:bg-green-100 flex items-center gap-2 ${
-                      pathname === "/admin" || pathname.startsWith("/admin/") ? "text-primary bg-green-100 dark:text-primary dark:bg-green-100" : ""
+                    className={`hover:text-primary w-full p-3 px-10 rounded-sm hover:bg-accent flex items-center gap-2 ${
+                      pathname === "/admin" || pathname.startsWith("/admin/") ? "text-primary bg-accent" : ""
                     }`}
                   >
                     <ShieldCheck className="w-5 h-5" /> Admin
@@ -112,10 +112,10 @@ function DashboardHeader() {
       <div className='flex items-center gap-4'>
         <ModeToggle/>
         <div className='flex items-center gap-2'>
-          <span className='text-sm text-gray-600 dark:text-gray-400 hidden sm:block'>{user?.email}</span>
+          <span className='text-sm text-muted-foreground hidden sm:block'>{user?.email}</span>
           <button
             onClick={() => authClient.signOut().then(() => router.push('/'))}
-            className='p-2 rounded-md hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-600 transition-colors'
+            className='p-2 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors'
             title="Sign out"
           >
             <LogOut className='w-4 h-4' />

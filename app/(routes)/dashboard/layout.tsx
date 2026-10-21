@@ -4,6 +4,7 @@ import SideNav from './_components/SideNav'
 import DashboardHeader from './_components/DashboardHeader'
 import { authClient } from '/lib/auth-client'
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { checkUserBudgets } from './actions';
 
 
@@ -17,9 +18,13 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
 
   const checkBudgets=async()=>{
-    const result = await checkUserBudgets();
-    if(result?.length==0){
-      router.replace('/dashboard/budgets')
+    try {
+      const result = await checkUserBudgets();
+      if(result?.length==0){
+        router.replace('/dashboard/budgets')
+      }
+    } catch {
+      toast.error('Failed to verify your budgets');
     }
   };
 

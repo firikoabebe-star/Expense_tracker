@@ -45,8 +45,8 @@ function SideNav() {
         {menuList.map((menu) => {
           const IconComponent = menu.icon;
           return (
-            <Link href={menu.path} className={`flex gap-2 items-center text-gray-500 font-md p-5 cursor-pointer rounded-md hover:text-primary hover:bg-green-100
-                ${path==menu.path&&'text-primary bg-green-100'}
+            <Link href={menu.path} className={`flex gap-2 items-center text-muted-foreground font-md p-5 cursor-pointer rounded-md hover:text-primary hover:bg-accent
+                ${path==menu.path?'text-primary bg-accent':''}
             `}
             key={menu.id}>
               <IconComponent />
@@ -58,7 +58,7 @@ function SideNav() {
       <div className='fixed bottom-10 p-5 flex gap-2 items-center'>
         <button
           onClick={() => authClient.signOut().then(() => router.push('/'))}
-          className='flex gap-2 items-center text-gray-500 hover:text-red-600 transition-colors'
+          className='flex gap-2 items-center text-muted-foreground hover:text-destructive transition-colors'
           title="Sign out"
         >
           <LogOut className='w-5 h-5' />

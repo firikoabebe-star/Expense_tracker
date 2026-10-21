@@ -11,7 +11,11 @@ import { Button } from "/components/ui/button";
 import { Input } from "/components/ui/input";
 import { OtpField } from "../_components/OtpField";
 import { PasswordChecklist } from "../_components/PasswordChecklist";
+import { PasswordInput } from "../_components/PasswordInput";
 import { ResendCode } from "../_components/ResendCode";
+
+const RESET_INPUT_CLASS =
+  "border-[var(--clr-border-mid)] bg-transparent placeholder:text-[var(--clr-text-muted)] focus-visible:ring-[var(--ring)] focus-visible:ring-offset-0";
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState<"request" | "reset">("request");
@@ -155,21 +159,20 @@ export default function ForgotPasswordPage() {
             >
               New password
             </label>
-            <Input
+            <PasswordInput
               id="new-password"
-              type="password"
               placeholder="••••••••"
               autoComplete="new-password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
+              onChange={(value) => {
+                setPassword(value);
                 setPasswordTouched(true);
               }}
               onFocus={() => setPasswordTouched(true)}
-              aria-describedby={
+              describedBy={
                 passwordTouched ? "new-password-checklist" : undefined
               }
-              className="border-[var(--clr-border-mid)] bg-transparent placeholder:text-[var(--clr-text-muted)] focus-visible:ring-[var(--ring)] focus-visible:ring-offset-0"
+              className={RESET_INPUT_CLASS}
               required
             />
 
@@ -187,14 +190,13 @@ export default function ForgotPasswordPage() {
             >
               Confirm new password
             </label>
-            <Input
+            <PasswordInput
               id="confirm-password"
-              type="password"
               placeholder="••••••••"
               autoComplete="new-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border-[var(--clr-border-mid)] bg-transparent placeholder:text-[var(--clr-text-muted)] focus-visible:ring-[var(--ring)] focus-visible:ring-offset-0"
+              onChange={setConfirmPassword}
+              className={RESET_INPUT_CLASS}
               required
             />
           </div>

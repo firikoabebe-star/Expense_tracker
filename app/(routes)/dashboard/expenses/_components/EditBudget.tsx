@@ -55,7 +55,7 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
     <div>
         <Dialog>
               <DialogTrigger asChild>
-               <Button className='flex gap-2 hover:bg-[#107c73]'> <PenBox/> Edit</Button>
+               <Button className='flex gap-2'> <PenBox/> Edit</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -70,7 +70,7 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                         {emojiIcon}
                       </Button>
                       <div className='mt-2'>
-                       <h2 className='text-black font-medium my-1 dark:text-white'>Budget Name</h2>
+                       <h2 className='text-foreground font-medium my-1'>Budget Name</h2>
                      {budgetInfo && (
                     <Input
                         placeholder="e.g home decor"
@@ -81,7 +81,7 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
 
                        </div>
                        <div className='mt-2'>
-                       <h2 className='text-black font-medium my-1 dark:text-white'>Budget Amount</h2>
+                       <h2 className='text-foreground font-medium my-1'>Budget Amount</h2>
                        {budgetInfo && (
                       <Input type='Number' placeholder="e.g 5000$"
                        defaultValue={budgetInfo.amount}
@@ -104,7 +104,7 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                     <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
                       <Button 
-                       className='mt-5 w-full hover:bg-[#05766c]'
+                       className='mt-5 w-full'
                        onClick={()=>onUpdateBudget()}>Update Budget</Button>
                     </DialogClose>
                   </DialogFooter>

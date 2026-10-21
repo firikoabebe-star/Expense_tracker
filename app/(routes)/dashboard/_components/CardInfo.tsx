@@ -1,6 +1,7 @@
 import { PiggyBank, ReceiptText, Wallet } from 'lucide-react'
 import React, { useMemo } from 'react'
 import type { BudgetSummary } from '/types'
+import { formatCurrency } from '/lib/utils'
 
 interface CardInfoProps {
   budgetList: BudgetSummary[];
@@ -25,21 +26,21 @@ function CardInfo({budgetList}: CardInfoProps) {
     {budgetList?.length>0?
     <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'> 
       
-      <div className='p-7 border border-border rounded-lg flex items-center justify-between'>
+      <div className='p-7 border border-border bg-card rounded-lg flex items-center justify-between'>
         <div>
         <h2 className='text-sm'>Total Budget</h2>
-        <h2 className='font-bold text-2xl'>💵{totalBudget}</h2>
+        <h2 className='font-bold text-2xl'>{formatCurrency(totalBudget)}</h2>
         </div>
         <PiggyBank className='bg-primary p-3 h-12 w-12 rounded-full text-white'/>
       </div>
-      <div className='p-7 border border-border rounded-lg flex items-center justify-between'>
+      <div className='p-7 border border-border bg-card rounded-lg flex items-center justify-between'>
         <div>
         <h2 className='text-sm'>Total Spending</h2>
-        <h2 className='font-bold text-2xl'>💵{totalSpend}</h2>
+        <h2 className='font-bold text-2xl'>{formatCurrency(totalSpend)}</h2>
         </div>
         <ReceiptText  className='bg-primary p-3 h-12 w-12 rounded-full text-white'/>
       </div>
-      <div className='p-7 border border-border rounded-lg flex items-center justify-between'>
+      <div className='p-7 border border-border bg-card rounded-lg flex items-center justify-between'>
         <div>
         <h2 className='text-sm'>Total Budgets</h2>
         <h2 className='font-bold text-2xl'>{budgetList?.length}</h2>
@@ -50,7 +51,7 @@ function CardInfo({budgetList}: CardInfoProps) {
     :
     <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
       {[1,2,3].map((item,index)=>(
-        <div key={index} className='h-[110px] w-full bg-slate-200 animate-pulse rounded-lg'>
+        <div key={index} className='h-[110px] w-full bg-accent animate-pulse rounded-lg'>
         </div>
       ))}
     </div>
