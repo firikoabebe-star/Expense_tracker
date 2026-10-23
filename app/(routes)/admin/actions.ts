@@ -135,35 +135,54 @@ export async function updateUserRole(userId: string, newRole: string) {
 export async function getSignupsLast30Days() {
   await requireAdmin();
 
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  // The day range is generated in SQL and left joined to the users, so days
+  // without signups are returned as zero instead of missing from the series.
+  const result = await db.execute<{ date: string; count: number }>(sql`
+    select to_char(days.day, 'YYYY-MM-DD') as date,
+           count(${user.id})::int as count
+    from generate_series(current_date - interval '29 days', current_date, interval '1 day') as days(day)
+    left join ${user}
+      on ${user.createdAt} >= current_date - interval '29 days'
+     and date_trunc('day', ${user.createdAt}) = days.day
+    group by days.day
+    order by days.day
+  `);
 
-  const rows = await db
-    .select({
-      date: sql<string>`to_char(${user.createdAt}, 'YYYY-MM-DD')`,
-      count: sql<number>`count(*)::int`,
-    })
-    .from(user)
-    .where(sql`${user.createdAt} >= ${thirtyDaysAgo}`)
-    .groupBy(sql`to_char(${user.createdAt}, 'YYYY-MM-DD')`)
-    .orderBy(sql`to_char(${user.createdAt}, 'YYYY-MM-DD')`);
-
-  return rows;
+  return result.rows;
 }
 
 export async function getExpensesLast7Days() {
   await requireAdmin();
 
-  const rows = await db
-    .select({
-      date: sql<string>`to_char(to_date(${Expenses.createdAt}, 'DD/MM/YYYY'), 'YYYY-MM-DD')`,
-      total: sql<number>`sum(${Expenses.amount})::numeric`,
-      count: sql<number>`count(*)::int`,
-    })
-    .from(Expenses)
-    .where(sql`to_date(${Expenses.createdAt}, 'DD/MM/YYYY') >= current_date - interval '6 days'`)
-    .groupBy(sql`to_char(to_date(${Expenses.createdAt}, 'DD/MM/YYYY'), 'YYYY-MM-DD')`)
-    .orderBy(sql`to_char(to_date(${Expenses.createdAt}, 'DD/MM/YYYY'), 'YYYY-MM-DD')`);
+  // Expenses.createdAt is a DD/MM/YYYY varchar, so the day is rebuilt
+  // explicitly into a YYYY-MM-DD key (year, month and day are read from their
+  // own positions) instead of relying on a locale dependent cast. Rows that do
+  // not have the expected shape are skipped, and a row can therefore never
+  // make the whole query fail.
+  const result = await db.execute<{ date: string; total: string; count: number }>(sql`
+    with parsed as (
+      select
+        substring(${Expenses.createdAt} from '([[:digit:]]{4})$') || '-' ||
+        lpad(substring(${Expenses.createdAt} from '^[[:digit:]]{1,2}/([[:digit:]]{1,2})/'), 2, '0') || '-' ||
+        lpad(substring(${Expenses.createdAt} from '^([[:digit:]]{1,2})/'), 2, '0') as day,
+        ${Expenses.amount} as amount
+      from ${Expenses}
+      where ${Expenses.createdAt} ~ '^[[:digit:]]{1,2}/[[:digit:]]{1,2}/[[:digit:]]{4}$'
+    )
+    select to_char(days.day, 'YYYY-MM-DD') as date,
+           coalesce(sum(parsed.amount), 0)::numeric as total,
+           count(parsed.day)::int as count
+    from generate_series(current_date - interval '6 days', current_date, interval '1 day') as days(day)
+    left join parsed on parsed.day = to_char(days.day, 'YYYY-MM-DD')
+    group by days.day
+    order by days.day
+  `);
 
-  return rows;
+  // Postgres returns numeric as a string, so it is converted to a number
+  // before it reaches the chart.
+  return result.rows.map((row) => ({
+    date: row.date,
+    total: Number(row.total),
+    count: row.count,
+  }));
 }

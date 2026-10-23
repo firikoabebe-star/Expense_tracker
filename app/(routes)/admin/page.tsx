@@ -102,12 +102,12 @@ function AdminPage() {
         <h2 className='font-bold text-3xl'>Admin Dashboard</h2>
         <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
           {[1, 2, 3, 4].map((item, index) => (
-            <div key={index} className='h-[110px] w-full bg-slate-200 animate-pulse rounded-lg' />
+            <div key={index} className='h-[110px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
           ))}
         </div>
-        <div className='mt-7 h-[300px] w-full bg-slate-200 animate-pulse rounded-lg' />
-        <div className='mt-7 h-[400px] w-full bg-slate-200 animate-pulse rounded-lg' />
-        <div className='mt-7 h-[400px] w-full bg-slate-200 animate-pulse rounded-lg' />
+        <div className='mt-7 h-[300px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
+        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
+        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
       </div>
     );
   }

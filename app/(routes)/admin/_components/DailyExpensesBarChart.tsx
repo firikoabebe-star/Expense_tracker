@@ -14,7 +14,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "/components/ui/chart"
-import { formatCurrency } from "/lib/utils"
+import { formatCurrency, parseDayKey } from "/lib/utils"
 
 interface DailyExpense {
   date: string;
@@ -29,12 +29,14 @@ interface DailyExpensesBarChartProps {
 const chartConfig = {
   total: {
     label: "Total Expenses",
-    color: "hsl(var(--chart-3))",
+    color: "var(--chart-3)",
   },
 } satisfies ChartConfig
 
 export default function DailyExpensesBarChart({ data }: DailyExpensesBarChartProps) {
-  if (data.length === 0) {
+  const hasExpenses = data.some((entry) => entry.total > 0);
+
+  if (data.length === 0 || !hasExpenses) {
     return (
       <Card className="h-[400px]">
         <CardHeader>
@@ -66,8 +68,10 @@ export default function DailyExpensesBarChart({ data }: DailyExpensesBarChartPro
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value: string) => {
-                const d = new Date(value);
-                return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                const d = parseDayKey(value);
+                return d
+                  ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : value;
               }}
             />
             <YAxis
@@ -79,13 +83,15 @@ export default function DailyExpensesBarChart({ data }: DailyExpensesBarChartPro
               content={
                 <ChartTooltipContent
                   labelFormatter={(label) => {
-                    const d = new Date(String(label));
-                    return d.toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    });
+                    const d = parseDayKey(String(label));
+                    return d
+                      ? d.toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : String(label);
                   }}
                   formatter={(value, name, item) => (
                     <span className="font-mono font-medium tabular-nums text-foreground">
@@ -94,7 +100,7 @@ export default function DailyExpensesBarChart({ data }: DailyExpensesBarChartPro
                   )}
                 />
               }
-              cursor={{ fill: "hsl(var(--muted))" }}
+              cursor={{ fill: "var(--muted)" }}
             />
             <Bar
               dataKey="total"
