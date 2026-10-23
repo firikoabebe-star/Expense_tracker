@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "/components/ui/chart"
+import { parseDayKey } from "/lib/utils"
 
 interface SignupData {
   date: string;
@@ -27,12 +28,14 @@ interface LineChartDashboardProps {
 const chartConfig = {
   count: {
     label: "Signups",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
 export default function LineChartDashboard({ data }: LineChartDashboardProps) {
-  if (data.length === 0) {
+  const hasSignups = data.some((entry) => entry.count > 0);
+
+  if (data.length === 0 || !hasSignups) {
     return (
       <Card className="h-[400px]">
         <CardHeader>
@@ -64,8 +67,10 @@ export default function LineChartDashboard({ data }: LineChartDashboardProps) {
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value: string) => {
-                const d = new Date(value);
-                return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                const d = parseDayKey(value);
+                return d
+                  ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : value;
               }}
             />
             <YAxis
@@ -77,13 +82,15 @@ export default function LineChartDashboard({ data }: LineChartDashboardProps) {
               content={
                 <ChartTooltipContent
                   labelFormatter={(label) => {
-                    const d = new Date(String(label));
-                    return d.toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    });
+                    const d = parseDayKey(String(label));
+                    return d
+                      ? d.toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : String(label);
                   }}
                 />
               }
@@ -94,7 +101,7 @@ export default function LineChartDashboard({ data }: LineChartDashboardProps) {
               stroke="var(--color-count)"
               strokeWidth={2}
               dot={{ r: 3, fill: "var(--color-count)" }}
-              activeDot={{ r: 5 }}
+              activeDot={{ r: 5, fill: "var(--color-count)", stroke: "var(--color-count)" }}
             />
           </LineChart>
         </ChartContainer>

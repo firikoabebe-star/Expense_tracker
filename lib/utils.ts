@@ -41,6 +41,23 @@ export function compareExpenseDates(a: string, b: string): number {
 }
 
 /**
+ * Parses a YYYY-MM-DD day key as a local date. `new Date("2024-05-03")` is
+ * interpreted as UTC midnight, which renders as the previous day in negative
+ * UTC offsets, so the parts are read explicitly instead.
+ * Returns null when the value is not a valid day key.
+ */
+export function parseDayKey(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? "").trim());
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  if (Number.isNaN(date.getTime())) return null;
+  if (date.getMonth() !== Number(match[2]) - 1 || date.getDate() !== Number(match[3])) {
+    return null;
+  }
+  return date;
+}
+
+/**
  * Quotes a CSV value when it contains a comma, quote, or line break and
  * doubles any embedded quote (RFC 4180).
  */
