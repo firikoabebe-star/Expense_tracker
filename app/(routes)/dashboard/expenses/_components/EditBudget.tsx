@@ -16,6 +16,7 @@ import EmojiPicker from 'emoji-picker-react'
 import { Input } from '/components/ui/input'
 import { toast } from 'sonner'
 import type { BudgetSummary, RefreshData } from '/types'
+import { MAX_BUDGET_AMOUNT, MAX_BUDGET_NAME_LENGTH, validateMoneyAmount } from '/lib/utils'
 import { updateBudget } from '../../actions';
 
 interface EditBudgetProps {
@@ -34,12 +35,39 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
     setEmojiIcon(budgetInfo?.icon)
     }
   },[budgetInfo])
+
+  const amountValue = amount ?? budgetInfo?.amount ?? '';
+  const nameValue = name ?? budgetInfo?.name ?? '';
+  const amountValidation = validateMoneyAmount(amountValue, { max: MAX_BUDGET_AMOUNT });
+  const trimmedName = nameValue.trim();
+  const canSubmit =
+    Boolean(budgetInfo) &&
+    trimmedName.length > 0 &&
+    trimmedName.length <= MAX_BUDGET_NAME_LENGTH &&
+    amountValidation.valid;
+
   const onUpdateBudget=async()=>{
+    if(!budgetInfo) return;
+
+    const check = validateMoneyAmount(amountValue, { max: MAX_BUDGET_AMOUNT });
+    if(!check.valid){
+      toast.error(check.message);
+      return;
+    }
+    if(!trimmedName){
+      toast.error('Enter a name');
+      return;
+    }
+    if(trimmedName.length > MAX_BUDGET_NAME_LENGTH){
+      toast.error(`Name can't be more than ${MAX_BUDGET_NAME_LENGTH} characters`);
+      return;
+    }
+
     try {
       const result = await updateBudget(
-        (budgetInfo as BudgetSummary).id,
-        name,
-        amount,
+        budgetInfo.id,
+        trimmedName,
+        String(check.value),
         emojiIcon
       );
 
@@ -47,8 +75,12 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
         refreshData();
         toast("Budget Updated");
       }
-    } catch {
-      toast.error('Failed to update budget');
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : 'Failed to update budget'
+      );
     }
   }
   return (
@@ -71,10 +103,11 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                       </Button>
                       <div className='mt-2'>
                        <h2 className='text-foreground font-medium my-1'>Budget Name</h2>
-                     {budgetInfo && (
+                      {budgetInfo && (
                     <Input
                         placeholder="e.g home decor"
-                        defaultValue={budgetInfo.name}
+                        value={nameValue}
+                        maxLength={MAX_BUDGET_NAME_LENGTH}
                         onChange={(e)=>setName(e.target.value)}
                     />
                     )}
@@ -83,9 +116,27 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                        <div className='mt-2'>
                        <h2 className='text-foreground font-medium my-1'>Budget Amount</h2>
                        {budgetInfo && (
-                      <Input type='Number' placeholder="e.g 5000$"
-                       defaultValue={budgetInfo.amount}
+                      <Input type='text' inputMode='decimal' placeholder="e.g. 25000 or 1.5m"
+                       value={amountValue}
+                       aria-invalid={amountValue !== '' && !amountValidation.valid ? true : undefined}
+                       aria-describedby={
+                         amountValue === ''
+                           ? undefined
+                           : amountValidation.valid
+                             ? 'edit-budget-amount-preview'
+                             : 'edit-budget-amount-error'
+                       }
                        onChange={(e)=>setAmount(e.target.value)}/>
+                       )}
+                       {budgetInfo && amountValue !== '' && amountValidation.valid && (
+                         <p id='edit-budget-amount-preview' className='mt-1 text-xs text-muted-foreground'>
+                           = ETB {amountValidation.value.toLocaleString('en-US')}
+                         </p>
+                       )}
+                       {budgetInfo && amountValue !== '' && !amountValidation.valid && (
+                         <p id='edit-budget-amount-error' role='alert' className='mt-1 text-xs text-destructive'>
+                           {amountValidation.message}
+                         </p>
                        )}
                        </div>
                       
@@ -104,6 +155,7 @@ const [emojiIcon, setEmojiIcon] = useState<string | null | undefined>();
                     <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
                       <Button 
+                       disabled={!canSubmit}
                        className='mt-5 w-full'
                        onClick={()=>onUpdateBudget()}>Update Budget</Button>
                     </DialogClose>

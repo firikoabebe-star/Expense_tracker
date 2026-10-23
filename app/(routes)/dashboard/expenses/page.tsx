@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import type { ExpenseSummary } from '/types'
 import { getAllExpenses, deleteExpense } from '../actions';
 import ExpenseTableSkeleton from '../_components/ExpenseTableSkeleton';
-import { formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
+import { formatCompactCurrency, formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
 import {
   UNDO_WINDOW_MS,
   cancelExpenseDelete,
@@ -193,9 +193,9 @@ const displayedExpenses = useMemo(() => {
           </div>
           {displayedExpenses.map((expenses) => (
             <div key={expenses.id} className='grid grid-cols-4 bg-card p-2 border-b border-border'>
-              <h2>{expenses.name}</h2>
-              <h2>{formatCurrency(expenses.amount)}</h2>
-              <h2>{expenses.createdAt}</h2>
+              <h2 className='min-w-0 truncate' title={expenses.name}>{expenses.name}</h2>
+              <h2 className='min-w-0 truncate' title={formatCurrency(expenses.amount)}>{formatCompactCurrency(expenses.amount)}</h2>
+              <h2 className='min-w-0 truncate' title={expenses.createdAt}>{expenses.createdAt}</h2>
               <h2>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

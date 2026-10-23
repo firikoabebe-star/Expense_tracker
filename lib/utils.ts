@@ -11,6 +11,129 @@ export function formatCurrency(amount: number | string): string {
   return `ETB${num.toLocaleString("en-US")}`;
 }
 
+/** Amounts at or above this are abbreviated where space is tight (cards, tables). */
+export const COMPACT_CURRENCY_THRESHOLD = 1_000_000;
+
+/**
+ * Compact variant of formatCurrency for cards, stat cards, table cells and
+ * chart axis labels, where a long amount would otherwise break the layout.
+ * Below the threshold the full value with separators is kept (ETB999,999);
+ * from 1,000,000 the value is abbreviated with up to two decimals and the
+ * trailing zeros trimmed: ETB 1.43M, ETB 94.34M, ETB 100M, ETB 1.2B.
+ * Always pair this with a title/tooltip holding formatCurrency() so the exact
+ * number stays reachable.
+ */
+export function formatCompactCurrency(amount: number | string): string {
+  const num = typeof amount === "string" ? Number(amount) : amount;
+  if (!Number.isFinite(num) || Math.abs(num) < COMPACT_CURRENCY_THRESHOLD) {
+    return formatCurrency(Number.isFinite(num) ? num : 0);
+  }
+  const compact = num.toLocaleString("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 2,
+  });
+  return `ETB ${compact}`;
+}
+
+export const MAX_BUDGET_AMOUNT = 100_000_000;
+export const MAX_EXPENSE_AMOUNT = 100_000_000;
+export const MAX_BUDGET_NAME_LENGTH = 40;
+export const MAX_EXPENSE_NAME_LENGTH = 80;
+
+const AMOUNT_FORMAT_MESSAGE = "Enter a number like 2500, 250k or 1.43m";
+const AMOUNT_MULTIPLIERS: Record<string, number> = {
+  k: 1_000,
+  m: 1_000_000,
+  b: 1_000_000_000,
+};
+
+export type ParsedAmount =
+  | { valid: true; value: number }
+  | { valid: false; message: string };
+
+export interface MoneyAmountOptions {
+  max: number;
+}
+
+export type MoneyAmountValidation =
+  | { valid: true; message: ""; value: number }
+  | { valid: false; message: string; value: null };
+
+function roundToTwoDecimals(value: number): number {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
+/**
+ * Parses what a user types into a number. Accepts an optional leading "ETB",
+ * spaces and thousands separators, and a single k/m/b suffix ("1.5m"). The
+ * multiplication is rounded to two decimals so 1.43m is exactly 1430000.
+ */
+export function parseAmountInput(raw: string): ParsedAmount {
+  if (typeof raw !== "string") {
+    return { valid: false, message: AMOUNT_FORMAT_MESSAGE };
+  }
+
+  const compact = raw
+    .trim()
+    .replace(/[\s,]/g, "")
+    .replace(/^etb/i, "");
+  const match = /^(\d+(?:\.\d+)?)([kmb])?$/i.exec(compact);
+  if (!match) {
+    return { valid: false, message: AMOUNT_FORMAT_MESSAGE };
+  }
+
+  const suffix = match[2]?.toLowerCase();
+  const multiplier = suffix ? AMOUNT_MULTIPLIERS[suffix] : 1;
+  const value = roundToTwoDecimals(Number(match[1]) * multiplier);
+  if (!Number.isFinite(value)) {
+    return { valid: false, message: AMOUNT_FORMAT_MESSAGE };
+  }
+
+  return { valid: true, value };
+}
+
+function formatAmountLimit(max: number): string {
+  if (max >= 1_000_000 && max % 1_000_000 === 0) return `${max / 1_000_000}M`;
+  if (max >= 1_000 && max % 1_000 === 0) return `${max / 1_000}k`;
+  return max.toLocaleString("en-US");
+}
+
+/**
+ * Shared client/server validation for money fields, which are stored as
+ * numeric strings. Builds on parseAmountInput and additionally requires a
+ * positive value, at most two decimal places after conversion and <= max.
+ */
+export function validateMoneyAmount(
+  raw: string | number,
+  { max }: MoneyAmountOptions
+): MoneyAmountValidation {
+  const parsed = parseAmountInput(typeof raw === "number" ? String(raw) : raw);
+  if (!parsed.valid) {
+    return { valid: false, message: parsed.message, value: null };
+  }
+  if (parsed.value <= 0) {
+    return { valid: false, message: "Enter an amount greater than 0", value: null };
+  }
+  if (parsed.value > max) {
+    return {
+      valid: false,
+      message: `Amount can't be more than ETB ${formatAmountLimit(max)}`,
+      value: null,
+    };
+  }
+
+  const scaled = parsed.value * 100;
+  if (Math.abs(scaled - Math.round(scaled)) > 1e-6) {
+    return {
+      valid: false,
+      message: "Amount can have at most 2 decimal places",
+      value: null,
+    };
+  }
+
+  return { valid: true, message: "", value: parsed.value };
+}
+
 /**
  * Expenses keep their date in a DD/MM/YYYY varchar, so it has to be parsed
  * explicitly before it can be compared chronologically (a plain string

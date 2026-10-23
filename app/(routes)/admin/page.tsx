@@ -15,7 +15,7 @@ import {
   AlertDialogTrigger,
 } from "/components/ui/alert-dialog";
 import { getAllUsers, getAdminStats, getRecentActivity, updateUserRole, getSignupsLast30Days, getExpensesLast7Days } from './actions';
-import { formatCurrency } from '/lib/utils';
+import { formatCompactCurrency, formatCurrency } from '/lib/utils';
 import LineChartDashboard from './_components/LineChartDashboard';
 import DailyExpensesBarChart from './_components/DailyExpensesBarChart';
 
@@ -249,10 +249,10 @@ function AdminPage() {
                       {item.type}
                     </span>
                   </h2>
-                  <h2 className='truncate'>{item.name}</h2>
-                  <h2>{formatCurrency(item.amount)}</h2>
-                  <h2 className='truncate'>{item.userName}</h2>
-                  <h2>{item.createdAt || '—'}</h2>
+                  <h2 className='min-w-0 truncate' title={item.name}>{item.name}</h2>
+                  <h2 className='min-w-0 truncate' title={formatCurrency(item.amount)}>{formatCompactCurrency(item.amount)}</h2>
+                  <h2 className='min-w-0 truncate' title={item.userName}>{item.userName}</h2>
+                  <h2 className='min-w-0 truncate' title={item.createdAt || undefined}>{item.createdAt || '—'}</h2>
                 </div>
               ))
             )}

@@ -59,6 +59,8 @@ export interface GenerateJsonOptions {
   image?: GenerateJsonImage;
   /** Cache lifetime in ms; `0` disables reading/writing the cache. */
   cacheTtlMs?: number;
+  /** Extra material mixed into the cache key, e.g. an aggregate fingerprint. */
+  cacheKeyExtra?: string;
   /** Total budget for the call across retries; defaults to 20s. */
   timeoutMs?: number;
 }
@@ -122,13 +124,15 @@ function cacheKeyFor(
   model: string,
   prompt: string,
   jsonSchema: Record<string, unknown> | undefined,
-  image: { mimeType: string; data: string } | undefined
+  image: { mimeType: string; data: string } | undefined,
+  cacheKeyExtra: string | undefined
 ): string {
   return buildCacheKey(userId, feature, {
     model,
     prompt,
     schema: jsonSchema ?? null,
     image: image ? { mimeType: image.mimeType, sha256: sha256(image.data) } : null,
+    extra: cacheKeyExtra ?? null,
   });
 }
 
@@ -232,7 +236,15 @@ export async function generateJson<T>(
 
   if (!Number.isFinite(ttlMs) || ttlMs <= 0) return runGuarded();
 
-  const key = cacheKeyFor(userId, feature, model, prompt, jsonSchema, image);
+  const key = cacheKeyFor(
+    userId,
+    feature,
+    model,
+    prompt,
+    jsonSchema,
+    image,
+    options.cacheKeyExtra
+  );
 
   try {
     const data = await getOrSet(key, ttlMs, async () => {

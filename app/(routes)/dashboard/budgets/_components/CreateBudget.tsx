@@ -17,6 +17,7 @@ import { Button } from '/components/ui/button';
 import { Input } from "/components/ui/input"
 import { toast } from 'sonner';
 import type { RefreshData } from '/types';
+import { MAX_BUDGET_AMOUNT, MAX_BUDGET_NAME_LENGTH, validateMoneyAmount } from '/lib/utils';
 import { createBudget } from '../../actions';
 
 interface CreateBudgetProps {
@@ -32,16 +33,41 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
+  const amountValidation = validateMoneyAmount(amount, { max: MAX_BUDGET_AMOUNT });
+  const trimmedName = name.trim();
+  const canSubmit =
+    trimmedName.length > 0 &&
+    trimmedName.length <= MAX_BUDGET_NAME_LENGTH &&
+    amountValidation.valid;
+
   const onCreateBudget=async()=>{
+    const check = validateMoneyAmount(amount, { max: MAX_BUDGET_AMOUNT });
+    if(!check.valid){
+      toast.error(check.message);
+      return;
+    }
+    if(!trimmedName){
+      toast.error('Enter a name');
+      return;
+    }
+    if(trimmedName.length > MAX_BUDGET_NAME_LENGTH){
+      toast.error(`Name can't be more than ${MAX_BUDGET_NAME_LENGTH} characters`);
+      return;
+    }
+
     try {
-      const result = await createBudget(name, amount, emojiIcon);
+      const result = await createBudget(trimmedName, String(check.value), emojiIcon);
 
       if(result){
         refreshData();
         toast('New Budget Created!');
       }
-    } catch {
-      toast.error('Failed to create budget');
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : 'Failed to create budget'
+      );
     }
   }
   return (
@@ -70,12 +96,33 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
                 <div className='mt-2'>
                  <h2 className='text-foreground font-medium my-1'>Budget Name</h2>
                 <Input placeholder="e.g home decor"
+                value={name}
+                maxLength={MAX_BUDGET_NAME_LENGTH}
                 onChange={(e)=>setName(e.target.value)}/>
                  </div>
                  <div className='mt-2'>
                  <h2 className='text-foreground font-medium my-1'>Budget Amount</h2>
-                <Input type='Number' placeholder="e.g 5000$"
+                <Input type='text' inputMode='decimal' placeholder="e.g. 25000 or 1.5m"
+                 value={amount}
+                 aria-invalid={amount !== '' && !amountValidation.valid ? true : undefined}
+                 aria-describedby={
+                   amount === ''
+                     ? undefined
+                     : amountValidation.valid
+                       ? 'create-budget-amount-preview'
+                       : 'create-budget-amount-error'
+                 }
                  onChange={(e)=>setAmount(e.target.value)}/>
+                {amount !== '' && amountValidation.valid && (
+                  <p id='create-budget-amount-preview' className='mt-1 text-xs text-muted-foreground'>
+                    = ETB {amountValidation.value.toLocaleString('en-US')}
+                  </p>
+                )}
+                {amount !== '' && !amountValidation.valid && (
+                  <p id='create-budget-amount-error' role='alert' className='mt-1 text-xs text-destructive'>
+                    {amountValidation.message}
+                  </p>
+                )}
                  </div>
                  
                 {openEmojiPicker && (
@@ -93,7 +140,7 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
               <DialogFooter className="sm:justify-start">
               <DialogClose asChild>
                 <Button 
-                 disabled={!(name&&amount)}
+                 disabled={!canSubmit}
                  className='mt-5 w-full'
                  onClick={()=>onCreateBudget()}>Create Budget</Button>
               </DialogClose>
