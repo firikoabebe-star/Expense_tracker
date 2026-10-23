@@ -3,6 +3,7 @@
 import { db } from "/utils/dbConfig";
 import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
 import { Budgets, Expenses } from "/utils/schema";
+import { account } from "/auth-schema";
 import { auth } from "/lib/auth";
 import {
   MAX_BUDGET_AMOUNT,
@@ -106,6 +107,16 @@ export async function getExpensesForBudget(budgetId: number) {
 export async function checkUserBudgets() {
   const email = await getUserEmail();
   return db.select().from(Budgets).where(eq(Budgets.createdBy, email));
+}
+
+export async function getUserAuthAccounts() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Unauthorized");
+  return db
+    .select({ providerId: account.providerId })
+    .from(account)
+    .where(eq(account.userId, userId));
 }
 
 export async function createBudget(

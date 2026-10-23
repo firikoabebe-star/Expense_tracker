@@ -11,7 +11,7 @@ import {
   SheetDescription,
   SheetClose,
 } from "/components/ui/sheet"
-import { Menu, LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut } from 'lucide-react'
+import { Menu, LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut, Settings } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from "next/navigation";
@@ -104,6 +104,16 @@ function DashboardHeader() {
                   </Link>
                 </SheetClose>
               )}
+              <SheetClose asChild>
+                <Link
+                  href="/dashboard/settings"
+                  className={`hover:text-primary w-full p-3 px-10 rounded-sm hover:bg-accent flex items-center gap-2 ${
+                    pathname === "/dashboard/settings" ? "text-primary bg-accent" : ""
+                  }`}
+                >
+                  <Settings className="w-5 h-5" /> Settings
+                </Link>
+              </SheetClose>
             </div>
           </SheetContent>
         </Sheet>
@@ -113,6 +123,14 @@ function DashboardHeader() {
         <ModeToggle/>
         <div className='flex items-center gap-2'>
           <span className='text-sm text-muted-foreground hidden sm:block'>{user?.email}</span>
+          <Link
+            href='/dashboard/settings'
+            className='p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors'
+            title='Settings'
+            aria-label='Settings'
+          >
+            <Settings className='w-4 h-4' />
+          </Link>
           <button
             onClick={() => authClient.signOut().then(() => router.push('/'))}
             className='p-2 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors'
