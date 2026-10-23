@@ -1,6 +1,6 @@
 'use client'
 import { authClient } from '/lib/auth-client';
-import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut } from 'lucide-react';
+import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, LogOut, Settings } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -35,6 +35,12 @@ function SideNav() {
       icon: ShieldCheck,
       path: '/admin',
     }] : []),
+    {
+      id: 5,
+      name: 'Settings',
+      icon: Settings,
+      path: '/dashboard/settings',
+    },
   ];
   const path=usePathname();
   const router = useRouter();

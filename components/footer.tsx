@@ -3,12 +3,12 @@
 // components/footer.jsx
 // grey.co pattern:
 //   • Dark green (#0D530E) background — full-bleed
-//   • Logo + tagline column, 4 link columns, newsletter column
+//   • Logo + tagline column, 3 link columns, newsletter column
 //   • Bottom bar: copyright left, legal links right
 // ─────────────────────────────────────────────────────────────────
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Instagram, Youtube, Twitter } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const COLS = {
   Product: [
@@ -17,30 +17,17 @@ const COLS = {
     ["About", "/about"],
     ["Developers", "/developers"],
   ],
-  Company: [
-    ["Blog", "#"],
-    ["Careers", "#"],
-    ["Press", "#"],
-    ["Contact", "#"],
-  ],
   Resources: [
-    ["Help Center", "#"],
-    ["FAQ", "#"],
-    ["Video Guides", "#"],
-    ["Status", "#"],
+    ["Help Center", "/help"],
+    ["FAQ", "/help"],
+    ["Contact", "/contact"],
   ],
   Legal: [
-    ["Privacy Policy", "#"],
-    ["Terms of Service", "#"],
-    ["Cookie Policy", "#"],
+    ["Privacy Policy", "/privacy"],
+    ["Terms of Service", "/terms"],
+    ["Cookie Policy", "/privacy#cookies"],
   ],
 };
-
-const SOCIALS = [
-  { Icon: Instagram, href: "#", label: "Instagram" },
-  { Icon: Youtube, href: "#", label: "YouTube" },
-  { Icon: Twitter, href: "#", label: "Twitter" },
-];
 
 export default function FooterSection() {
   const [email, setEmail] = useState("");
@@ -108,7 +95,7 @@ export default function FooterSection() {
                   flexShrink: 0,
                 }}
               >
-                E
+                M
               </div>
               <span
                 style={{
@@ -136,39 +123,6 @@ export default function FooterSection() {
               Smart budgeting for everyone. Take control of your money today.
             </p>
 
-            {/* Socials */}
-            <div style={{ display: "flex", gap: "0.625rem" }}>
-              {SOCIALS.map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 8,
-                    border: "1px solid rgba(255,255,255,0.15)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "rgba(255,255,255,0.55)",
-                    textDecoration: "none",
-                    transition: "border-color 0.15s, color 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
-                    e.currentTarget.style.color = "#fff";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor =
-                      "rgba(255,255,255,0.15)";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.55)";
-                  }}
-                >
-                  <Icon size={14} />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Link columns */}
@@ -312,8 +266,14 @@ export default function FooterSection() {
                 lineHeight: 1.6,
               }}
             >
-              By subscribing, you agree to our Privacy Policy. Unsubscribe
-              anytime.
+              By subscribing, you agree to our{" "}
+              <Link
+                href="/privacy"
+                style={{ color: "inherit", textDecoration: "underline" }}
+              >
+                Privacy Policy
+              </Link>
+              . Unsubscribe anytime.
             </p>
           </div>
         </div>
@@ -340,10 +300,14 @@ export default function FooterSection() {
             © {new Date().getFullYear()} Montra. All rights reserved.
           </p>
           <div style={{ display: "flex", gap: "1.375rem", flexWrap: "wrap" }}>
-            {["Privacy", "Terms", "Cookies"].map((t) => (
+            {[
+              ["Privacy", "/privacy"],
+              ["Terms", "/terms"],
+              ["Cookies", "/privacy#cookies"],
+            ].map(([t, href]) => (
               <Link
                 key={t}
-                href="#"
+                href={href}
                 style={{
                   fontFamily: "var(--font-body)",
                   fontWeight: 300,

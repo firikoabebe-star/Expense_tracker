@@ -105,7 +105,7 @@ export default function FAQsThree() {
           >
             Can't find your answer?{" "}
             <a
-              href="mailto:support@montra.app"
+              href="mailto:support@base.et"
               style={{ color: "var(--clr-brand)", textDecoration: "underline" }}
             >
               Email our team
