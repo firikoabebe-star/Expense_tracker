@@ -18,7 +18,7 @@ import {
   type ChartConfig,
 } from "/components/ui/chart"
 import type { BudgetSummary } from "/types"
-import { formatCurrency } from "/lib/utils"
+import { formatCompactCurrency, formatCurrency } from "/lib/utils"
 
 interface BarChartDashboardProps {
   budgetList: BudgetSummary[];
@@ -90,7 +90,9 @@ export default function BarChartDashboard({ budgetList }: BarChartDashboardProps
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ style: { fill: "var(--clr-text-2)" } }}
+              width={72}
+              tickFormatter={(value: number) => formatCompactCurrency(value)}
+              tick={{ width: 120, style: { fill: "var(--clr-text-2)", fontSize: 11 } }}
             />
             <ChartTooltip
               content={

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { authClient } from '/lib/auth-client';
 import { getFirstName } from '/lib/name';
 import CardInfo from './_components/CardInfo'
+import AIInsights from './_components/AIInsights'
 import BarChartDashboard from './_components/BarChartDashboard'
 import PieChartDashboard from './_components/PieChartDashboard'
 import Budgetitem from './budgets/_components/Budgetitem'
@@ -42,6 +43,7 @@ function page() {
       <p className='text-muted-foreground'>Your money, simplified. Let's manage your expenses smarter.</p>
 
       <CardInfo budgetList={budgetList}/>
+      <AIInsights enabled={!loading && !!user}/>
       <div className='grid grid-cols-1 md:grid-cols-3 mt-6 gap-5'>
         <div className='md:col-span-2'>
           {loading ? (

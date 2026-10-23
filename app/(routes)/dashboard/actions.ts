@@ -4,8 +4,33 @@ import { db } from "/utils/dbConfig";
 import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
 import { Budgets, Expenses } from "/utils/schema";
 import { auth } from "/lib/auth";
+import {
+  MAX_BUDGET_AMOUNT,
+  MAX_BUDGET_NAME_LENGTH,
+  MAX_EXPENSE_AMOUNT,
+  MAX_EXPENSE_NAME_LENGTH,
+  validateMoneyAmount,
+} from "/lib/utils";
 import { headers } from "next/headers";
 import moment from "moment";
+
+const CONTROL_CHARACTERS = /[\u0000-\u001F\u007F-\u009F]/g;
+
+function normalizeEntityName(value: string, maxLength: number): string {
+  if (typeof value !== "string") throw new Error("Enter a name");
+  const name = value.replace(CONTROL_CHARACTERS, "").replace(/\s+/g, " ").trim();
+  if (!name) throw new Error("Enter a name");
+  if (name.length > maxLength) {
+    throw new Error(`Name can't be more than ${maxLength} characters`);
+  }
+  return name;
+}
+
+function normalizeMoneyAmount(value: string | number, max: number): string {
+  const result = validateMoneyAmount(value, { max });
+  if (!result.valid) throw new Error(result.message);
+  return String(result.value);
+}
 
 async function getUserEmail() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -83,37 +108,58 @@ export async function checkUserBudgets() {
   return db.select().from(Budgets).where(eq(Budgets.createdBy, email));
 }
 
-export async function createBudget(name: string, amount: string, icon: string) {
+export async function createBudget(
+  name: string,
+  amount: string | number,
+  icon: string
+) {
+  const validName = normalizeEntityName(name, MAX_BUDGET_NAME_LENGTH);
+  const validAmount = normalizeMoneyAmount(amount, MAX_BUDGET_AMOUNT);
   const email = await getUserEmail();
   return db
     .insert(Budgets)
-    .values({ name, amount, createdBy: email, icon })
+    .values({ name: validName, amount: validAmount, createdBy: email, icon })
     .returning({ insertedId: Budgets.id });
 }
 
 export async function updateBudget(
   budgetId: number,
   name: string | undefined,
-  amount: string | undefined,
+  amount: string | number | undefined,
   icon: string | null | undefined
 ) {
+  const validName =
+    name === undefined
+      ? undefined
+      : normalizeEntityName(name, MAX_BUDGET_NAME_LENGTH);
+  const validAmount =
+    amount === undefined
+      ? undefined
+      : normalizeMoneyAmount(amount, MAX_BUDGET_AMOUNT);
   const { email } = await assertBudgetOwner(budgetId);
   return db
     .update(Budgets)
-    .set({ name, amount, icon })
+    .set({ name: validName, amount: validAmount, icon })
     .where(and(eq(Budgets.id, budgetId), eq(Budgets.createdBy, email)))
     .returning();
 }
 
 export async function createExpense(
   name: string,
-  amount: string,
+  amount: string | number,
   budgetId: number
 ) {
+  const validName = normalizeEntityName(name, MAX_EXPENSE_NAME_LENGTH);
+  const validAmount = normalizeMoneyAmount(amount, MAX_EXPENSE_AMOUNT);
   await assertBudgetOwner(budgetId);
   return db
     .insert(Expenses)
-    .values({ name, amount, budgetId, createdAt: moment().format("DD/MM/YYYY") })
+    .values({
+      name: validName,
+      amount: validAmount,
+      budgetId,
+      createdAt: moment().format("DD/MM/YYYY"),
+    })
     .returning({ insertedId: Expenses.id });
 }
 

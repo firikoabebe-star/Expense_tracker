@@ -4,7 +4,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import type { ExpenseSummary, RefreshData } from '/types'
 import { deleteExpense } from '../../actions';
-import { formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
+import { formatCompactCurrency, formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
 import { Input } from '/components/ui/input';
 import { Button } from '/components/ui/button';
 import ExpenseTableSkeleton from '../../_components/ExpenseTableSkeleton';
@@ -165,9 +165,9 @@ function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseL
           </div>
           {displayedExpenses.map((expenses) => (
             <div key={expenses.id} className='grid grid-cols-4 bg-card p-2 items-center gap-3 border-b border-border md:gap-4'>
-              <h2>{expenses.name}</h2>
-              <h2>{formatCurrency(expenses.amount)}</h2>
-              <h2>{expenses.createdAt}</h2>
+              <h2 className='min-w-0 truncate' title={expenses.name}>{expenses.name}</h2>
+              <h2 className='min-w-0 truncate' title={formatCurrency(expenses.amount)}>{formatCompactCurrency(expenses.amount)}</h2>
+              <h2 className='min-w-0 truncate' title={expenses.createdAt}>{expenses.createdAt}</h2>
               <h2>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

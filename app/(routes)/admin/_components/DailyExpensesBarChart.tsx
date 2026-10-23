@@ -14,7 +14,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "/components/ui/chart"
-import { formatCurrency, parseDayKey } from "/lib/utils"
+import { formatCompactCurrency, formatCurrency, parseDayKey } from "/lib/utils"
 
 interface DailyExpense {
   date: string;
@@ -77,7 +77,9 @@ export default function DailyExpensesBarChart({ data }: DailyExpensesBarChartPro
             <YAxis
               tickLine={false}
               axisLine={false}
-              allowDecimals={false}
+              width={72}
+              tickFormatter={(value: number) => formatCompactCurrency(value)}
+              tick={{ width: 120, style: { fill: "var(--clr-text-2)", fontSize: 11 } }}
             />
             <ChartTooltip
               content={
