@@ -75,7 +75,7 @@ export function ResendCode({
           className={
             status.type === "error"
               ? "text-sm text-destructive"
-              : "text-sm text-emerald-600 dark:text-emerald-400"
+              : "text-sm text-emerald-600 dark:text-[var(--primary)]"
           }
         >
           {status.text}

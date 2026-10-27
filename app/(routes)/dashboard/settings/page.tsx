@@ -5,6 +5,7 @@ import { ShieldAlert } from "lucide-react";
 
 import { authClient } from "/lib/auth-client";
 import { getUserAuthAccounts } from "../actions";
+import { PageHeader } from "../_components/PageHeader";
 import { ChangePasswordCard } from "./_components/ChangePasswordCard";
 import { ProfileCard, type SignInProvider } from "./_components/ProfileCard";
 import { SettingsSkeleton } from "./_components/SettingsSkeleton";
@@ -59,16 +60,13 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mx-auto w-full max-w-2xl">
-        <header className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Manage your profile and keep your account secure.
-          </p>
-        </header>
+    <div className="mx-auto w-full max-w-2xl">
+      <PageHeader
+        title="Settings"
+        subtitle="Manage your profile and keep your account secure."
+      />
 
-        <div className="space-y-4">
+        <div className="mt-6 space-y-4">
           <ProfileCard
             name={session?.user?.name}
             email={session?.user?.email}
@@ -76,7 +74,7 @@ export default function SettingsPage() {
           />
 
           {accountsError ? (
-            <section className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-destructive">
                   <ShieldAlert className="h-5 w-5" aria-hidden="true" />
@@ -96,7 +94,6 @@ export default function SettingsPage() {
             <ChangePasswordCard hasCredential={hasCredential} />
           )}
         </div>
-      </div>
     </div>
   );
 }

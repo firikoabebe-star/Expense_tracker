@@ -2,7 +2,7 @@
 // ─────────────────────────────────────────────────────────────────
 // components/footer.jsx
 // grey.co pattern:
-//   • Dark green (#0D530E) background — full-bleed
+//   • Brand surface — full-bleed (solid card surface in dark mode)
 //   • Logo + tagline column, 3 link columns, newsletter column
 //   • Bottom bar: copyright left, legal links right
 // ─────────────────────────────────────────────────────────────────
@@ -41,17 +41,8 @@ export default function FooterSection() {
     }
   };
 
-  const linkStyle = {
-    fontFamily: "var(--font-body)",
-    fontWeight: 300,
-    fontSize: "0.9rem",
-    color: "rgba(255,255,255,0.55)",
-    textDecoration: "none",
-    transition: "color 0.15s",
-  };
-
   return (
-    <footer style={{ background: "var(--clr-brand)" }}>
+    <footer className="surface-inverse">
       <div
         style={{
           maxWidth: "78rem",
@@ -61,12 +52,14 @@ export default function FooterSection() {
       >
         {/* ── Top grid ── */}
         <div
+          className="border-on-inverse"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
             gap: "clamp(2rem,4vw,3.5rem)",
             paddingBottom: "clamp(2.5rem,4vw,4rem)",
-            borderBottom: "1px solid rgba(255,255,255,0.12)",
+            borderBottomWidth: 1,
+            borderBottomStyle: "solid",
           }}
         >
           {/* Brand col */}
@@ -84,7 +77,7 @@ export default function FooterSection() {
                   width: 30,
                   height: 30,
                   borderRadius: 8,
-                  background: "#E7E1B1",
+                  background: "var(--clr-accent)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -98,11 +91,11 @@ export default function FooterSection() {
                 M
               </div>
               <span
+                className="text-on-inverse-accent"
                 style={{
                   fontFamily: "var(--font-display)",
                   fontWeight: 600,
                   fontSize: "1rem",
-                  color: "#E7E1B1",
                 }}
               >
                 Montra
@@ -110,11 +103,11 @@ export default function FooterSection() {
             </div>
 
             <p
+              className="text-on-inverse-muted"
               style={{
                 fontFamily: "var(--font-body)",
                 fontWeight: 300,
                 fontSize: "0.875rem",
-                color: "rgba(255,255,255,0.5)",
                 lineHeight: 1.7,
                 maxWidth: "22ch",
                 marginBottom: "1.375rem",
@@ -122,20 +115,19 @@ export default function FooterSection() {
             >
               Smart budgeting for everyone. Take control of your money today.
             </p>
-
           </div>
 
           {/* Link columns */}
           {Object.entries(COLS).map(([cat, links]) => (
             <div key={cat}>
               <h4
+                className="text-on-inverse-accent"
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "0.7rem",
                   fontWeight: 700,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.35)",
                   marginBottom: "1.25rem",
                 }}
               >
@@ -155,13 +147,12 @@ export default function FooterSection() {
                   <li key={name}>
                     <Link
                       href={href}
-                      style={linkStyle}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
-                      }
+                      className="on-inverse-link"
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontWeight: 300,
+                        fontSize: "0.9rem",
+                      }}
                     >
                       {name}
                     </Link>
@@ -174,13 +165,13 @@ export default function FooterSection() {
           {/* Newsletter */}
           <div>
             <h4
+              className="text-on-inverse-accent"
               style={{
                 fontFamily: "var(--font-body)",
                 fontSize: "0.7rem",
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.35)",
                 marginBottom: "1.25rem",
               }}
             >
@@ -188,10 +179,10 @@ export default function FooterSection() {
             </h4>
             {sent ? (
               <p
+                className="text-on-inverse-accent"
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "0.875rem",
-                  color: "#a8e6a9",
                   fontWeight: 500,
                 }}
               >
@@ -215,20 +206,13 @@ export default function FooterSection() {
                   style={{
                     padding: "0.625rem 0.875rem",
                     borderRadius: 10,
-                    border: "1px solid rgba(255,255,255,0.15)",
-                    background: "rgba(255,255,255,0.07)",
-                    color: "#fff",
+                    border: "1px solid var(--border)",
+                    background: "var(--card)",
+                    color: "var(--foreground)",
                     fontFamily: "var(--font-body)",
                     fontSize: "0.875rem",
                     outline: "none",
-                    transition: "border-color 0.15s",
                   }}
-                  onFocus={(e) =>
-                    (e.target.style.borderColor = "rgba(231,225,177,0.5)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.borderColor = "rgba(255,255,255,0.15)")
-                  }
                 />
                 <button
                   type="submit"
@@ -240,16 +224,21 @@ export default function FooterSection() {
                     padding: "0.625rem",
                     borderRadius: 10,
                     border: "none",
-                    background: "#E7E1B1",
+                    background: "var(--clr-accent)",
                     color: "var(--clr-brand)",
                     fontFamily: "var(--font-body)",
                     fontWeight: 600,
                     fontSize: "0.875rem",
                     cursor: "pointer",
-                    transition: "opacity 0.15s",
+                    transition: "background 0.15s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background =
+                      "var(--clr-brand-light)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = "var(--clr-accent)")
+                  }
                 >
                   Subscribe <ArrowRight size={13} />
                 </button>
@@ -257,11 +246,11 @@ export default function FooterSection() {
             )}
 
             <p
+              className="text-on-inverse-muted"
               style={{
                 fontFamily: "var(--font-body)",
                 fontWeight: 300,
                 fontSize: "0.75rem",
-                color: "rgba(255,255,255,0.3)",
                 marginTop: "0.75rem",
                 lineHeight: 1.6,
               }}
@@ -290,11 +279,11 @@ export default function FooterSection() {
           }}
         >
           <p
+            className="text-on-inverse-muted"
             style={{
               fontFamily: "var(--font-body)",
               fontWeight: 300,
               fontSize: "0.8rem",
-              color: "rgba(255,255,255,0.3)",
             }}
           >
             © {new Date().getFullYear()} Montra. All rights reserved.
@@ -308,20 +297,12 @@ export default function FooterSection() {
               <Link
                 key={t}
                 href={href}
+                className="on-inverse-link"
                 style={{
                   fontFamily: "var(--font-body)",
                   fontWeight: 300,
                   fontSize: "0.8rem",
-                  color: "rgba(255,255,255,0.3)",
-                  textDecoration: "none",
-                  transition: "color 0.15s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,0.3)")
-                }
               >
                 {t}
               </Link>

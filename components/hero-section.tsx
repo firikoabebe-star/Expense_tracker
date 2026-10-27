@@ -1,436 +1,459 @@
 "use client";
 
+// ─────────────────────────────────────────────────────────────────
+// components/hero-section.tsx
+// Landing hero — one rounded frame holding an asymmetric bento grid:
+//   • text panel with a notched (concave) bottom-right corner
+//   • large "spending overview" tile with an inline SVG area chart
+//   • "AI insight" tile with a progress bar
+//   • angled "scan receipt" tile in the bottom-right corner
+// Every surface is a design token (bg-card / bg-accent / border-border)
+// so both themes stay solid — no glass, no hardcoded colours.
+// ─────────────────────────────────────────────────────────────────
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Check, TrendingUp, Wallet, PiggyBank } from "lucide-react";
-import LandingNavbar from "./LandingNavbar";
+import Image from "next/image";
+import { motion, useReducedMotion, type Variants } from "motion/react";
+import { ArrowRight, ScanLine, Sparkles, TrendingDown } from "lucide-react";
 
-const TRUST = ["50,000+ users", "Free to start", "No credit card needed"];
+import LandingNavbar from "./LandingNavbar";
+import { cn } from "/lib/utils";
+
+// Sample figures — labelled as sample data wherever they appear.
+const SAMPLE = {
+  spent: "ETB 12,450",
+  lastMonth: "ETB 13,560",
+  trend: "8.2%",
+  insight: "Groceries are 18% under budget — ETB 1,240 left this month.",
+  budgetUsed: 62,
+  receiptTotal: "ETB 480",
+};
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+
+const CHART_LINE =
+  "M0 92 C22 88 38 70 62 72 C86 74 102 88 126 66 C150 44 168 60 192 50 C216 40 232 54 256 32 C280 10 300 28 320 20";
+const CHART_AREA = `${CHART_LINE} L320 120 L0 120 Z`;
+
+const DISPLAY_FONT = { fontFamily: "var(--font-display)" } as const;
+
+type TileProps = {
+  /** When provided, the live sample card is replaced by this image. */
+  imageUrl?: string;
+  className?: string;
+};
 
 export default function HeroSection() {
+  const reduceMotion = useReducedMotion();
+
+  const container: Variants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: reduceMotion ? 0 : 0.08,
+        delayChildren: reduceMotion ? 0 : 0.04,
+      },
+    },
+  };
+
+  const item: Variants = {
+    hidden: { opacity: 0, y: reduceMotion ? 0 : 18 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" },
+    },
+  };
+
   return (
     <>
       <LandingNavbar />
 
-      <main
-        style={{
-          background: "var(--clr-bg)",
-          overflow: "hidden",
-        }}
-      >
-        <section
-          style={{
-            paddingTop: "8rem",
-            paddingBottom: "5rem",
-            position: "relative",
-          }}
-        >
-          {/* Background glow */}
-          <div
-            style={{
-              position: "absolute",
-              top: "-10rem",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "50rem",
-              height: "50rem",
-              background:
-                "radial-gradient(circle, rgba(13,83,14,0.08), transparent 70%)",
-              pointerEvents: "none",
-            }}
-          />
-
-          <div
-            style={{
-              maxWidth: "1400px",
-              margin: "0 auto",
-              padding: "0 clamp(1.25rem, 5vw, 3rem)",
-              position: "relative",
-              zIndex: 2,
-            }}
-          >
-            {/* 2-Column layout */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1.05fr 0.95fr",
-                gap: "4rem",
-                alignItems: "center",
-              }}
+      <main className="overflow-hidden bg-background">
+        <section className="px-4 pb-16 pt-[6.5rem] sm:px-6 sm:pb-20 lg:px-8 lg:pb-24 lg:pt-32">
+          <div className="mx-auto w-full max-w-[1320px]">
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="rounded-3xl border border-border bg-card p-4"
+              style={{ boxShadow: "var(--shadow-lg)" }}
             >
-              {/* Left column – text & CTAs */}
-              <div
-                style={{
-                  textAlign: "left",
-                  maxWidth: "620px",
-                }}
-              >
-                {/* Badge */}
-                <div
-                  className="et-fade-up"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: ".5rem",
-                    padding: ".6rem 1rem",
-                    borderRadius: "999px",
-                    background: "var(--block-sage)",
-                    border: "1px solid var(--clr-border)",
-                    marginBottom: "1.5rem",
-                  }}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-12">
+                {/* ── Text panel (notched corner) ─────────────────── */}
+                <motion.div
+                  variants={item}
+                  className="relative col-span-2 overflow-hidden rounded-[1.75rem] border border-border bg-accent lg:col-span-7 lg:row-span-2"
                 >
-                  <TrendingUp size={14} color="var(--clr-brand)" />
+                  <div className="flex h-full flex-col justify-center gap-6 p-5 sm:gap-7 sm:p-8 lg:p-10">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1.5 text-[0.6875rem] font-semibold text-foreground sm:gap-2 sm:px-3 sm:text-xs">
+                        <Sparkles className="h-3 w-3 shrink-0 text-primary sm:h-3.5 sm:w-3.5" aria-hidden="true" />
+                        <span className="whitespace-nowrap">AI-powered expense tracking</span>
+                      </span>
+                      <MiniThumbnail />
+                    </div>
+
+                    <div className="space-y-4">
+                      <h1
+                        className="text-[clamp(2.125rem,6vw,3.5rem)] font-bold leading-[1.02] tracking-[-0.035em] text-foreground"
+                        style={DISPLAY_FONT}
+                      >
+                        Every birr,
+                        <br />
+                        finally <span className="text-primary">clear</span>.
+                      </h1>
+                      <p className="max-w-[46ch] text-[0.95rem] leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
+                        Montra turns everyday spending into budgets and insights
+                        you can act on, so you always know where your money went.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Link
+                        href="/sign-up"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-[var(--clr-brand-mid)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      >
+                        Get started
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                      <Link
+                        href="#services"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      >
+                        See features
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Concave cut-out punched into the corner that meets
+                      the media tiles. Filled with the frame surface. */}
                   <span
-                    style={{
-                      fontSize: ".85rem",
-                      color: "var(--clr-brand)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Smart Budgeting App
-                  </span>
-                </div>
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -bottom-px -right-px hidden h-24 w-24 rounded-tl-[2.5rem] bg-card lg:block"
+                  />
+                </motion.div>
 
-                {/* Headline */}
-                <h6
-                  className="et-fade-up et-d1"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 700,
-                    fontSize: "clamp(2.75rem, 6vw, 4.75rem)",
-                    lineHeight: 0.95,
-                    letterSpacing: "-0.05em",
-                    maxWidth: "12ch",
-                    margin: 0,
-                  }}
+                {/* ── Large tile: spending overview ───────────────── */}
+                <motion.div
+                  variants={item}
+                  className="col-span-2 lg:col-span-5 lg:row-span-2"
                 >
-                  Manage your
-                  <br />
-                  <em
-                    style={{
-                      color: "var(--clr-brand)",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    money.
-                  </em>
-                  <br />
-                  Build your future.
-                </h6>
+                  <Float className="h-full" delay={0}>
+                    <SpendingOverviewTile className="h-full" />
+                  </Float>
+                </motion.div>
 
-                {/* Description */}
-                <p
-                  className="et-fade-up et-d2"
-                  style={{
-                    maxWidth: "42rem",
-                    margin: "2rem 0",
-                    color: "var(--clr-text-muted)",
-                    fontSize: "1.1rem",
-                    lineHeight: 1.8,
-                  }}
-                >
-                  Track expenses, automate budgets, and understand your finances
-                  with beautiful insights designed to help you save more every
-                  month.
-                </p>
+                {/* ── AI insight tile ─────────────────────────────── */}
+                <motion.div variants={item} className="col-span-1 lg:col-span-8 lg:row-start-3">
+                  <Float className="h-full" delay={0.6}>
+                    <InsightTile className="h-full" />
+                  </Float>
+                </motion.div>
 
-                {/* CTA */}
-                <div
-                  className="et-fade-up et-d3"
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    gap: "1rem",
-                    flexWrap: "wrap",
-                    marginBottom: "2rem",
-                  }}
-                >
-                  <Link
-                    href="/sign-up"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: ".5rem",
-                      padding: "1rem 2rem",
-                      borderRadius: "var(--r-pill)",
-                      background: "var(--clr-brand)",
-                      color: "#fff",
-                      textDecoration: "none",
-                      fontWeight: 600,
-                      boxShadow: "var(--shadow-md)",
-                    }}
-                  >
-                    Get Started Free
-                    <ArrowRight size={18} />
-                  </Link>
-
-                  <Link
-                    href="/pricing"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "1rem 2rem",
-                      borderRadius: "var(--r-pill)",
-                      border: "1px solid var(--clr-border)",
-                      color: "var(--clr-text)",
-                      textDecoration: "none",
-                      background: "white",
-                    }}
-                  >
-                    View Pricing
-                  </Link>
-                </div>
-
-                {/* Trust */}
-                <div
-                  className="et-fade-up et-d4"
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    gap: "1.5rem",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {TRUST.map((item) => (
-                    <span
-                      key={item}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: ".4rem",
-                        color: "var(--clr-text-muted)",
-                        fontSize: ".9rem",
-                      }}
-                    >
-                      <Check size={14} color="var(--clr-brand)" />
-                      {item}
-                    </span>
-                  ))}
-                </div>
+                {/* ── Angled scan-receipt tile ────────────────────── */}
+                <motion.div variants={item} className="col-span-1 lg:col-span-4 lg:row-start-3">
+                  <Float className="h-full" delay={1.2}>
+                    <ScanReceiptTile className="h-full" />
+                  </Float>
+                </motion.div>
               </div>
-
-              {/* Right column – Dashboard preview */}
-              <div>
-                <div
-                  className="et-scale-in"
-                  style={{
-                    position: "relative",
-                    maxWidth: "100%",
-                    margin: 0,
-                  }}
-                >
-                  {/* Main Dashboard */}
-                  <div
-                    style={{
-                      background: "white",
-                      borderRadius: "32px",
-                      border: "1px solid var(--clr-border)",
-                      boxShadow: "var(--shadow-xl)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {/* Header */}
-                    <div
-                      style={{
-                        padding: "1rem 1.5rem",
-                        borderBottom: "1px solid var(--clr-border)",
-                        display: "flex",
-                        gap: ".5rem",
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          background: "#ff5f57",
-                        }}
-                      />
-                      <span
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          background: "#febc2e",
-                        }}
-                      />
-                      <span
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          background: "#28c840",
-                        }}
-                      />
-                    </div>
-
-                    <div
-                      style={{
-                        padding: "2rem",
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fit,minmax(220px,1fr))",
-                        gap: "1rem",
-                      }}
-                    >
-                      {/* Card 1 */}
-                      <div
-                        style={{
-                          background: "var(--block-sage)",
-                          borderRadius: "20px",
-                          padding: "1.5rem",
-                        }}
-                      >
-                        <Wallet size={24} color="var(--clr-brand)" />
-                        <p
-                          style={{
-                            marginTop: ".8rem",
-                            color: "var(--clr-text-muted)",
-                          }}
-                        >
-                          Total Balance
-                        </p>
-                        <h3
-                          style={{
-                            fontSize: "2rem",
-                            marginTop: ".25rem",
-                          }}
-                        >
-                          $12,480
-                        </h3>
-                      </div>
-
-                      {/* Card 2 */}
-                      <div
-                        style={{
-                          background: "var(--block-cream)",
-                          borderRadius: "20px",
-                          padding: "1.5rem",
-                        }}
-                      >
-                        <PiggyBank size={24} color="var(--clr-brand)" />
-                        <p
-                          style={{
-                            marginTop: ".8rem",
-                            color: "var(--clr-text-muted)",
-                          }}
-                        >
-                          Monthly Savings
-                        </p>
-                        <h3
-                          style={{
-                            fontSize: "2rem",
-                            marginTop: ".25rem",
-                          }}
-                        >
-                          $4,200
-                        </h3>
-                      </div>
-
-                      {/* Chart */}
-                      <div
-                        style={{
-                          gridColumn: "1/-1",
-                          background: "var(--clr-bg-off)",
-                          borderRadius: "20px",
-                          padding: "2rem",
-                        }}
-                      >
-                        <p
-                          style={{
-                            marginBottom: "1rem",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Spending Overview
-                        </p>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "end",
-                            gap: "1rem",
-                            height: "180px",
-                          }}
-                        >
-                          {[40, 70, 55, 90, 65, 110, 80].map((h, i) => (
-                            <div
-                              key={i}
-                              style={{
-                                flex: 1,
-                                height: `${h}%`,
-                                borderRadius: "12px 12px 0 0",
-                                background: "var(--clr-brand)",
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Floating Card 1 */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "15%",
-                      left: "-50px",
-                      background: "white",
-                      padding: "1rem",
-                      borderRadius: "18px",
-                      boxShadow: "var(--shadow-lg)",
-                      border: "1px solid var(--clr-border)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: ".8rem",
-                        color: "var(--clr-text-muted)",
-                      }}
-                    >
-                      Savings Goal
-                    </div>
-                    <div
-                      style={{
-                        fontWeight: 700,
-                        fontSize: "1.25rem",
-                        color: "var(--clr-brand)",
-                      }}
-                    >
-                      82%
-                    </div>
-                  </div>
-
-                  {/* Floating Card 2 */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: "-40px",
-                      bottom: "15%",
-                      background: "var(--clr-brand)",
-                      color: "white",
-                      padding: "1rem 1.25rem",
-                      borderRadius: "18px",
-                      boxShadow: "var(--shadow-lg)",
-                    }}
-                  >
-                    <div style={{ opacity: 0.8, fontSize: ".8rem" }}>
-                      Budget Status
-                    </div>
-                    <div
-                      style={{
-                        fontWeight: 700,
-                        fontSize: "1.1rem",
-                      }}
-                    >
-                      On Track ✓
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>
     </>
+  );
+}
+
+/* ── Gentle float wrapper (disabled for reduced motion) ─────────── */
+function Float({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
+  return (
+    <motion.div
+      className={className}
+      animate={{ y: [0, -6, 0] }}
+      transition={{
+        duration: 7,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── Small rounded thumbnail beside the headline ────────────────── */
+function MiniThumbnail() {
+  return (
+    <div className="ml-auto flex h-16 w-16 shrink-0 flex-col justify-between rounded-2xl border border-border bg-card p-2 sm:h-20 sm:w-20">
+      <div className="flex h-6 items-end gap-1 sm:h-8" aria-hidden="true">
+        {[45, 70, 55, 90].map((height, index) => (
+          <span
+            key={index}
+            className="w-full rounded-sm bg-primary"
+            style={{ height: `${height}%` }}
+          />
+        ))}
+      </div>
+      <span className="text-[0.625rem] font-medium leading-none text-muted-foreground sm:text-[0.6875rem]">
+        Saved
+      </span>
+    </div>
+  );
+}
+
+/* ── Large tile: live area chart ────────────────────────────────── */
+function SpendingOverviewTile({ imageUrl, className }: TileProps) {
+  if (imageUrl) {
+    return (
+      <figure
+        className={cn(
+          "relative min-h-[16rem] overflow-hidden rounded-[1.75rem] border border-border bg-card",
+          className
+        )}
+      >
+        <Image
+          src={imageUrl}
+          alt="Montra spending overview preview"
+          fill
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          className="object-cover"
+        />
+      </figure>
+    );
+  }
+
+  return (
+    <article
+      className={cn(
+        "flex flex-col gap-4 rounded-[1.75rem] border border-border bg-card p-5 sm:p-6",
+        className
+      )}
+    >
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-base font-semibold text-foreground" style={DISPLAY_FONT}>
+            Spending overview
+          </h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            This month · sample data
+          </p>
+        </div>
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-accent px-2.5 py-1 text-[0.6875rem] font-semibold text-primary">
+          <TrendingDown className="h-3 w-3" aria-hidden="true" />
+          {SAMPLE.trend}
+        </span>
+      </header>
+
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Total spent
+          </p>
+          <p
+            className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+            style={DISPLAY_FONT}
+          >
+            {SAMPLE.spent}
+          </p>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          vs {SAMPLE.lastMonth} last month
+        </p>
+      </div>
+
+      <div className="mt-auto flex min-h-[9.5rem] flex-1 flex-col gap-2">
+        <div className="relative min-h-[7.5rem] w-full flex-1">
+          <svg
+            viewBox="0 0 320 120"
+            preserveAspectRatio="none"
+            className="absolute inset-0 h-full w-full"
+            role="img"
+            aria-label={`Sample spending trend from January to June, ending at ${SAMPLE.spent} this month`}
+          >
+            <defs>
+              <linearGradient id="heroSpendFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <line
+              x1="0"
+              y1="40"
+              x2="320"
+              y2="40"
+              stroke="var(--border)"
+              strokeDasharray="4 6"
+            />
+            <line
+              x1="0"
+              y1="82"
+              x2="320"
+              y2="82"
+              stroke="var(--border)"
+              strokeDasharray="4 6"
+            />
+            <path d={CHART_AREA} fill="url(#heroSpendFill)" />
+            <path
+              d={CHART_LINE}
+              fill="none"
+              stroke="var(--primary)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+        </div>
+        <div className="flex justify-between text-[0.6875rem] text-muted-foreground">
+          {MONTHS.map((month) => (
+            <span key={month}>{month}</span>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ── AI insight tile ────────────────────────────────────────────── */
+function InsightTile({ imageUrl, className }: TileProps) {
+  if (imageUrl) {
+    return (
+      <figure
+        className={cn(
+          "relative min-h-[12rem] overflow-hidden rounded-2xl border border-border bg-accent",
+          className
+        )}
+      >
+        <Image
+          src={imageUrl}
+          alt="Montra AI insight preview"
+          fill
+          sizes="(min-width: 1024px) 60vw, 50vw"
+          className="object-cover"
+        />
+      </figure>
+    );
+  }
+
+  return (
+    <article
+      className={cn(
+        "flex flex-col gap-3 rounded-2xl border border-border bg-accent p-4 sm:p-5",
+        className
+      )}
+    >
+      <h2 className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+        <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+        AI insight
+      </h2>
+
+      <p className="text-[0.8125rem] leading-relaxed text-foreground sm:text-sm">
+        {SAMPLE.insight}
+      </p>
+
+      <p className="text-[0.6875rem] text-muted-foreground">Sample insight</p>
+
+      <div className="mt-auto space-y-2 pt-1">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-[0.6875rem] sm:text-xs">
+          <span className="text-muted-foreground">Grocery budget</span>
+          <span className="font-semibold text-foreground">
+            {SAMPLE.budgetUsed}% used
+          </span>
+        </div>
+        <div
+          className="h-2 w-full overflow-hidden rounded-full border border-border bg-background"
+          role="img"
+          aria-label={`Grocery budget: ${SAMPLE.budgetUsed} percent used (sample data)`}
+        >
+          <div
+            className="h-full rounded-full bg-primary"
+            style={{ width: `${SAMPLE.budgetUsed}%` }}
+          />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ── Angled scan-receipt tile ───────────────────────────────────── */
+function ScanReceiptTile({ imageUrl, className }: TileProps) {
+  if (imageUrl) {
+    return (
+      <figure
+        className={cn(
+          "relative min-h-[12rem] overflow-hidden rounded-[1.5rem] border border-border bg-accent",
+          className
+        )}
+      >
+        <Image
+          src={imageUrl}
+          alt="Montra receipt scanning preview"
+          fill
+          sizes="(min-width: 1024px) 30vw, 50vw"
+          className="object-cover"
+        />
+      </figure>
+    );
+  }
+
+  return (
+    <article
+      className={cn(
+        "relative flex flex-col gap-3 overflow-hidden rounded-[1.5rem] border border-border bg-accent p-4 sm:p-5",
+        className
+      )}
+    >
+      <h2 className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
+          <ScanLine className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+        </span>
+        Scan receipt
+      </h2>
+
+      <p className="text-[0.6875rem] leading-snug text-muted-foreground sm:text-xs">
+        Snap a receipt and Montra logs it for you.
+      </p>
+
+      <div className="mt-auto w-full max-w-[104px] rounded-lg border border-border bg-card p-2">
+        <div className="space-y-1" aria-hidden="true">
+          <span className="block h-1 w-3/4 rounded-full bg-border" />
+          <span className="block h-1 w-1/2 rounded-full bg-border" />
+          <span className="block h-1 w-2/3 rounded-full bg-border" />
+        </div>
+        <div className="mt-2 flex items-center justify-between border-t border-dashed border-border pt-1.5 text-[0.625rem] font-semibold text-foreground">
+          <span>Total</span>
+          <span>{SAMPLE.receiptTotal}</span>
+        </div>
+      </div>
+
+      {/* Diagonal cut corner: the frame surface shows through, so the
+          tile reads as clipped without masking its border. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 right-0 h-12 w-12"
+      >
+        <span
+          className="absolute inset-0 bg-card"
+          style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
+        />
+        <span className="absolute left-1/2 top-1/2 h-px w-[68px] -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-border" />
+      </span>
+    </article>
   );
 }

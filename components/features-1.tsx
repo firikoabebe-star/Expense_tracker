@@ -51,7 +51,7 @@ export default function Features() {
     <section
       id="services"
       style={{
-        background: "#fff",
+        background: "var(--background)",
         padding: "clamp(4rem, 7vw, 7rem) 0",
       }}
     >

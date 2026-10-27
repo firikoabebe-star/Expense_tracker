@@ -189,6 +189,7 @@ Response (JSON, redirect, or server-rendered data)
 | `BETTER_AUTH_URL` | Yes in production | Public base URL of the app; used in trusted origins and auth callbacks. | `https://your-domain.example` |
 | `RESEND_API_KEY` | Yes for email features | Resend API key for OTP and contact emails. | `your_value_here` |
 | `RESEND_FROM_EMAIL` | Yes for email features | Verified sender shown on outgoing email. | `Montra <noreply@yourdomain.example>` |
+| `SUPPORT_EMAIL` | Optional | Destination address for the contact form and the address shown on the Contact, Privacy, Terms, and Help pages. | `info.nexusdt@gmail.com` |
 | `GOOGLE_CLIENT_ID` | Yes for Google sign-in | Google OAuth client id. | `your_value_here` |
 | `GOOGLE_CLIENT_SECRET` | Yes for Google sign-in | Google OAuth client secret. | `your_value_here` |
 | `GEMINI_API_KEY` | Yes for AI features | Gemini API key from Google AI Studio. | `your_value_here` |
@@ -198,7 +199,7 @@ Response (JSON, redirect, or server-rendered data)
 | `AI_GLOBAL_RPM` | Optional | Global AI requests per minute. Defaults to `4`. | `4` |
 | `AI_GLOBAL_RPD` | Optional | Global AI requests per day. Defaults to `15`. | `15` |
 
-`SUPPORT_EMAIL` is not an environment variable in this repository. The contact form's destination address is defined in code.
+`SUPPORT_EMAIL` is defined in `lib/site.ts` and falls back to `info.nexusdt@gmail.com`. The contact form's destination and the support address shown on the Contact, Privacy, Terms, and Help pages all use this constant.
 
 ## Deployment on Vercel
 

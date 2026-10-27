@@ -98,49 +98,49 @@ function AdminPage() {
 
   if (loading) {
     return (
-      <div className='p-8 dark:bg-[#1B1B1F]'>
+      <div className='p-8 dark:bg-background'>
         <h2 className='font-bold text-3xl'>Admin Dashboard</h2>
         <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
           {[1, 2, 3, 4].map((item, index) => (
-            <div key={index} className='h-[110px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
+            <div key={index} className='h-[110px] w-full bg-slate-200 dark:bg-muted animate-pulse rounded-lg' />
           ))}
         </div>
-        <div className='mt-7 h-[300px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
-        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
-        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
+        <div className='mt-7 h-[300px] w-full bg-slate-200 dark:bg-muted animate-pulse rounded-lg' />
+        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-muted animate-pulse rounded-lg' />
+        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-muted animate-pulse rounded-lg' />
       </div>
     );
   }
 
   return (
-    <div className='p-8 dark:bg-[#1B1B1F]'>
+    <div className='p-8 dark:bg-background'>
       <h2 className='font-bold text-3xl'>Admin Dashboard</h2>
       <p className='text-gray-500'>Manage users and monitor platform activity.</p>
 
       {/* Overview Cards */}
       <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
+        <div className='p-7 border dark:border-border rounded-lg flex items-center justify-between'>
           <div>
             <h2 className='text-sm'>Total Users</h2>
             <h2 className='font-bold text-2xl'>{stats?.totalUsers ?? 0}</h2>
           </div>
           <Users className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
         </div>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
+        <div className='p-7 border dark:border-border rounded-lg flex items-center justify-between'>
           <div>
             <h2 className='text-sm'>Total Expenses</h2>
             <h2 className='font-bold text-2xl'>{stats?.totalExpenses ?? 0}</h2>
           </div>
           <ReceiptText className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
         </div>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
+        <div className='p-7 border dark:border-border rounded-lg flex items-center justify-between'>
           <div>
             <h2 className='text-sm'>Total Budgets</h2>
             <h2 className='font-bold text-2xl'>{stats?.totalBudgets ?? 0}</h2>
           </div>
           <PiggyBank className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
         </div>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
+        <div className='p-7 border dark:border-border rounded-lg flex items-center justify-between'>
           <div>
             <h2 className='text-sm'>Signups (Week / Month)</h2>
             <h2 className='font-bold text-2xl'>{stats?.signupsThisWeek ?? 0} / {stats?.signupsThisMonth ?? 0}</h2>
@@ -164,7 +164,7 @@ function AdminPage() {
         <h2 className='font-bold text-lg mb-2'>User Management</h2>
         <div className='overflow-x-auto'>
           <div className='min-w-[800px]'>
-            <div className='grid grid-cols-7 bg-slate-200 dark:bg-inherit p-2'>
+            <div className='grid grid-cols-7 bg-slate-200 dark:bg-muted p-2'>
               <h2 className='font-bold'>Name</h2>
               <h2 className='font-bold'>Email</h2>
               <h2 className='font-bold'>Role</h2>
@@ -174,11 +174,11 @@ function AdminPage() {
               <h2 className='font-bold'>Action</h2>
             </div>
             {users.map((u) => (
-              <div key={u.id} className='grid grid-cols-7 bg-slate-50 dark:bg-inherit p-2 items-center gap-3 md:gap-4'>
+              <div key={u.id} className='grid grid-cols-7 bg-slate-50 dark:bg-card p-2 items-center gap-3 md:gap-4'>
                 <h2 className='truncate'>{u.name}</h2>
                 <h2 className='truncate'>{u.email}</h2>
                 <h2>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700 dark:bg-muted dark:text-muted-foreground'}`}>
                     {u.role}
                   </span>
                 </h2>
@@ -191,7 +191,7 @@ function AdminPage() {
                   ) : (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <button className='text-sm px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors'>
+                        <button className='text-sm px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-accent transition-colors'>
                           {u.role === 'admin' ? (
                             <ShieldOff className='w-4 h-4 text-orange-500 inline' />
                           ) : (
@@ -232,7 +232,7 @@ function AdminPage() {
         <h2 className='font-bold text-lg mb-2'>Recent Activity</h2>
         <div className='overflow-x-auto'>
           <div className='min-w-[700px]'>
-            <div className='grid grid-cols-5 bg-slate-200 dark:bg-inherit p-2'>
+            <div className='grid grid-cols-5 bg-slate-200 dark:bg-muted p-2'>
               <h2 className='font-bold'>Type</h2>
               <h2 className='font-bold'>Name</h2>
               <h2 className='font-bold'>Amount</h2>
@@ -243,9 +243,9 @@ function AdminPage() {
               <div className='p-4 text-center text-gray-500'>No recent activity</div>
             ) : (
               activity.map((item, index) => (
-                <div key={`${item.type}-${item.id}-${index}`} className='grid grid-cols-5 bg-slate-50 dark:bg-inherit p-2 items-center gap-3'>
+                <div key={`${item.type}-${item.id}-${index}`} className='grid grid-cols-5 bg-slate-50 dark:bg-card p-2 items-center gap-3'>
                   <h2>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.type === 'expense' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.type === 'expense' ? 'bg-red-100 text-red-700 dark:bg-destructive dark:text-destructive-foreground' : 'bg-green-100 text-green-700 dark:bg-primary dark:text-primary-foreground'}`}>
                       {item.type}
                     </span>
                   </h2>

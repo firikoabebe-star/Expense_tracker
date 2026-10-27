@@ -2,7 +2,7 @@
    globals.css  —  Montra Design System
    Inspired by grey.co:
      Light → pure #FFFFFF canvas, soft colored section blocks
-     Dark  → deep #0A1A0B canvas (unchanged from before)
+     Dark  → neutral navy-slate canvas, solid surfaces
    Brand: Primary #0D530E  |  Secondary #306D29  |  Accent #E7E1B1
    ================================================================ */
 
@@ -37,8 +37,10 @@
     /* ── Text ── */
     --clr-text:         #0A0F0A;
     --clr-text-2:       #3C4C3D;
-    --clr-text-muted:   #7A8C7A;
+    --clr-text-muted:   #5F715F;   /* 5.2:1 on white, 4.7:1 on sage */
     --clr-text-on-dark: #FFFFFF;
+    /* Secondary copy on brand/inverse surfaces (≥ 8:1 on the brand fill) */
+    --clr-on-inverse-muted: color-mix(in srgb, var(--clr-text-on-dark) 78%, transparent);
 
     /* ── Borders — nearly invisible (grey.co style) ── */
     --clr-border:       rgba(0,0,0,0.08);
@@ -79,7 +81,7 @@
     --secondary:            #FAFAFA;
     --secondary-foreground: #0A0F0A;
     --muted:                #FAFAFA;
-    --muted-foreground:     #7A8C7A;
+    --muted-foreground:     #5F715F;   /* ≥4.5:1 on white, #FAFAFA and sage */
     --accent:               #EEF4EE;
     --accent-foreground:    #0A0F0A;
     --destructive:          0 84.2% 60.2%;
@@ -89,6 +91,10 @@
     --ring:                 #0D530E;
     --radius:               0.875rem;
 
+    /* Status scale — budget health and trend indicators */
+    --success:              #16A34A;
+    --warning:              #D97706;
+
     --chart-1:              #0D530E;
     --chart-2:              #4caf50;
     --chart-3:              #81c784;
@@ -96,25 +102,32 @@
     --chart-5:              #c8e6c9;
   }
 
-  /* ── Dark mode — deep forest canvas ── */
+  /* ── Dark mode — neutral navy-slate canvas ── */
   .dark {
-    --clr-bg:           #0A1A0B;
-    --clr-bg-off:       #111F12;
+    --clr-brand:        #2DD4BF;
+    --clr-brand-mid:    #5EEAD4;
+    --clr-brand-light:  #242F49;
+    --clr-accent:       #0B1220;
 
-    --block-sage:       rgba(13,83,14,0.20);
-    --block-cream:      rgba(231,225,177,0.07);
-    --block-sky:        rgba(40,80,180,0.15);
-    --block-blush:      rgba(140,40,40,0.12);
-    --block-lavender:   rgba(90,60,180,0.13);
-    --block-charcoal:   #1E2D1F;
+    --clr-bg:           #161B24;
+    --clr-bg-off:       #1E2535;
 
-    --clr-text:         #EAF4EB;
-    --clr-text-2:       #A8C9AA;
-    --clr-text-muted:   #6B8F6C;
-    --clr-text-on-dark: #EAF4EB;
+    --block-sage:       #242F49;
+    --block-cream:      #2A2F3E;
+    --block-sky:        #202D44;
+    --block-blush:      #332B37;
+    --block-lavender:   #2C2B49;
+    --block-charcoal:   #1E2535;
 
-    --clr-border:       rgba(255,255,255,0.08);
-    --clr-border-mid:   rgba(255,255,255,0.14);
+    --clr-text:         #E8ECF3;
+    --clr-text-2:       #C3CAD8;
+    --clr-text-muted:   #A4ADBF;
+    --clr-text-on-dark: #E8ECF3;
+    /* Inverse surfaces become card surfaces in dark — reuse muted text */
+    --clr-on-inverse-muted: var(--muted-foreground);
+
+    --clr-border:       #384358;
+    --clr-border-mid:   #46526B;
 
     --shadow-xs: 0 1px 4px rgba(0,0,0,0.35);
     --shadow-sm: 0 2px 12px rgba(0,0,0,0.45);
@@ -122,29 +135,32 @@
     --shadow-lg: 0 16px 56px rgba(0,0,0,0.60);
     --shadow-xl: 0 28px 80px rgba(0,0,0,0.65);
 
-    --background:           #0A1A0B;
-    --foreground:           #EAF4EB;
-    --card:                 #142015;
-    --card-foreground:      #EAF4EB;
-    --popover:              #142015;
-    --popover-foreground:   #EAF4EB;
-    --primary:              #4caf50;
-    --primary-foreground:   #0A1A0B;
-    --secondary:            #111F12;
-    --secondary-foreground: #EAF4EB;
-    --muted:                #1C2D1D;
-    --muted-foreground:     #6B8F6C;
-    --accent:               #1C2D1D;
-    --accent-foreground:    #EAF4EB;
-    --border:               rgba(255,255,255,0.08);
-    --input:                rgba(255,255,255,0.10);
-    --ring:                 #4caf50;
+    --background:           #161B24;
+    --foreground:           #E8ECF3;
+    --card:                 #1E2535;
+    --card-foreground:      #E8ECF3;
+    --popover:              #1E2535;
+    --popover-foreground:   #E8ECF3;
+    --primary:              #2DD4BF;
+    --primary-foreground:   #0B1220;
+    --secondary:            #242F49;
+    --secondary-foreground: #E8ECF3;
+    --muted:                #242F49;
+    --muted-foreground:     #A4ADBF;
+    --accent:               #242F49;
+    --accent-foreground:    #E8ECF3;
+    --border:               #384358;
+    --input:                #384358;
+    --ring:                 #2DD4BF;
 
-    --chart-1:              #4caf50;
-    --chart-2:              #81c784;
-    --chart-3:              #a5d6a7;
-    --chart-4:              #66bb6a;
-    --chart-5:              #388e3c;
+    --success:              #4ADE80;
+    --warning:              #FBBF24;
+
+    --chart-1:              #2DD4BF;
+    --chart-2:              #60A5FA;
+    --chart-3:              #FBBF24;
+    --chart-4:              #FB7185;
+    --chart-5:              #A78BFA;
   }
 }
 
@@ -159,6 +175,9 @@
     font-size:        16px;
     line-height:      1.6;
   }
+  /* Placeholders must clear 4.5:1 in both themes. */
+  input::placeholder,
+  textarea::placeholder { color: var(--clr-text-muted); opacity: 1; }
   h1,h2,h3,h4,h5,h6 {
     font-family: var(--font-display);
     line-height: 1.1;
@@ -168,7 +187,48 @@
   code, pre, kbd { font-family: var(--font-mono); }
   ::selection { background: rgba(13,83,14,0.18); }
   * { border-color: var(--clr-border); }
+  .dark ::selection { background: #2DD4BF; color: #0B1220; }
 }
+
+/* ── Inverse brand surfaces ──────────────────────────────────────
+   Footer, stats band, CTA banner and highlighted cards.
+   Light → deep brand green with light text.
+   Dark  → solid card surface + visible border, so the section never
+           flips to the bright accent colour and glares.            */
+.surface-inverse {
+  background-color: var(--clr-brand);
+  color:            var(--clr-text-on-dark);
+  border:           1px solid transparent;
+}
+.dark .surface-inverse {
+  background-color: var(--card);
+  border-color:     var(--border);
+}
+
+/* Secondary copy on an inverse surface — 78% floor keeps it ≥ 8:1
+   in both themes without opacity utilities. */
+.text-on-inverse-muted {
+  color: var(--clr-on-inverse-muted);
+}
+
+/* Accent copy on an inverse surface: warm cream in light, brand
+   accent in dark (where cream is the near-black accent token). */
+.text-on-inverse-accent { color: var(--clr-accent); }
+.dark .text-on-inverse-accent { color: var(--primary); }
+
+/* Hairline dividers / ghost borders inside inverse surfaces. */
+.border-on-inverse {
+  border-color: color-mix(in srgb, var(--clr-text-on-dark) 18%, transparent);
+}
+
+/* Links on inverse surfaces: readable at rest, brighter on hover. */
+.on-inverse-link {
+  color: var(--clr-on-inverse-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.on-inverse-link:hover,
+.on-inverse-link:focus-visible { color: var(--clr-text-on-dark); }
 
 /* ── Keyframe animations ──────────────────────────────────────── */
 @keyframes et-fade-up {
@@ -218,3 +278,63 @@
   animation: et-marquee 28s linear infinite;
 }
 .et-marquee-track:hover { animation-play-state: paused; }
+
+/* ── Print stylesheet ─────────────────────────────────────────────
+   Reports are printed from the dashboard: drop the navigation, chrome
+   and on-screen controls, and force the light palette so a print from
+   dark mode is still ink on white.                                */
+@media print {
+  @page { margin: 16mm; }
+
+  :root,
+  .dark {
+    --background: #FFFFFF;
+    --foreground: #0A0F0A;
+    --card: #FFFFFF;
+    --card-foreground: #0A0F0A;
+    --muted: #F5F5F5;
+    --muted-foreground: #3C4C3D;
+    --accent: #EEF4EE;
+    --accent-foreground: #0A0F0A;
+    --border: rgba(0, 0, 0, 0.22);
+    --primary: #0D530E;
+    --primary-foreground: #FFFFFF;
+    --success: #15803D;
+    --warning: #B45309;
+    --chart-1: #0D530E;
+    --chart-2: #4CAF50;
+    --chart-3: #81C784;
+    --chart-4: #A5D6A7;
+    --chart-5: #C8E6C9;
+  }
+
+  html,
+  body {
+    background: #FFFFFF !important;
+    color: #0A0F0A !important;
+  }
+
+  header.sticky,
+  nav,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+  }
+
+  .print-flat {
+    box-shadow: none !important;
+    border-color: rgba(0, 0, 0, 0.22) !important;
+  }
+
+  .recharts-responsive-container {
+    width: 100% !important;
+  }
+}

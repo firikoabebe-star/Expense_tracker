@@ -34,6 +34,14 @@ interface ExpenseListTableProps {
   expensesList: ExpenseSummary[];
   refreshData: RefreshData;
   loading?: boolean;
+  /** Presentation only: hide the built-in heading when a card supplies one. */
+  showTitle?: boolean;
+  /** Presentation only: the page header already offers the CSV export. */
+  showExport?: boolean;
+  /** Budget name keyed by expense id, rendered as a coloured chip. */
+  budgetNames?: Record<number, string>;
+  /** Shown instead of the first-run message when a filter empties the list. */
+  emptyMessage?: string;
 }
 
 function SortIcon({ field, activeField, dir }: { field: SortField; activeField: SortField | null; dir: SortDir }) {
@@ -41,7 +49,46 @@ function SortIcon({ field, activeField, dir }: { field: SortField; activeField: 
   return dir === 'asc' ? <ArrowUp className='inline h-3 w-3 ml-1' /> : <ArrowDown className='inline h-3 w-3 ml-1' />;
 }
 
-function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseListTableProps) {
+const BUDGET_CHIP_COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+] as const
+
+/** Stable colour per budget so a chip keeps its tint between renders. */
+function budgetColor(name: string): string {
+  let hash = 0
+  for (let index = 0; index < name.length; index += 1) {
+    hash = (hash * 31 + name.charCodeAt(index)) >>> 0
+  }
+  return BUDGET_CHIP_COLORS[hash % BUDGET_CHIP_COLORS.length]
+}
+
+function BudgetChip({ name }: { name: string }) {
+  const color = budgetColor(name)
+  return (
+    <span
+      className='mt-1 inline-flex max-w-full items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium'
+      style={{
+        color,
+        borderColor: `color-mix(in srgb, ${color} 35%, transparent)`,
+        backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+      }}
+      title={name}
+    >
+      <span
+        aria-hidden
+        className='h-1.5 w-1.5 shrink-0 rounded-full'
+        style={{ backgroundColor: color }}
+      />
+      <span className='truncate'>{name}</span>
+    </span>
+  )
+}
+
+function ExpenseListTable({expensesList, refreshData, loading = false, showTitle = true, showExport = true, budgetNames, emptyMessage}: ExpenseListTableProps) {
     const [search, setSearch] = useState('');
     const [sortField, setSortField] = useState<SortField | null>(null);
     const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -128,7 +175,7 @@ function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseL
     };
   return (
     <div className='mt-3'>
-      <h2 className='font-bold text-lg mb-2'>Latest Expenses</h2>
+      {showTitle && <h2 className='font-bold text-lg mb-2'>Latest Expenses</h2>}
       {loading ? (
         <ExpenseTableSkeleton />
       ) : (
@@ -144,13 +191,16 @@ function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseL
               className='pl-9'
             />
           </div>
-          <Button variant='outline' onClick={exportCsv} className='shrink-0'>
-            <Download className='h-4 w-4 mr-1' /> CSV
-          </Button>
+          {showExport && (
+            <Button variant='outline' onClick={exportCsv} className='shrink-0'>
+              <Download className='h-4 w-4 mr-1' /> CSV
+            </Button>
+          )}
         </div>
       )}
       {displayedExpenses.length > 0 ? (
-        <>
+        <div className='overflow-x-auto'>
+          <div className='min-w-[520px] sm:min-w-0'>
           <div className='grid grid-cols-4 gap-3 bg-accent text-accent-foreground p-2 rounded-t-md'>
             <button className='font-bold text-left cursor-pointer' onClick={() => toggleSort('name')}>
               Name <SortIcon field='name' activeField={sortField} dir={sortDir} />
@@ -165,7 +215,12 @@ function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseL
           </div>
           {displayedExpenses.map((expenses) => (
             <div key={expenses.id} className='grid grid-cols-4 bg-card p-2 items-center gap-3 border-b border-border md:gap-4'>
-              <h2 className='min-w-0 truncate' title={expenses.name}>{expenses.name}</h2>
+              <div className='min-w-0'>
+                <p className='truncate text-sm' title={expenses.name}>{expenses.name}</p>
+                {budgetNames?.[expenses.id] ? (
+                  <BudgetChip name={budgetNames[expenses.id]} />
+                ) : null}
+              </div>
               <h2 className='min-w-0 truncate' title={formatCurrency(expenses.amount)}>{formatCompactCurrency(expenses.amount)}</h2>
               <h2 className='min-w-0 truncate' title={expenses.createdAt}>{expenses.createdAt}</h2>
               <h2>
@@ -191,11 +246,14 @@ function ExpenseListTable({expensesList, refreshData, loading = false}: ExpenseL
               </h2>
             </div>
           ))}
-        </>
-      ) : expensesList.length > 0 ? (
+          </div>
+        </div>
+      ) : search.trim() ? (
         <p className="text-muted-foreground mt-4">No expenses match "{search}".</p>
       ) : (
-        <p className="text-muted-foreground mt-4">No expenses yet. Add one to get started!</p>
+        <p className="text-muted-foreground mt-4">
+          {emptyMessage ?? 'No expenses yet. Add one to get started!'}
+        </p>
       )}
         </>
       )}

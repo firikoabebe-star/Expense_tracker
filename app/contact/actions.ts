@@ -6,7 +6,8 @@ import { headers } from "next/headers";
 import { Resend } from "resend";
 import { z } from "zod";
 
-const SUPPORT_EMAIL = "support@base.et";
+import { SUPPORT_EMAIL } from "/lib/site";
+
 const RATE_WINDOW_MS = 10 * 60_000;
 const MAX_PER_CLIENT = 3;
 const MAX_GLOBAL = 20;
@@ -148,7 +149,7 @@ export async function sendContactMessage(input: ContactInput): Promise<ContactRe
   if (!consumeRateLimit("contact:global", MAX_GLOBAL)) {
     return {
       ok: false,
-      message: "The contact form is busy right now. Please email support@base.et.",
+      message: `The contact form is busy right now. Please email ${SUPPORT_EMAIL}.`,
     };
   }
 

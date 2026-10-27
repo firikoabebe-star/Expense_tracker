@@ -5,6 +5,7 @@ import { CheckCircle2, Loader, Send } from "lucide-react";
 
 import { Button } from "/components/ui/button";
 import { Input } from "/components/ui/input";
+import { SUPPORT_EMAIL } from "/lib/site";
 import {
   sendContactMessage,
   type ContactFieldErrors,
@@ -49,7 +50,7 @@ export default function ContactForm() {
       setMessage(result.message);
       setStatus("error");
     } catch {
-      setMessage("We couldn't send your message. Please email support@base.et.");
+      setMessage(`We couldn't send your message. Please email ${SUPPORT_EMAIL}.`);
       setStatus("error");
     }
   };

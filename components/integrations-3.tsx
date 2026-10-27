@@ -46,6 +46,7 @@ export default function IntegrationsSection() {
               borderRadius: "var(--r-xl)",
               overflow: "hidden",
               background: "var(--block-blush)",
+              border: "1px solid var(--border)",
               position: "relative",
             }}
           >
@@ -70,11 +71,11 @@ export default function IntegrationsSection() {
               position: "absolute",
               bottom: -16,
               right: -12,
-              background: "#fff",
+              background: "var(--card)",
               borderRadius: 16,
               padding: "1rem 1.375rem",
               boxShadow: "var(--shadow-lg)",
-              border: "1px solid var(--clr-border)",
+              border: "1px solid var(--border)",
             }}
           >
             <p
@@ -161,7 +162,7 @@ export default function IntegrationsSection() {
               padding: "0.75rem 1.75rem",
               borderRadius: "var(--r-pill)",
               background: "var(--clr-brand)",
-              color: "#fff",
+              color: "var(--primary-foreground)",
               fontFamily: "var(--font-body)",
               fontWeight: 500,
               fontSize: "0.9375rem",

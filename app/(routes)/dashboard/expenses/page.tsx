@@ -1,230 +1,426 @@
-"use client"
-import { ArrowLeft, Trash, Search, ArrowUp, ArrowDown, ArrowUpDown, Download } from 'lucide-react'
-import React, { useState ,useEffect, useMemo, useCallback} from 'react'
-import { authClient } from '/lib/auth-client';
-import { Button } from '/components/ui/button'
-import { Input } from '/components/ui/input'
-import { toast } from 'sonner'
+'use client'
+
+import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import {
+  ArrowLeft,
+  CalendarRange,
+  Calculator,
+  Download,
+  ReceiptText,
+  TrendingUp,
+} from 'lucide-react'
+import { toast } from 'sonner'
+
+import { Button } from '/components/ui/button'
+import { Card } from '/components/ui/card'
+import {
+  aggregateBuckets,
+  buildMonthBuckets,
+  findBucketIndex,
+  roundMoney,
+} from '/lib/analytics'
+import { authClient } from '/lib/auth-client'
+import {
+  formatCompactCurrency,
+  parseExpenseDate,
+  toCsv,
+} from '/lib/utils'
 import type { ExpenseSummary } from '/types'
-import { getAllExpenses, deleteExpense } from '../actions';
-import ExpenseTableSkeleton from '../_components/ExpenseTableSkeleton';
-import { formatCompactCurrency, formatCurrency, compareExpenseDates, toCsv } from '/lib/utils';
-import {
-  UNDO_WINDOW_MS,
-  cancelExpenseDelete,
-  getPendingDeleteIds,
-  scheduleExpenseDelete,
-  subscribePendingDeletes,
-} from './pendingDelete';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '/components/ui/alert-dialog';
 
-type SortField = 'name' | 'amount' | 'date';
-type SortDir = 'asc' | 'desc';
+import { getAllExpenses } from '../actions'
+import {
+  getExpenseBudgetTags,
+  getExpenseStats,
+  type ExpenseStats,
+} from '../analytics-actions'
+import { DashboardErrorCard } from '../_components/DashboardErrorCard'
+import { PageHeader } from '../_components/PageHeader'
+import { StatCard } from '../_components/StatCard'
+import ExpenseListTable from './_components/ExpenseListTable'
+import { toDateAmounts } from '../analytics/_lib/previous-period'
 
-function SortIcon({ field, activeField, dir }: { field: SortField; activeField: SortField | null; dir: SortDir }) {
-  if (field !== activeField) return <ArrowUpDown className='inline h-3 w-3 ml-1 opacity-40' />;
-  return dir === 'asc' ? <ArrowUp className='inline h-3 w-3 ml-1' /> : <ArrowDown className='inline h-3 w-3 ml-1' />;
+type QuickFilter = 'all' | 'week' | 'month' | 'large'
+type StatsState = 'loading' | 'ready' | 'error'
+
+/** Quick filter that surfaces unusually large single expenses. */
+const LARGE_EXPENSE_THRESHOLD = 1_000
+
+const FILTERS: { value: QuickFilter; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'week', label: 'This week' },
+  { value: 'month', label: 'This month' },
+  { value: 'large', label: 'Over ETB 1,000' },
+]
+
+function percentChange(current: number, previous: number): number | null {
+  if (previous === 0) return null
+  return Math.round(((current - previous) / previous) * 1000) / 10
+}
+
+function InfoChip({ children, title }: { children: React.ReactNode; title?: string }) {
+  return (
+    <span
+      title={title}
+      className='inline-flex max-w-[9rem] items-center rounded-full bg-accent px-2 py-1 text-xs font-medium text-muted-foreground'
+    >
+      <span className='truncate'>{children}</span>
+    </span>
+  )
 }
 
 function ExpenseList() {
-const [expensesList,setExpensesList]=useState<ExpenseSummary[]>([]);
-const { data: session } = authClient.useSession();
-const user = session?.user;
-const router=useRouter();
-const [loading,setLoading]=useState(true);
-const [search,setSearch]=useState('');
-const [sortField,setSortField]=useState<SortField | null>(null);
-const [sortDir,setSortDir]=useState<SortDir>('asc');
-const [pendingDeletes,setPendingDeletes]=useState<Set<number>>(new Set());
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+  const router = useRouter()
 
-useEffect(
-  () =>
-    subscribePendingDeletes(() => {
-      setPendingDeletes(new Set(getPendingDeleteIds()));
-    }),
-  []
-);
+  const [expensesList, setExpensesList] = React.useState<ExpenseSummary[]>([])
+  const [stats, setStats] = React.useState<ExpenseStats | null>(null)
+  const [statsState, setStatsState] = React.useState<StatsState>('loading')
+  const [loading, setLoading] = React.useState(true)
+  const [filter, setFilter] = React.useState<QuickFilter>('all')
+  const [budgetNames, setBudgetNames] = React.useState<Record<number, string>>({})
 
-const toggleSort = (field: SortField) => {
-  if (sortField === field) {
-    setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-  } else {
-    setSortField(field);
-    setSortDir('asc');
-  }
-};
+  const loadAll = React.useCallback(async () => {
+    setLoading(true)
+    setStatsState('loading')
 
-const displayedExpenses = useMemo(() => {
-  let list = expensesList.filter((e) => !pendingDeletes.has(e.id));
-  if (search.trim()) {
-    const term = search.toLowerCase();
-    list = list.filter((e) => e.name.toLowerCase().includes(term));
-  }
-  if (sortField) {
-    list = [...list].sort((a, b) => {
-      let cmp = 0;
-          if (sortField === 'name') cmp = a.name.localeCompare(b.name);
-          else if (sortField === 'amount') cmp = Number(a.amount) - Number(b.amount);
-          else cmp = compareExpenseDates(a.createdAt, b.createdAt);
-      return sortDir === 'asc' ? cmp : -cmp;
-    });
-  }
-  return list;
-}, [expensesList, search, sortField, sortDir, pendingDeletes]);
+    const [expenseResult, statsResult, tagResult] = await Promise.allSettled([
+      getAllExpenses(),
+      getExpenseStats(),
+      getExpenseBudgetTags(),
+    ])
 
-  useEffect(()=>{
-        user&&getAllExpensesAction();
-    },[user])
+    if (expenseResult.status === 'fulfilled') {
+      setExpensesList(expenseResult.value)
+    } else {
+      toast.error('Failed to load expenses')
+    }
+    setLoading(false)
 
-    const getAllExpensesAction=async()=>{
-      try {
-        setLoading(true);
-        const result=await getAllExpenses();
-        setExpensesList(result);
-      } catch {
-        toast.error('Failed to load expenses');
-      } finally {
-        setLoading(false);
+    if (statsResult.status === 'fulfilled' && statsResult.value.ok) {
+      setStats(statsResult.value.data)
+      setStatsState('ready')
+    } else {
+      setStats(null)
+      setStatsState('error')
+    }
+
+    if (tagResult.status === 'fulfilled' && tagResult.value.ok) {
+      const names: Record<number, string> = {}
+      for (const tag of tagResult.value.data) names[tag.id] = tag.budgetName
+      setBudgetNames(names)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (user) loadAll()
+  }, [user, loadAll])
+
+  const counts = React.useMemo(() => {
+    const now = new Date()
+    const weekStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 6
+    )
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const dayEnd = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999
+    )
+
+    const result = { all: expensesList.length, week: 0, month: 0, large: 0 }
+    for (const expense of expensesList) {
+      const amount = Number(expense.amount) || 0
+      if (amount > LARGE_EXPENSE_THRESHOLD) result.large += 1
+
+      const date = parseExpenseDate(expense.createdAt)
+      if (!date) continue
+      if (date >= weekStart && date <= dayEnd) result.week += 1
+      if (date >= monthStart && date <= dayEnd) result.month += 1
+    }
+    return result
+  }, [expensesList])
+
+  const filtered = React.useMemo(() => {
+    if (filter === 'all') return expensesList
+
+    const now = new Date()
+    const weekStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 6
+    )
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const dayEnd = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999
+    )
+
+    return expensesList.filter((expense) => {
+      if (filter === 'large') {
+        return Number(expense.amount) > LARGE_EXPENSE_THRESHOLD
+      }
+      const date = parseExpenseDate(expense.createdAt)
+      if (!date || date > dayEnd) return false
+      return date >= (filter === 'week' ? weekStart : monthStart)
+    })
+  }, [expensesList, filter])
+
+  const monthly = React.useMemo(() => {
+    const buckets = buildMonthBuckets(new Date(), 12)
+    const entries = toDateAmounts(expensesList)
+    const spend = aggregateBuckets(buckets, entries).values.map(roundMoney)
+    const countsByMonth = aggregateBuckets(
+      buckets,
+      entries.map((entry) => ({ date: entry.date, amount: 1 }))
+    ).values
+    const largest = buckets.map(() => 0)
+    for (const entry of entries) {
+      const index = findBucketIndex(buckets, entry.date)
+      if (index !== -1 && entry.amount > largest[index]) {
+        largest[index] = entry.amount
+      }
+    }
+    return {
+      spend,
+      average: spend.map((value, index) =>
+        countsByMonth[index] ? roundMoney(value / countsByMonth[index]) : 0
+      ),
+      largest,
+    }
+  }, [expensesList])
+
+  const monthTotals = React.useMemo(() => {
+    const now = new Date()
+    const thisStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const nextStart = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+    const lastStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+
+    let thisSpend = 0
+    let lastSpend = 0
+    let thisCount = 0
+    let lastCount = 0
+
+    for (const expense of expensesList) {
+      const date = parseExpenseDate(expense.createdAt)
+      if (!date) continue
+      const amount = Number(expense.amount) || 0
+      if (date >= thisStart && date < nextStart) {
+        thisSpend += amount
+        thisCount += 1
+      } else if (date >= lastStart && date < thisStart) {
+        lastSpend += amount
+        lastCount += 1
       }
     }
 
-    const handleDeleteExpense = useCallback(
-      (expense: ExpenseSummary) => {
-        const toastId = toast('Expense deleted', {
-          description: `"${expense.name}" is removed. You can undo this for ${UNDO_WINDOW_MS / 1000} seconds.`,
-          duration: UNDO_WINDOW_MS,
-          action: {
-            label: 'Undo',
-            onClick: () => {
-              cancelExpenseDelete(expense.id);
-              toast.dismiss(toastId);
-            },
-          },
-        });
-
-        scheduleExpenseDelete(expense.id, async () => {
-          try {
-            const result = await deleteExpense(expense.id);
-            if (result) {
-              await getAllExpensesAction();
-              toast.dismiss(toastId);
-            } else {
-              toast.error('Failed to delete expense');
-            }
-          } catch {
-            toast.error('Failed to delete expense');
-          }
-        });
-      },
-      []
-    );
-
-    const exportCsv = () => {
-      const rows = displayedExpenses.map((e) => [e.name, e.amount, e.createdAt]);
-      const csv = toCsv([['Name', 'Amount', 'Date'], ...rows]);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'expenses.csv';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 0);
-    };
-
-    if (loading) {
-      return (
-        <div className='p-6'>
-          <h2 className='font-bold text-lg mb-2 flex gap-2 items-center'>
-            <Button onClick={() => router.back()}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            Latest Expenses
-          </h2>
-          <ExpenseTableSkeleton />
-        </div>
-      );
+    return {
+      thisSpend: roundMoney(thisSpend),
+      lastSpend: roundMoney(lastSpend),
+      thisCount,
+      lastCount,
     }
+  }, [expensesList])
 
-    return (
-    <div className='p-6'>
-      <h2 className='font-bold text-lg mb-2 flex gap-2 items-center '><Button onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>Latest Expenses</h2>
-      {expensesList.length > 0 && (
-        <div className='flex gap-2 mb-3'>
-          <div className='relative flex-1'>
-            <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-            <Input
-              placeholder='Search expenses by name...'
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className='pl-9'
+  const thisAverage =
+    monthTotals.thisCount > 0
+      ? roundMoney(monthTotals.thisSpend / monthTotals.thisCount)
+      : 0
+  const lastAverage =
+    monthTotals.lastCount > 0
+      ? roundMoney(monthTotals.lastSpend / monthTotals.lastCount)
+      : 0
+
+  const exportCsv = () => {
+    const rows = filtered.map((expense) => [
+      expense.name,
+      expense.amount,
+      expense.createdAt,
+    ])
+    const csv = toCsv([['Name', 'Amount', 'Date'], ...rows])
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'expenses.csv'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 0)
+  }
+
+  const largest = stats?.largestExpense ?? null
+
+  return (
+    <div>
+      <PageHeader
+        title='Expenses'
+        subtitle='Every expense across your budgets, in one place.'
+        actions={
+          <>
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={() => router.back()}
+              aria-label='Go back'
+              title='Back'
+            >
+              <ArrowLeft className='h-4 w-4' />
+            </Button>
+            <Button
+              variant='outline'
+              onClick={exportCsv}
+              disabled={filtered.length === 0}
+            >
+              <Download className='h-4 w-4' />
+              CSV
+            </Button>
+          </>
+        }
+      />
+
+      <div className='mt-6 grid grid-cols-12 gap-5'>
+        {statsState === 'error' ? (
+          <div className='col-span-12'>
+            <DashboardErrorCard
+              message="We couldn't load your expense summary. The list below is unaffected."
+              onRetry={loadAll}
             />
           </div>
-          <Button variant='outline' onClick={exportCsv} className='shrink-0'>
-            <Download className='h-4 w-4 mr-1' /> CSV
-          </Button>
+        ) : (
+          <>
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='Total spent'
+              icon={ReceiptText}
+              value={stats?.total ?? 0}
+              badge={<InfoChip>{stats?.count ?? 0} expenses</InfoChip>}
+              caption='All budgets and months'
+              sparkline={monthly.spend}
+              color='var(--chart-1)'
+              loading={statsState === 'loading'}
+            />
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='Average expense'
+              icon={Calculator}
+              value={stats?.averagePerExpense ?? 0}
+              changePct={percentChange(thisAverage, lastAverage)}
+              caption={`Last month: ${formatCompactCurrency(lastAverage)}`}
+              sparkline={monthly.average}
+              color='var(--chart-2)'
+              loading={statsState === 'loading'}
+            />
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='Largest expense'
+              icon={TrendingUp}
+              value={largest?.amount ?? 0}
+              badge={
+                largest ? (
+                  <InfoChip title={largest.budgetName}>
+                    {largest.budgetName}
+                  </InfoChip>
+                ) : (
+                  <InfoChip>None yet</InfoChip>
+                )
+              }
+              caption={largest?.name ?? 'No expenses recorded yet'}
+              sparkline={monthly.largest}
+              color='var(--chart-3)'
+              loading={statsState === 'loading'}
+            />
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='This month'
+              icon={CalendarRange}
+              value={monthTotals.thisSpend}
+              changePct={percentChange(
+                monthTotals.thisSpend,
+                monthTotals.lastSpend
+              )}
+              caption={`Last month: ${formatCompactCurrency(
+                monthTotals.lastSpend
+              )} · ${monthTotals.lastCount} ${
+                monthTotals.lastCount === 1 ? 'expense' : 'expenses'
+              }`}
+              sparkline={monthly.spend}
+              color='var(--chart-4)'
+              loading={statsState === 'loading'}
+            />
+          </>
+        )}
+      </div>
+
+      <div
+        className='mt-6 flex flex-wrap items-center gap-2'
+        role='group'
+        aria-label='Filter expenses'
+      >
+        {FILTERS.map((option) => {
+          const active = filter === option.value
+          return (
+            <button
+              key={option.value}
+              type='button'
+              onClick={() => setFilter(option.value)}
+              aria-pressed={active}
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                active
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground'
+              }`}
+            >
+              {option.label}
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[11px] tabular-nums ${
+                  active
+                    ? 'bg-background/20 text-background'
+                    : 'bg-accent text-muted-foreground'
+                }`}
+              >
+                {counts[option.value]}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      <Card className='mt-5 border-border bg-card p-4 shadow-sm sm:p-5'>
+        <div className='flex flex-col gap-1'>
+          <h2 className='text-base font-semibold text-foreground'>
+            {filter === 'all' ? 'All expenses' : 'Filtered expenses'}
+          </h2>
+          <p className='text-sm text-muted-foreground'>
+            {filtered.length.toLocaleString('en-US')} of{' '}
+            {expensesList.length.toLocaleString('en-US')} expenses
+          </p>
         </div>
-      )}
-      {displayedExpenses.length > 0 ? (
-        <>
-          <div className='grid grid-cols-4 gap-3 bg-accent text-accent-foreground p-2 rounded-t-md'>
-            <button className='font-bold text-left cursor-pointer' onClick={() => toggleSort('name')}>
-              Name <SortIcon field='name' activeField={sortField} dir={sortDir} />
-            </button>
-            <button className='font-bold text-left cursor-pointer' onClick={() => toggleSort('amount')}>
-              Amount <SortIcon field='amount' activeField={sortField} dir={sortDir} />
-            </button>
-            <button className='font-bold text-left cursor-pointer' onClick={() => toggleSort('date')}>
-              Date <SortIcon field='date' activeField={sortField} dir={sortDir} />
-            </button>
-            <h2 className='font-bold'>Action</h2>
-          </div>
-          {displayedExpenses.map((expenses) => (
-            <div key={expenses.id} className='grid grid-cols-4 bg-card p-2 border-b border-border'>
-              <h2 className='min-w-0 truncate' title={expenses.name}>{expenses.name}</h2>
-              <h2 className='min-w-0 truncate' title={formatCurrency(expenses.amount)}>{formatCompactCurrency(expenses.amount)}</h2>
-              <h2 className='min-w-0 truncate' title={expenses.createdAt}>{expenses.createdAt}</h2>
-              <h2>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button className='text-destructive hover:opacity-70 cursor-pointer'>
-                      <Trash />
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will delete "{expenses.name}" ({formatCurrency(expenses.amount)}). You can undo it for {UNDO_WINDOW_MS / 1000} seconds afterwards.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction className="bg-destructive hover:opacity-90" onClick={() => handleDeleteExpense(expenses)}>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </h2>
-            </div>
-          ))}
-        </>
-      ) : expensesList.length > 0 ? (
-        <p className="text-muted-foreground mt-4">No expenses match "{search}".</p>
-      ) : (
-        <p className="text-muted-foreground mt-4">No expenses yet. Add one to get started!</p>
-      )}
+
+        <ExpenseListTable
+          expensesList={filtered}
+          refreshData={loadAll}
+          loading={loading}
+          showTitle={false}
+          showExport={false}
+          budgetNames={budgetNames}
+          emptyMessage={
+            filter === 'all' ? undefined : 'No expenses match this filter.'
+          }
+        />
+      </Card>
     </div>
   )
 }

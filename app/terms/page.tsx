@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import LegalLayout, { LegalHeading, type LegalSection } from "/components/legal-layout";
+import { SUPPORT_EMAIL } from "/lib/site";
 
 export const metadata: Metadata = {
   title: "Terms of Service | Montra",
@@ -51,8 +52,8 @@ export default function TermsPage() {
         You are responsible for the information on your account and for keeping
         your sign-in details secure. Do not share your password with anyone.
         Contact{" "}
-        <a href="mailto:support@base.et">support@base.et</a> if you believe your
-        account has been compromised.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> if you believe
+        your account has been compromised.
       </p>
 
       <LegalHeading id="acceptable-use">Acceptable use</LegalHeading>
@@ -86,8 +87,8 @@ export default function TermsPage() {
       <p>
         You may stop using Montra at any time and request account deletion by
         emailing{" "}
-        <a href="mailto:support@base.et">support@base.et</a>. We may suspend or
-        terminate access for accounts that violate these terms.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. We may suspend
+        or terminate access for accounts that violate these terms.
       </p>
 
       <LegalHeading id="liability">Liability limits</LegalHeading>
@@ -108,7 +109,7 @@ export default function TermsPage() {
       <LegalHeading id="contact">Contact</LegalHeading>
       <p>
         Questions about these terms can be sent to{" "}
-        <a href="mailto:support@base.et">support@base.et</a>.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
     </LegalLayout>
   );

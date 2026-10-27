@@ -39,7 +39,7 @@ function BudgetList() {
           [1, 2, 3, 4, 5].map((item, index) => (
             <div
               key={index}
-              className="w-full bg-accent rounded-lg h-[170px] animate-pulse"
+              className="w-full bg-accent rounded-2xl h-[170px] animate-pulse"
             />
           ))
         ) : budgetList.length > 0 ? (

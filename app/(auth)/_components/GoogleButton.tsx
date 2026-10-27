@@ -44,7 +44,7 @@ export function GoogleButton({
       onClick={handleGoogle}
       disabled={disabled || loading}
       variant="outline"
-      className="h-11 w-full rounded-lg border-[var(--clr-border-mid)] bg-transparent hover:bg-black/5 dark:hover:bg-white/5"
+      className="h-11 w-full rounded-lg border-[var(--clr-border-mid)] bg-transparent hover:bg-black/5 dark:hover:bg-accent"
     >
       <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
         <path
