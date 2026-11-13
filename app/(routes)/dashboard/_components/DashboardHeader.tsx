@@ -35,15 +35,19 @@ interface DashboardHeaderProps {
    * so the admin layout can keep rendering this header unchanged.
    */
   navItems?: DashboardNavItem[]
+  /** Optional chip rendered next to the wordmark (e.g. the admin badge). */
+  badge?: React.ReactNode
 }
 
 function Brand({
   onClick,
   showName = false,
+  badge,
 }: {
   onClick?: () => void
   /** Drawer has room for the wordmark even on narrow viewports. */
   showName?: boolean
+  badge?: React.ReactNode
 }) {
   return (
     <Link
@@ -66,11 +70,18 @@ function Brand({
       >
         Montra
       </span>
+      {badge}
     </Link>
   )
 }
 
-function MobileNav({ navItems }: { navItems: DashboardNavItem[] }) {
+function MobileNav({
+  navItems,
+  badge,
+}: {
+  navItems: DashboardNavItem[]
+  badge?: React.ReactNode
+}) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -91,7 +102,7 @@ function MobileNav({ navItems }: { navItems: DashboardNavItem[] }) {
       >
         <SheetHeader className='space-y-1'>
           <SheetTitle className='text-left'>
-            <Brand showName />
+            <Brand showName badge={badge} />
           </SheetTitle>
           <SheetDescription>Quick navigation links</SheetDescription>
         </SheetHeader>
@@ -135,28 +146,39 @@ function MobileNav({ navItems }: { navItems: DashboardNavItem[] }) {
   )
 }
 
-function DashboardHeader({ navItems = DASHBOARD_NAV_ITEMS }: DashboardHeaderProps) {
+function DashboardHeader({
+  navItems = DASHBOARD_NAV_ITEMS,
+  badge,
+}: DashboardHeaderProps) {
   const pathname = usePathname()
   const { data: session } = authClient.useSession()
   const user = session?.user
   const isAdmin =
     (user as Record<string, unknown> | undefined)?.role === 'admin'
+  const inAdminArea = (pathname ?? '').startsWith('/admin')
 
   const searchItems = React.useMemo<DashboardNavItem[]>(() => {
     const items = [...navItems]
-    if (isAdmin) {
+    if (isAdmin && !items.some((item) => item.path === '/admin')) {
       items.push({ name: 'Admin', path: '/admin', icon: ShieldCheck })
     }
-    items.push({ name: 'Settings', path: '/dashboard/settings', icon: Settings })
+    const settingsPath = inAdminArea ? '/admin/settings' : '/dashboard/settings'
+    if (!items.some((item) => item.path === settingsPath)) {
+      items.push({
+        name: 'Settings',
+        path: settingsPath,
+        icon: Settings,
+      })
+    }
     return items
-  }, [navItems, isAdmin])
+  }, [navItems, isAdmin, inAdminArea])
 
   return (
     <header className='sticky top-0 z-40 border-b border-border bg-background'>
       <div className='mx-auto flex h-16 w-full max-w-7xl items-center gap-2 px-4 sm:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]'>
         <div className='flex min-w-0 items-center gap-2 lg:justify-self-start'>
-          <MobileNav navItems={navItems} />
-          <Brand />
+          <MobileNav navItems={navItems} badge={badge} />
+          <Brand badge={badge} />
         </div>
 
         <nav
@@ -201,6 +223,7 @@ function DashboardHeader({ navItems = DASHBOARD_NAV_ITEMS }: DashboardHeaderProp
             name={user?.name}
             email={user?.email}
             isAdmin={isAdmin}
+            area={inAdminArea ? 'admin' : 'dashboard'}
           />
         </div>
       </div>

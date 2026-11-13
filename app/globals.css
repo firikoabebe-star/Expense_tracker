@@ -95,6 +95,12 @@
     --success:              #16A34A;
     --warning:              #D97706;
 
+    /* Password strength scale — all values clear 4.5:1 on light surfaces */
+    --strength-weak:        #B91C1C;
+    --strength-fair:        #B45309;
+    --strength-good:        #A16207;
+    --strength-strong:      #15803D;
+
     --chart-1:              #0D530E;
     --chart-2:              #4caf50;
     --chart-3:              #81c784;
@@ -155,6 +161,12 @@
 
     --success:              #4ADE80;
     --warning:              #FBBF24;
+
+    /* Password strength scale — all values clear 4.5:1 on dark surfaces */
+    --strength-weak:        #F87171;
+    --strength-fair:        #FB923C;
+    --strength-good:        #FACC15;
+    --strength-strong:      #4ADE80;
 
     --chart-1:              #2DD4BF;
     --chart-2:              #60A5FA;

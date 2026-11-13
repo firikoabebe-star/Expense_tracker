@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, FileText, LayoutGrid, PiggyBank, ReceiptText } from 'lucide-react'
+import { BarChart3, FileText, LayoutGrid, PiggyBank, ReceiptText, Settings } from 'lucide-react'
 
 export interface DashboardNavItem {
   name: string
@@ -18,15 +18,18 @@ export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { name: 'Expenses', path: '/dashboard/expenses', icon: ReceiptText },
   { name: 'Analytics', path: '/dashboard/analytics', icon: BarChart3 },
   { name: 'Reports', path: '/dashboard/reports', icon: FileText },
+  { name: 'Settings', path: '/dashboard/settings', icon: Settings },
 ]
 
-/** `/dashboard` only matches itself; nested routes match their own section. */
+/** Section roots only match themselves; nested routes match their own path. */
+const NAV_ROOT_PATHS = new Set(['/dashboard', '/admin'])
+
 export function isDashboardNavItemActive(
   pathname: string | null | undefined,
   path: string
 ): boolean {
   if (!pathname) return false
-  if (path === '/dashboard') return pathname === '/dashboard'
+  if (NAV_ROOT_PATHS.has(path)) return pathname === path
   return pathname === path || pathname.startsWith(`${path}/`)
 }
 

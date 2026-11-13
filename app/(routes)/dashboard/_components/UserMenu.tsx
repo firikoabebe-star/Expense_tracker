@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   ChevronDown,
   LogOut,
@@ -24,6 +24,11 @@ interface UserMenuProps {
   name?: string | null
   email?: string | null
   isAdmin?: boolean
+  /**
+   * Which area the header is rendered in. Inside /admin the switch item is
+   * always "My Account" so the menu never points back at the admin dashboard.
+   */
+  area?: 'dashboard' | 'admin'
 }
 
 function getInitials(name?: string | null, email?: string | null): string {
@@ -43,10 +48,20 @@ const menuItemClass =
  * Account dropdown: identity, the account/admin switch, settings and sign out.
  * Unlike the old flat bar it keeps the same sign-out behaviour.
  */
-export function UserMenu({ name, email, isAdmin }: UserMenuProps) {
+export function UserMenu({
+  name,
+  email,
+  isAdmin,
+  area = 'dashboard',
+}: UserMenuProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const displayName = (name ?? '').trim() || 'Montra member'
   const displayEmail = (email ?? '').trim() || 'Signed in'
+  const inAdmin = (pathname ?? '').startsWith('/admin') || area === 'admin'
+  const settingsHref = (pathname ?? '').startsWith('/admin')
+    ? '/admin/settings'
+    : '/dashboard/settings'
 
   const handleSignOut = () => {
     authClient.signOut().then(() => router.push('/'))
@@ -90,7 +105,14 @@ export function UserMenu({ name, email, isAdmin }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator className='my-1 bg-border' />
 
-        {isAdmin ? (
+        {inAdmin ? (
+          <DropdownMenuItem asChild className={menuItemClass}>
+            <Link href={settingsHref}>
+              <UserRound aria-hidden />
+              My Account
+            </Link>
+          </DropdownMenuItem>
+        ) : isAdmin ? (
           <DropdownMenuItem asChild className={menuItemClass}>
             <Link href='/admin'>
               <ShieldCheck aria-hidden />
@@ -99,7 +121,7 @@ export function UserMenu({ name, email, isAdmin }: UserMenuProps) {
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem asChild className={menuItemClass}>
-            <Link href='/dashboard/settings'>
+            <Link href={settingsHref}>
               <UserRound aria-hidden />
               My Account
             </Link>
@@ -107,7 +129,7 @@ export function UserMenu({ name, email, isAdmin }: UserMenuProps) {
         )}
 
         <DropdownMenuItem asChild className={menuItemClass}>
-          <Link href='/dashboard/settings'>
+          <Link href={settingsHref}>
             <Settings aria-hidden />
             Settings
           </Link>

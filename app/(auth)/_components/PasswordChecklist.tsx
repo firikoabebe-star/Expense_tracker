@@ -6,14 +6,16 @@ import { cn } from "/lib/utils";
 
 const STRENGTH_LABELS = ["Weak", "Fair", "Good", "Strong"] as const;
 
-// One existing semantic token per strength level. Every value is a CSS
-// variable, so it adapts to dark/light mode — no hardcoded colors.
+// One semantic token per strength level. Every value is a CSS variable, so it
+// adapts to dark/light mode — no hardcoded colors.
 const STRENGTH_COLORS = [
-  "hsl(var(--destructive))",
-  "var(--clr-accent)",
-  "var(--clr-brand-mid)",
-  "var(--primary)",
-];
+  "var(--strength-weak)",
+  "var(--strength-fair)",
+  "var(--strength-good)",
+  "var(--strength-strong)",
+] as const;
+
+const SEGMENT_COUNT = 4;
 
 type PasswordChecklistProps = {
   password: string;
@@ -29,7 +31,9 @@ export function PasswordChecklist({
   if (!visible) return null;
 
   const strength = getPasswordStrength(password);
-  const label = STRENGTH_LABELS[Math.max(strength, 1) - 1];
+  const level = Math.min(Math.max(strength, 1), SEGMENT_COUNT);
+  const label = STRENGTH_LABELS[level - 1];
+  const levelColor = STRENGTH_COLORS[level - 1];
 
   return (
     <div
@@ -69,18 +73,25 @@ export function PasswordChecklist({
 
       <div className="flex items-center gap-3">
         <div className="flex flex-1 gap-1" aria-hidden="true">
-          {STRENGTH_COLORS.map((color, index) => (
+          {Array.from({ length: SEGMENT_COUNT }, (_, index) => (
             <span
-              key={color}
-              className="h-1.5 flex-1 rounded-full transition-colors duration-200"
-              style={{
-                backgroundColor:
-                  index < strength ? color : "var(--clr-border)",
-              }}
-            />
+              key={index}
+              className="relative h-2 flex-1 overflow-hidden rounded-full border border-[var(--border)] bg-[var(--accent)]"
+            >
+              <span
+                className={cn(
+                  "absolute inset-0 origin-left rounded-full transition-all duration-150 motion-reduce:transition-none",
+                  index < strength ? "scale-x-100" : "scale-x-0"
+                )}
+                style={{ backgroundColor: levelColor }}
+              />
+            </span>
           ))}
         </div>
-        <span className="text-xs font-medium text-[var(--clr-text-muted)]">
+        <span
+          className="text-xs font-medium"
+          style={{ color: levelColor }}
+        >
           <span className="sr-only">Password strength: </span>
           {label}
         </span>
