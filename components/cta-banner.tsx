@@ -15,14 +15,14 @@ export default function CTABanner() {
   return (
     <section
       style={{
-        background: "#fff",
+        background: "var(--background)",
         padding: "0 clamp(1.25rem,5vw,3rem) clamp(4rem,7vw,7rem)",
       }}
     >
       <div style={{ maxWidth: "78rem", margin: "0 auto" }}>
         <div
+          className="surface-inverse"
           style={{
-            background: "var(--clr-brand)",
             borderRadius: "var(--r-2xl)",
             padding: "clamp(2.5rem,5vw,4.5rem) clamp(2rem,5vw,4rem)",
             display: "flex",
@@ -43,7 +43,8 @@ export default function CTABanner() {
               width: 300,
               height: 300,
               borderRadius: "50%",
-              background: "rgba(231,225,177,0.08)",
+              background:
+                "color-mix(in srgb, var(--clr-text-on-dark) 9%, transparent)",
               pointerEvents: "none",
             }}
           />
@@ -55,7 +56,8 @@ export default function CTABanner() {
               width: 200,
               height: 200,
               borderRadius: "50%",
-              background: "rgba(231,225,177,0.05)",
+              background:
+                "color-mix(in srgb, var(--clr-text-on-dark) 6%, transparent)",
               pointerEvents: "none",
             }}
           />
@@ -63,13 +65,13 @@ export default function CTABanner() {
           {/* Left copy */}
           <div style={{ position: "relative", zIndex: 1, flex: "1 1 280px" }}>
             <p
+              className="text-on-inverse-accent"
               style={{
                 fontFamily: "var(--font-body)",
                 fontSize: "0.7rem",
                 fontWeight: 700,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: "rgba(231,225,177,0.55)",
                 marginBottom: "0.875rem",
               }}
             >
@@ -77,12 +79,12 @@ export default function CTABanner() {
             </p>
 
             <h2
+              className="text-on-inverse-accent"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: "clamp(1.875rem,3.5vw,2.875rem)",
                 letterSpacing: "-0.03em",
-                color: "#E7E1B1",
                 lineHeight: 1.1,
                 marginBottom: "1rem",
               }}
@@ -93,11 +95,11 @@ export default function CTABanner() {
             </h2>
 
             <p
+              className="text-on-inverse-muted"
               style={{
                 fontFamily: "var(--font-body)",
                 fontWeight: 300,
                 fontSize: "1rem",
-                color: "rgba(255,255,255,0.58)",
                 lineHeight: 1.75,
                 maxWidth: "44ch",
               }}
@@ -127,7 +129,7 @@ export default function CTABanner() {
                 gap: "0.5rem",
                 padding: "0.9375rem 2.25rem",
                 borderRadius: "var(--r-pill)",
-                background: "#E7E1B1",
+                background: "var(--clr-accent)",
                 color: "var(--clr-brand)",
                 fontFamily: "var(--font-body)",
                 fontWeight: 600,
@@ -138,11 +140,11 @@ export default function CTABanner() {
                 boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#fff";
+                e.currentTarget.style.background = "var(--clr-brand-light)";
                 e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#E7E1B1";
+                e.currentTarget.style.background = "var(--clr-accent)";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
@@ -151,28 +153,19 @@ export default function CTABanner() {
 
             <Link
               href="/pricing"
+              className="on-inverse-link border-on-inverse"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "0.9375rem 2.25rem",
                 borderRadius: "var(--r-pill)",
-                border: "1.5px solid rgba(231,225,177,0.30)",
-                color: "rgba(255,255,255,0.75)",
+                borderWidth: "1.5px",
+                borderStyle: "solid",
                 fontFamily: "var(--font-body)",
                 fontWeight: 400,
                 fontSize: "0.9375rem",
-                textDecoration: "none",
                 whiteSpace: "nowrap",
-                transition: "border-color 0.15s, color 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(231,225,177,0.65)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.95)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(231,225,177,0.30)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.75)";
               }}
             >
               View pricing plans

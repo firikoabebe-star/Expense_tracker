@@ -50,7 +50,7 @@ function AIInsights({ enabled }: AIInsightsProps) {
   const loading = status === "idle" || status === "loading";
 
   return (
-    <section className="mt-6 rounded-lg border border-border bg-card p-5">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-foreground" aria-hidden />

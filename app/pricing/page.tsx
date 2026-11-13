@@ -105,7 +105,7 @@ export default function PricingPage() {
   return (
     <>
       <LandingNavbar />
-      <div style={{ background: "#fff", minHeight: "100vh" }}>
+      <div style={{ background: "var(--background)", minHeight: "100vh" }}>
         {/* ── Hero ── */}
         <section
           style={{
@@ -222,7 +222,7 @@ export default function PricingPage() {
                     width: 18,
                     height: 18,
                     borderRadius: "50%",
-                    background: "#fff",
+                    background: "var(--background)",
                     transition: "left 0.25s var(--ease-spring)",
                     boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
                   }}
@@ -330,8 +330,8 @@ export default function PricingPage() {
                   key={i}
                   style={{
                     borderRadius: "var(--r-md)",
-                    border: "1.5px solid var(--clr-border)",
-                    background: "#fff",
+                    border: "1.5px solid var(--border)",
+                    background: "var(--card)",
                     padding: "1.5rem",
                     display: "flex",
                     flexDirection: "column",
@@ -404,13 +404,14 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
 
   return (
     <div
+      className={dark ? "surface-inverse" : undefined}
       style={{
         display: "flex",
         flexDirection: "column",
         borderRadius: "var(--r-xl)",
         padding: "clamp(1.75rem,3vw,2.5rem)",
-        background: dark ? "var(--clr-brand)" : "var(--block-sage)",
-        border: dark ? "none" : "1.5px solid var(--clr-border)",
+        background: dark ? undefined : "var(--block-sage)",
+        border: dark ? undefined : "1.5px solid var(--border)",
         position: "relative",
         boxShadow: dark ? "var(--shadow-lg)" : "var(--shadow-xs)",
         animation: `et-fade-up 0.55s ${index * 0.09 + 0.1}s both`,
@@ -423,7 +424,7 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
             top: -13,
             left: "50%",
             transform: "translateX(-50%)",
-            background: "#E7E1B1",
+            background: "var(--clr-accent)",
             color: "var(--clr-brand)",
             fontFamily: "var(--font-body)",
             fontWeight: 700,
@@ -452,13 +453,11 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
             width: 40,
             height: 40,
             borderRadius: 10,
-            background: dark
-              ? "rgba(231,225,177,0.15)"
-              : "var(--clr-brand-light)",
+            background: dark ? "var(--clr-accent)" : "var(--clr-brand-light)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: dark ? "#E7E1B1" : "var(--clr-brand)",
+            color: "var(--clr-brand)",
           }}
         >
           <Icon size={19} />
@@ -469,7 +468,7 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
               fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: "1.0625rem",
-              color: dark ? "#E7E1B1" : "var(--clr-text)",
+              color: dark ? "var(--clr-text-on-dark)" : "var(--clr-text)",
             }}
           >
             {name}
@@ -479,7 +478,9 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
               fontFamily: "var(--font-body)",
               fontWeight: 300,
               fontSize: "0.8rem",
-              color: dark ? "rgba(231,225,177,0.6)" : "var(--clr-text-muted)",
+              color: dark
+                ? "var(--clr-on-inverse-muted)"
+                : "var(--clr-text-muted)",
             }}
           >
             {tagline}
@@ -496,7 +497,7 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
               fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: price === 0 ? "2.5rem" : "3rem",
-              color: dark ? "#E7E1B1" : "var(--clr-text)",
+              color: dark ? "var(--clr-text-on-dark)" : "var(--clr-text)",
               letterSpacing: "-0.04em",
             }}
           >
@@ -509,7 +510,7 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
                 fontWeight: 300,
                 fontSize: "0.875rem",
                 color: dark
-                  ? "rgba(231,225,177,0.55)"
+                  ? "var(--clr-on-inverse-muted)"
                   : "var(--clr-text-muted)",
               }}
             >
@@ -522,7 +523,9 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "0.78rem",
-              color: dark ? "rgba(231,225,177,0.55)" : "var(--clr-text-muted)",
+              color: dark
+                ? "var(--clr-on-inverse-muted)"
+                : "var(--clr-text-muted)",
               marginTop: 3,
             }}
           >
@@ -540,8 +543,8 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
           gap: "0.4rem",
           padding: "0.7rem 1.5rem",
           borderRadius: "var(--r-pill)",
-          background: dark ? "#E7E1B1" : "var(--clr-brand)",
-          color: dark ? "var(--clr-brand)" : "#fff",
+          background: dark ? "var(--clr-accent)" : "var(--clr-brand)",
+          color: dark ? "var(--clr-brand)" : "var(--primary-foreground)",
           fontFamily: "var(--font-body)",
           fontWeight: 600,
           fontSize: "0.9375rem",
@@ -564,7 +567,7 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
       <div
         style={{
           height: 1,
-          background: dark ? "rgba(231,225,177,0.15)" : "var(--clr-border)",
+          background: dark ? "var(--clr-border)" : "var(--border)",
           marginBottom: "1.5rem",
         }}
       />
@@ -596,16 +599,14 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
                 justifyContent: "center",
                 background: ok
                   ? dark
-                    ? "rgba(231,225,177,0.18)"
+                    ? "var(--clr-accent)"
                     : "var(--clr-brand-light)"
                   : "transparent",
                 color: ok
-                  ? dark
-                    ? "#E7E1B1"
-                    : "var(--clr-brand)"
+                  ? "var(--clr-brand)"
                   : dark
-                    ? "rgba(231,225,177,0.25)"
-                    : "var(--clr-border-mid)",
+                    ? "var(--clr-on-inverse-muted)"
+                    : "var(--clr-text-muted)",
               }}
             >
               {ok ? (
@@ -621,10 +622,10 @@ function PlanCard({ plan, yearly, index }: PlanCardProps) {
                 fontSize: "0.9rem",
                 color: ok
                   ? dark
-                    ? "rgba(255,255,255,0.88)"
+                    ? "var(--clr-text-on-dark)"
                     : "var(--clr-text-2)"
                   : dark
-                    ? "rgba(255,255,255,0.32)"
+                    ? "var(--clr-on-inverse-muted)"
                     : "var(--clr-text-muted)",
               }}
             >

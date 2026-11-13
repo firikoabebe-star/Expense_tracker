@@ -1,6 +1,5 @@
 "use client"
 import React from 'react'
-import SideNav from './_components/SideNav'
 import DashboardHeader from './_components/DashboardHeader'
 import { authClient } from '/lib/auth-client'
 import { useRouter } from 'next/navigation';
@@ -35,15 +34,12 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [user]);
 
   return (
-    <div>
-      <div className="fixed lg:w-64 hidden lg:block">
-        <SideNav />
-      </div>
-      <div className="lg:ml-64">
-        <DashboardHeader />
-        
+    <div className='min-h-screen bg-background text-foreground'>
+      <DashboardHeader />
+
+      <main className='mx-auto w-full max-w-7xl p-6'>
         {children}
-      </div>
+      </main>
     </div>
   );
 }

@@ -20,7 +20,7 @@ export function SettingsCard({
   children,
 }: SettingsCardProps) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-start gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
           <Icon className="h-5 w-5" aria-hidden="true" />

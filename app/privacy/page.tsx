@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import LegalLayout, { LegalHeading, type LegalSection } from "/components/legal-layout";
+import { SUPPORT_EMAIL } from "/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Montra",
@@ -86,7 +87,7 @@ export default function PrivacyPage() {
         Your account information, budgets, and expenses remain associated with
         your Montra account. You can request deletion of your account by
         emailing{" "}
-        <a href="mailto:support@base.et">support@base.et</a>.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
 
       <LegalHeading id="security">Security</LegalHeading>
@@ -111,7 +112,7 @@ export default function PrivacyPage() {
       <LegalHeading id="contact">Contact</LegalHeading>
       <p>
         If you have questions about this policy, email{" "}
-        <a href="mailto:support@base.et">support@base.et</a>.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
     </LegalLayout>
   );

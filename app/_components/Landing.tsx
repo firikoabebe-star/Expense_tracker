@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────
 // app/_components/Landing.jsx
 // Root landing page — assembles all sections in grey.co order.
-// Background stays pure #fff (light) / #0A1A0B (dark).
+// Background stays pure #fff (light) / #161B24 (dark).
 // ─────────────────────────────────────────────────────────────────
 import React from "react";
 import HeroSection from "/components/hero-section";

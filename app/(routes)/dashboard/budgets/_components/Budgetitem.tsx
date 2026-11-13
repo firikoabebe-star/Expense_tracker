@@ -28,7 +28,7 @@ function Budgetitem({budget}: BudgetItemProps) {
 
   return (
     <Link href={'/dashboard/expenses/'+budget?.id} className='block h-full min-w-0 overflow-hidden'>
-      <div className='p-5 border border-border bg-card rounded-lg hover:shadow-md cursor-pointer h-full min-h-[170px] min-w-0 overflow-hidden'>
+      <div className='p-5 border border-border bg-card rounded-2xl shadow-sm hover:shadow-md cursor-pointer h-full min-h-[170px] min-w-0 overflow-hidden'>
       <div className='flex gap-2 items-center justify-between min-w-0'>
         <div className='flex gap-2 items-center min-w-0 flex-1'>
             <h2 className='text-2xl p-3 px-4

@@ -9,6 +9,8 @@
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 
+import { SUPPORT_EMAIL } from "/lib/site";
+
 const FAQ_ITEMS = [
   {
     q: "How do I create a budget?",
@@ -42,9 +44,9 @@ export default function FAQsThree() {
   return (
     <section
       style={{
-        background: "#fff",
+        background: "var(--background)",
         padding: "clamp(4rem,7vw,7rem) 0",
-        borderTop: "1px solid var(--clr-border)",
+        borderTop: "1px solid var(--border)",
       }}
     >
       <div
@@ -105,7 +107,7 @@ export default function FAQsThree() {
           >
             Can't find your answer?{" "}
             <a
-              href="mailto:support@base.et"
+              href={`mailto:${SUPPORT_EMAIL}`}
               style={{ color: "var(--clr-brand)", textDecoration: "underline" }}
             >
               Email our team
@@ -145,9 +147,9 @@ function AccordionItem({ question, answer, isOpen, onToggle }: AccordionItemProp
     <div
       style={{
         borderRadius: 16,
-        border: "1.5px solid var(--clr-border)",
+        border: "1.5px solid var(--border)",
         overflow: "hidden",
-        background: isOpen ? "#fff" : "transparent",
+        background: isOpen ? "var(--card)" : "transparent",
         transition: "background 0.2s, box-shadow 0.2s",
         boxShadow: isOpen ? "var(--shadow-sm)" : "none",
       }}
@@ -191,7 +193,9 @@ function AccordionItem({ question, answer, isOpen, onToggle }: AccordionItemProp
             alignItems: "center",
             justifyContent: "center",
             background: isOpen ? "var(--clr-brand)" : "var(--block-sage)",
-            color: isOpen ? "#E7E1B1" : "var(--clr-brand)",
+            color: isOpen
+              ? "var(--primary-foreground)"
+              : "var(--clr-brand)",
             transition: "background 0.2s, color 0.2s",
           }}
         >

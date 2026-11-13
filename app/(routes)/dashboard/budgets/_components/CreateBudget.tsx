@@ -74,7 +74,7 @@ function CreateBudget({refreshData}: CreateBudgetProps) {
     <div> 
       <Dialog>
         <DialogTrigger asChild>
-          <div className='bg-accent text-accent-foreground p-10 rounded-md 
+          <div className='bg-accent text-accent-foreground p-10 rounded-2xl
           items-center flex flex-col border-2 border-dashed border-border cursor-pointer hover:shadow-md whitespace-nowrap'>
             <h2 className='text-3xl'>+</h2>
             <h2>Create New Budget</h2>

@@ -56,7 +56,7 @@ export default function AboutPage() {
     <>
       <LandingNavbar />
 
-      <main style={{ background: "#fff", minHeight: "100vh" }}>
+      <main style={{ background: "var(--background)", minHeight: "100vh" }}>
         {/* ───────────────── HERO WITH VISIBLE FLOATING CARDS ───────────────── */}
         <section
           style={{
@@ -64,7 +64,7 @@ export default function AboutPage() {
             paddingBottom: "clamp(4rem, 8vw, 6rem)",
             borderBottom: "1px solid var(--clr-border)",
             background:
-              "linear-gradient(180deg, #fff 30%, var(--clr-bg-off) 100%)",
+              "linear-gradient(180deg, var(--background) 30%, var(--clr-bg-off) 100%)",
             position: "relative",
             overflow: "hidden",
           }}
@@ -76,16 +76,15 @@ export default function AboutPage() {
               left: "max(2rem, 5%)",
               top: "50%",
               transform: "translateY(-50%)",
-              background: "white",
+              background: "var(--card)",
               borderRadius: "24px",
               padding: "1rem 1.25rem",
               boxShadow: "var(--shadow-lg)",
-              border: "1px solid var(--clr-border)",
+              border: "1px solid var(--border)",
               display: "flex",
               flexDirection: "column",
               gap: "0.5rem",
               zIndex: 3,
-              backdropFilter: "blur(4px)",
             }}
           >
             <div
@@ -276,7 +275,7 @@ export default function AboutPage() {
                   padding: "0.9rem 2rem",
                   borderRadius: "var(--r-pill)",
                   background: "var(--clr-brand)",
-                  color: "#fff",
+                  color: "var(--primary-foreground)",
                   textDecoration: "none",
                   fontWeight: 600,
                   boxShadow: "var(--shadow-md)",
@@ -293,10 +292,10 @@ export default function AboutPage() {
                   alignItems: "center",
                   padding: "0.9rem 2rem",
                   borderRadius: "var(--r-pill)",
-                  border: "1px solid var(--clr-border)",
+                  border: "1px solid var(--border)",
                   textDecoration: "none",
                   color: "var(--clr-text)",
-                  background: "white",
+                  background: "var(--card)",
                 }}
               >
                 View Pricing
@@ -325,8 +324,8 @@ export default function AboutPage() {
                     gap: "0.5rem",
                     padding: "0.5rem 1rem",
                     borderRadius: "999px",
-                    background: "white",
-                    border: "1px solid var(--clr-border)",
+                    background: "var(--card)",
+                    border: "1px solid var(--border)",
                     boxShadow: "var(--shadow-sm)",
                     fontSize: "0.85rem",
                     color: "var(--clr-text-muted)",
@@ -529,11 +528,11 @@ export default function AboutPage() {
               <div
                 key={item.label}
                 style={{
-                  background: "white",
+                  background: "var(--card)",
                   borderRadius: "32px",
                   padding: "2rem 1rem",
                   boxShadow: "var(--shadow-sm)",
-                  border: "1px solid var(--clr-border)",
+                  border: "1px solid var(--border)",
                 }}
               >
                 <item.icon
@@ -691,7 +690,7 @@ export default function AboutPage() {
                 padding: "1rem 2rem",
                 borderRadius: "var(--r-pill)",
                 background: "var(--clr-brand)",
-                color: "#fff",
+                color: "var(--primary-foreground)",
                 textDecoration: "none",
                 fontWeight: 600,
                 boxShadow: "var(--shadow-md)",

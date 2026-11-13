@@ -99,11 +99,13 @@ const ENDPOINTS = [
   { m: "DELETE", p: "/v1/expenses/:id", d: "Remove a specific expense entry" },
 ];
 
+// Method badges use the theme's panel tints so they stay legible in dark
+// mode instead of hardcoded light-mode greens and reds.
 const METHOD_COLOR: Record<string, { bg: string; clr: string }> = {
-  GET: { bg: "rgba(13,83,14,0.10)", clr: "#0D530E" },
-  POST: { bg: "rgba(48,109,41,0.10)", clr: "#306D29" },
-  PUT: { bg: "rgba(160,120,0,0.10)", clr: "#7a5a00" },
-  DELETE: { bg: "rgba(180,30,30,0.10)", clr: "#a00" },
+  GET: { bg: "var(--block-sage)", clr: "var(--clr-brand)" },
+  POST: { bg: "var(--block-sky)", clr: "var(--clr-brand)" },
+  PUT: { bg: "var(--block-cream)", clr: "var(--clr-text)" },
+  DELETE: { bg: "var(--block-blush)", clr: "var(--clr-text)" },
 };
 
 const CHIPS = [
@@ -135,7 +137,7 @@ export default function DevelopersPage() {
   return (
     <>
       <LandingNavbar />
-      <div style={{ background: "#fff", minHeight: "100vh" }}>
+      <div style={{ background: "var(--background)", minHeight: "100vh" }}>
         {/* ── Hero ── */}
         <section
           style={{
@@ -143,7 +145,7 @@ export default function DevelopersPage() {
             paddingBottom: "clamp(3rem,5vw,5rem)",
             borderBottom: "1px solid var(--clr-border)",
             background:
-              "linear-gradient(180deg, #fff 55%, var(--clr-bg-off) 100%)",
+              "linear-gradient(180deg, var(--background) 55%, var(--clr-bg-off) 100%)",
           }}
         >
           <div
@@ -224,7 +226,7 @@ export default function DevelopersPage() {
                     padding: "0.75rem 1.75rem",
                     borderRadius: "var(--r-pill)",
                     background: "var(--clr-brand)",
-                    color: "#fff",
+                    color: "var(--primary-foreground)",
                     fontFamily: "var(--font-body)",
                     fontWeight: 500,
                     fontSize: "0.9375rem",
@@ -310,7 +312,7 @@ export default function DevelopersPage() {
                     marginLeft: "0.5rem",
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.75rem",
-                    color: "rgba(255,255,255,0.35)",
+                    color: "rgba(255,255,255,0.72)",
                   }}
                 >
                   ~ montra-api
@@ -521,7 +523,7 @@ $ node -e "
                   padding: "0.6875rem 1.5rem",
                   borderRadius: "var(--r-pill)",
                   background: "var(--clr-brand)",
-                  color: "#fff",
+                  color: "var(--primary-foreground)",
                   fontFamily: "var(--font-body)",
                   fontWeight: 500,
                   fontSize: "0.9rem",
@@ -662,12 +664,12 @@ function CodeBlock({ code, lang }: CodeBlockProps) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <Code2 size={13} style={{ color: "rgba(255,255,255,0.35)" }} />
+          <Code2 size={13} style={{ color: "rgba(255,255,255,0.72)" }} />
           <span
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "0.75rem",
-              color: "rgba(255,255,255,0.35)",
+              color: "rgba(255,255,255,0.72)",
             }}
           >
             {lang.toLowerCase()}
@@ -685,7 +687,7 @@ function CodeBlock({ code, lang }: CodeBlockProps) {
             background: copied
               ? "rgba(13,83,14,0.3)"
               : "rgba(255,255,255,0.08)",
-            color: copied ? "#6ed870" : "rgba(255,255,255,0.5)",
+            color: copied ? "#6ed870" : "rgba(255,255,255,0.78)",
             fontFamily: "var(--font-mono)",
             fontSize: "0.75rem",
             cursor: "pointer",

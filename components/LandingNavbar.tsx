@@ -65,14 +65,11 @@ export default function LandingNavbar() {
           padding: "0 clamp(1.25rem, 5vw, 3rem)",
           transition:
             "background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease",
-          background: scrolled ? "rgba(255,255,255,0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(18px) saturate(180%)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(18px) saturate(180%)" : "none",
+          background: scrolled ? "var(--background)" : "transparent",
           borderBottom: scrolled
             ? "1px solid var(--clr-border)"
             : "1px solid transparent",
         }}
-        className="dark:[background:rgba(10,26,11,0.88)]"
       >
         {/* ── Logo ── */}
         <Link
@@ -96,7 +93,7 @@ export default function LandingNavbar() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#E7E1B1",
+              color: "var(--clr-accent)",
               fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: 15,
@@ -177,7 +174,7 @@ export default function LandingNavbar() {
                 padding: "0.5rem 1.25rem",
                 borderRadius: "var(--r-pill)",
                 background: "var(--clr-brand)",
-                color: "#fff",
+                color: "var(--primary-foreground)",
                 fontFamily: "var(--font-body)",
                 fontWeight: 500,
                 fontSize: "0.9rem",
@@ -316,7 +313,7 @@ export default function LandingNavbar() {
               padding: "0.75rem",
               borderRadius: "var(--r-pill)",
               background: "var(--clr-brand)",
-              color: "#fff",
+              color: "var(--primary-foreground)",
               fontFamily: "var(--font-body)",
               fontWeight: 500,
               fontSize: "0.9375rem",

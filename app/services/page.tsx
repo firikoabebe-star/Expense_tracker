@@ -103,7 +103,7 @@ export default function ServicesPage() {
             overflow: "hidden",
             borderBottom: "1px solid var(--clr-border)",
             background:
-              "linear-gradient(180deg, #fff 40%, var(--clr-bg-off) 100%)",
+              "linear-gradient(180deg, var(--background) 40%, var(--clr-bg-off) 100%)",
           }}
         >
           {/* Background glow */}
@@ -114,9 +114,8 @@ export default function ServicesPage() {
               left: "50%",
               transform: "translateX(-50%)",
               width: "70rem",
-              height: "70rem",
-              background:
-                "radial-gradient(circle, rgba(13,83,14,0.06), transparent 70%)",
+              height: "70rem",                  background:
+                    "radial-gradient(circle, var(--block-sage), transparent 70%)",
               pointerEvents: "none",
             }}
           />
@@ -192,7 +191,7 @@ export default function ServicesPage() {
                     padding: "0.85rem 1.6rem",
                     borderRadius: "999px",
                     background: "var(--clr-brand)",
-                    color: "#fff",
+                    color: "var(--primary-foreground)",
                     textDecoration: "none",
                     fontWeight: 600,
                     display: "inline-flex",
@@ -209,11 +208,11 @@ export default function ServicesPage() {
                   style={{
                     padding: "0.85rem 1.6rem",
                     borderRadius: "999px",
-                    border: "1px solid var(--clr-border)",
+                    border: "1px solid var(--border)",
                     color: "var(--clr-text)",
                     textDecoration: "none",
                     fontWeight: 500,
-                    background: "white",
+                    background: "var(--card)",
                   }}
                 >
                   View Pricing
@@ -259,10 +258,10 @@ export default function ServicesPage() {
               {/* Card 1: Income / Expenses / Savings Rate */}
               <div
                 style={{
-                  background: "white",
+                  background: "var(--card)",
                   borderRadius: "28px",
                   padding: "1.5rem",
-                  border: "1px solid var(--clr-border)",
+                  border: "1px solid var(--border)",
                   boxShadow: "var(--shadow-md)",
                 }}
               >
@@ -345,7 +344,7 @@ export default function ServicesPage() {
                 <div
                   style={{
                     height: "10px",
-                    background: "rgba(13,83,14,0.15)",
+                    background: "var(--border)",
                     borderRadius: "20px",
                     overflow: "hidden",
                   }}
@@ -373,10 +372,10 @@ export default function ServicesPage() {
               {/* Card 3: Recent activity (mini feed) */}
               <div
                 style={{
-                  background: "white",
+                  background: "var(--card)",
                   borderRadius: "28px",
                   padding: "1.25rem",
-                  border: "1px solid var(--clr-border)",
+                  border: "1px solid var(--border)",
                   boxShadow: "var(--shadow-sm)",
                 }}
               >
@@ -648,10 +647,10 @@ export default function ServicesPage() {
                     display: "flex",
                     alignItems: "flex-start",
                     gap: "1rem",
-                    background: "white",
+                    background: "var(--card)",
                     borderRadius: "24px",
                     padding: "1.25rem",
-                    border: "1px solid var(--clr-border)",
+                    border: "1px solid var(--border)",
                     boxShadow: "var(--shadow-sm)",
                   }}
                 >
@@ -748,7 +747,7 @@ export default function ServicesPage() {
                   padding: "0.9rem 2rem",
                   borderRadius: "999px",
                   background: "var(--clr-brand)",
-                  color: "#fff",
+                  color: "var(--primary-foreground)",
                   textDecoration: "none",
                   fontWeight: 600,
                   boxShadow: "var(--shadow-md)",
@@ -763,8 +762,8 @@ export default function ServicesPage() {
                   alignItems: "center",
                   padding: "0.9rem 2rem",
                   borderRadius: "999px",
-                  border: "1px solid var(--clr-border)",
-                  background: "white",
+                  border: "1px solid var(--border)",
+                  background: "var(--card)",
                   color: "var(--clr-text)",
                   textDecoration: "none",
                   fontWeight: 500,

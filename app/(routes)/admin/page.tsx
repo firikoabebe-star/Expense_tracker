@@ -1,266 +1,235 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import { authClient } from '/lib/auth-client';
-import { Users, ReceiptText, PiggyBank, UserPlus, ShieldCheck, ShieldOff, Eye } from 'lucide-react';
-import { toast } from 'sonner';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "/components/ui/alert-dialog";
-import { getAllUsers, getAdminStats, getRecentActivity, updateUserRole, getSignupsLast30Days, getExpensesLast7Days } from './actions';
-import { formatCompactCurrency, formatCurrency } from '/lib/utils';
-import LineChartDashboard from './_components/LineChartDashboard';
-import DailyExpensesBarChart from './_components/DailyExpensesBarChart';
+'use client'
 
-interface AdminStats {
-  totalUsers: number;
-  totalExpenses: number;
-  totalBudgets: number;
-  signupsThisWeek: number;
-  signupsThisMonth: number;
-}
+import * as React from 'react'
+import { ChevronDown, ReceiptText, UserPlus, Users, Activity } from 'lucide-react'
 
-interface UserWithCounts {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  image: string | null;
-  role: string;
-  createdAt: Date;
-  budgetCount: number;
-  expenseCount: number;
-}
+import { authClient } from '/lib/auth-client'
+import { formatCompactCurrency } from '/lib/utils'
 
-interface ActivityItem {
-  id: number;
-  name: string;
-  amount: string;
-  createdAt: string;
-  type: string;
-  userName: string;
-  userEmail: string;
-}
+import { DashboardErrorCard } from '../dashboard/_components/DashboardErrorCard'
+import { PageHeader } from '../dashboard/_components/PageHeader'
+import { StatCard } from '../dashboard/_components/StatCard'
+import { getAdminOverview, getRecentActivity, getTopUsers } from './actions'
+import { FadeIn } from './_components/FadeIn'
+import { GrowthCard } from './_components/GrowthCard'
+import { RecentActivityCard } from './_components/RecentActivityCard'
+import { RolesCard } from './_components/RolesCard'
+import { SignupMethodCard } from './_components/SignupMethodCard'
+import { TopSpendersCard } from './_components/TopSpendersCard'
+import { VerificationCard } from './_components/VerificationCard'
+import type { ActivityItem, AdminOverview, AdminRange, TopUser } from './_components/types'
 
-function AdminPage() {
-  const { data: session } = authClient.useSession();
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [users, setUsers] = useState<UserWithCounts[]>([]);
-  const [activity, setActivity] = useState<ActivityItem[]>([]);
-  const [signups, setSignups] = useState<{ date: string; count: number }[]>([]);
-  const [dailyExpenses, setDailyExpenses] = useState<{ date: string; total: number; count: number }[]>([]);
-  const [loading, setLoading] = useState(true);
+type LoadState = 'loading' | 'ready' | 'error'
 
-  useEffect(() => {
-    loadData();
-  }, []);
+const RANGE_OPTIONS: { value: AdminRange; label: string }[] = [
+  { value: '7d', label: 'Last 7 days' },
+  { value: '30d', label: 'Last 30 days' },
+  { value: '6m', label: 'Last 6 months' },
+  { value: '12m', label: 'Last 12 months' },
+]
 
-  const loadData = async () => {
+function AdminOverviewPage() {
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+
+  const [range, setRange] = React.useState<AdminRange>('30d')
+  const [overview, setOverview] = React.useState<AdminOverview | null>(null)
+  const [topUsers, setTopUsers] = React.useState<TopUser[]>([])
+  const [activity, setActivity] = React.useState<ActivityItem[]>([])
+  const [state, setState] = React.useState<LoadState>('loading')
+  const request = React.useRef(0)
+
+  const load = React.useCallback(async (nextRange: AdminRange) => {
+    const requestId = request.current + 1
+    request.current = requestId
+    setState('loading')
+
     try {
-      const [statsResult, usersResult, activityResult, signupsResult, dailyExpensesResult] = await Promise.all([
-        getAdminStats(),
-        getAllUsers(),
-        getRecentActivity(),
-        getSignupsLast30Days(),
-        getExpensesLast7Days(),
-      ]);
-      setStats(statsResult);
-      setUsers(usersResult);
-      setActivity(activityResult);
-      setSignups(signupsResult);
-      setDailyExpenses(dailyExpensesResult);
-    } catch {
-      toast.error("Failed to load admin data");
-    } finally {
-      setLoading(false);
-    }
-  };
+      const [overviewResult, userRows, activityRows] = await Promise.all([
+        getAdminOverview(nextRange),
+        getTopUsers(5),
+        getRecentActivity(6),
+      ])
+      if (request.current !== requestId) return
 
-  const handleRoleToggle = async (userId: string, currentRole: string) => {
-    const newRole = currentRole === 'admin' ? 'user' : 'admin';
-    try {
-      await updateUserRole(userId, newRole);
-      setUsers(prev =>
-        prev.map(u => u.id === userId ? { ...u, role: newRole } : u)
-      );
-      toast.success(`User role updated to ${newRole}`);
-    } catch {
-      toast.error("Failed to update user role");
-    }
-  };
+      setTopUsers(userRows)
+      setActivity(activityRows)
 
-  if (loading) {
-    return (
-      <div className='p-8 dark:bg-[#1B1B1F]'>
-        <h2 className='font-bold text-3xl'>Admin Dashboard</h2>
-        <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
-          {[1, 2, 3, 4].map((item, index) => (
-            <div key={index} className='h-[110px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
-          ))}
-        </div>
-        <div className='mt-7 h-[300px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
-        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
-        <div className='mt-7 h-[400px] w-full bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg' />
-      </div>
-    );
-  }
+      if (!overviewResult.ok || !overviewResult.data) {
+        setOverview(null)
+        setState('error')
+        return
+      }
+
+      setOverview(overviewResult.data)
+      setState('ready')
+    } catch {
+      if (request.current !== requestId) return
+      setOverview(null)
+      setState('error')
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (!user) return
+    load(range)
+  }, [user, range, load])
+
+  const totals = overview?.totals
+  const sparklines = overview?.sparklines
+  const loading = state === 'loading'
+
+  /** Cumulative accounts make the total-users sparkline read as growth. */
+  const usersSparkline = React.useMemo(() => {
+    let running = 0
+    return (sparklines?.users ?? []).map((value) => {
+      running += value
+      return running
+    })
+  }, [sparklines])
 
   return (
-    <div className='p-8 dark:bg-[#1B1B1F]'>
-      <h2 className='font-bold text-3xl'>Admin Dashboard</h2>
-      <p className='text-gray-500'>Manage users and monitor platform activity.</p>
+    <div>
+      <PageHeader
+        title='Overview'
+        subtitle='Platform health, growth and spending at a glance.'
+        actions={
+          <div className='relative'>
+            <label htmlFor='admin-range' className='sr-only'>
+              Date range
+            </label>
+            <select
+              id='admin-range'
+              value={range}
+              onChange={(event) => setRange(event.target.value as AdminRange)}
+              className='h-10 w-full appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+            >
+              {RANGE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className='pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground'
+              aria-hidden
+            />
+          </div>
+        }
+      />
 
-      {/* Overview Cards */}
-      <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
-          <div>
-            <h2 className='text-sm'>Total Users</h2>
-            <h2 className='font-bold text-2xl'>{stats?.totalUsers ?? 0}</h2>
-          </div>
-          <Users className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
-        </div>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
-          <div>
-            <h2 className='text-sm'>Total Expenses</h2>
-            <h2 className='font-bold text-2xl'>{stats?.totalExpenses ?? 0}</h2>
-          </div>
-          <ReceiptText className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
-        </div>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
-          <div>
-            <h2 className='text-sm'>Total Budgets</h2>
-            <h2 className='font-bold text-2xl'>{stats?.totalBudgets ?? 0}</h2>
-          </div>
-          <PiggyBank className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
-        </div>
-        <div className='p-7 border dark:border-[#585b5a] rounded-lg flex items-center justify-between'>
-          <div>
-            <h2 className='text-sm'>Signups (Week / Month)</h2>
-            <h2 className='font-bold text-2xl'>{stats?.signupsThisWeek ?? 0} / {stats?.signupsThisMonth ?? 0}</h2>
-          </div>
-          <UserPlus className='bg-primary p-3 h-12 w-12 rounded-full text-white' />
-        </div>
-      </div>
+      {state === 'error' ? (
+        <FadeIn className='mt-6'>
+          <DashboardErrorCard
+            message="We couldn't load the admin overview. Recent activity is still available below."
+            onRetry={() => load(range)}
+          />
+        </FadeIn>
+      ) : (
+        <>
+          <FadeIn className='mt-6 grid grid-cols-12 gap-5'>
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='Total users'
+              icon={Users}
+              value={totals?.users.current ?? 0}
+              format='count'
+              changePct={totals?.users.change ?? null}
+              caption='All registered accounts'
+              sparkline={usersSparkline}
+              color='var(--chart-1)'
+              loading={loading}
+            />
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='New signups'
+              icon={UserPlus}
+              value={totals?.newUsers.current ?? 0}
+              format='count'
+              changePct={totals?.newUsers.change ?? null}
+              caption={`${(totals?.newUsers.previous ?? 0).toLocaleString(
+                'en-US'
+              )} in the previous period`}
+              sparkline={sparklines?.users ?? []}
+              color='var(--chart-2)'
+              loading={loading}
+            />
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='Active users'
+              icon={Activity}
+              value={totals?.activeUsers.current ?? 0}
+              format='count'
+              changePct={totals?.activeUsers.change ?? null}
+              caption={`${(totals?.expenses.current ?? 0).toLocaleString(
+                'en-US'
+              )} expenses logged`}
+              sparkline={sparklines?.expenses ?? []}
+              color='var(--chart-3)'
+              loading={loading}
+            />
+            <StatCard
+              className='col-span-12 sm:col-span-6 xl:col-span-3'
+              label='Total spent'
+              icon={ReceiptText}
+              value={totals?.totalSpent.current ?? 0}
+              changePct={totals?.totalSpent.change ?? null}
+              caption={
+                totals ? (
+                  <>
+                    Previous:{' '}
+                    {formatCompactCurrency(totals.totalSpent.previous)}
+                  </>
+                ) : undefined
+              }
+              sparkline={sparklines?.spent ?? []}
+              color='var(--chart-4)'
+              loading={loading}
+            />
+          </FadeIn>
 
-      {/* Signups Line Chart */}
-      <div className='mt-7'>
-        <LineChartDashboard data={signups} />
-      </div>
+          <FadeIn className='mt-5 grid grid-cols-12 gap-5' delay={0.05}>
+            <GrowthCard
+              className='col-span-12 lg:col-span-8'
+              signupsSeries={overview?.signupsSeries ?? []}
+              expensesTotalSeries={overview?.expensesTotalSeries ?? []}
+              loading={loading}
+            />
+            <VerificationCard
+              className='col-span-12 lg:col-span-4'
+              verifiedRate={overview?.verifiedRate ?? 0}
+              totalUsers={overview?.totals.users.current ?? 0}
+              loading={loading}
+            />
+          </FadeIn>
 
-      {/* Daily Expenses Bar Chart */}
-      <div className='mt-7'>
-        <DailyExpensesBarChart data={dailyExpenses} />
-      </div>
+          <FadeIn className='mt-5 grid grid-cols-12 gap-5' delay={0.1}>
+            <SignupMethodCard
+              className='col-span-12 md:col-span-6 lg:col-span-4'
+              sources={
+                overview?.signupSources ?? { google: 0, email: 0 }
+              }
+              loading={loading}
+            />
+            <TopSpendersCard
+              className='col-span-12 md:col-span-6 lg:col-span-4'
+              users={topUsers}
+              loading={loading}
+            />
+            <RolesCard
+              className='col-span-12 md:col-span-6 lg:col-span-4'
+              roleSplit={overview?.roleSplit ?? { admins: 0, users: 0 }}
+              loading={loading}
+            />
+          </FadeIn>
+        </>
+      )}
 
-      {/* User Management Table */}
-      <div className='mt-7'>
-        <h2 className='font-bold text-lg mb-2'>User Management</h2>
-        <div className='overflow-x-auto'>
-          <div className='min-w-[800px]'>
-            <div className='grid grid-cols-7 bg-slate-200 dark:bg-inherit p-2'>
-              <h2 className='font-bold'>Name</h2>
-              <h2 className='font-bold'>Email</h2>
-              <h2 className='font-bold'>Role</h2>
-              <h2 className='font-bold'>Signed Up</h2>
-              <h2 className='font-bold'>Verified</h2>
-              <h2 className='font-bold'>Budgets / Expenses</h2>
-              <h2 className='font-bold'>Action</h2>
-            </div>
-            {users.map((u) => (
-              <div key={u.id} className='grid grid-cols-7 bg-slate-50 dark:bg-inherit p-2 items-center gap-3 md:gap-4'>
-                <h2 className='truncate'>{u.name}</h2>
-                <h2 className='truncate'>{u.email}</h2>
-                <h2>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>
-                    {u.role}
-                  </span>
-                </h2>
-                <h2>{new Date(u.createdAt).toLocaleDateString()}</h2>
-                <h2>{u.emailVerified ? '✓' : '✗'}</h2>
-                <h2>{u.budgetCount} / {u.expenseCount}</h2>
-                <h2>
-                  {u.id === session?.user?.id ? (
-                    <span className='text-gray-400 text-sm'>You</span>
-                  ) : (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button className='text-sm px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors'>
-                          {u.role === 'admin' ? (
-                            <ShieldOff className='w-4 h-4 text-orange-500 inline' />
-                          ) : (
-                            <ShieldCheck className='w-4 h-4 text-primary inline' />
-                          )}
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {u.role === 'admin' ? 'Demote User?' : 'Promote to Admin?'}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {u.role === 'admin'
-                              ? `Are you sure you want to remove admin privileges from ${u.name}?`
-                              : `Are you sure you want to make ${u.name} an admin? They will have full access to the admin dashboard.`
-                            }
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleRoleToggle(u.id, u.role)}>
-                            {u.role === 'admin' ? 'Demote' : 'Promote'}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-                </h2>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className='mt-7 mb-8'>
-        <h2 className='font-bold text-lg mb-2'>Recent Activity</h2>
-        <div className='overflow-x-auto'>
-          <div className='min-w-[700px]'>
-            <div className='grid grid-cols-5 bg-slate-200 dark:bg-inherit p-2'>
-              <h2 className='font-bold'>Type</h2>
-              <h2 className='font-bold'>Name</h2>
-              <h2 className='font-bold'>Amount</h2>
-              <h2 className='font-bold'>User</h2>
-              <h2 className='font-bold'>Date</h2>
-            </div>
-            {activity.length === 0 ? (
-              <div className='p-4 text-center text-gray-500'>No recent activity</div>
-            ) : (
-              activity.map((item, index) => (
-                <div key={`${item.type}-${item.id}-${index}`} className='grid grid-cols-5 bg-slate-50 dark:bg-inherit p-2 items-center gap-3'>
-                  <h2>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.type === 'expense' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'}`}>
-                      {item.type}
-                    </span>
-                  </h2>
-                  <h2 className='min-w-0 truncate' title={item.name}>{item.name}</h2>
-                  <h2 className='min-w-0 truncate' title={formatCurrency(item.amount)}>{formatCompactCurrency(item.amount)}</h2>
-                  <h2 className='min-w-0 truncate' title={item.userName}>{item.userName}</h2>
-                  <h2 className='min-w-0 truncate' title={item.createdAt || undefined}>{item.createdAt || '—'}</h2>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+      <FadeIn className='mt-5' delay={0.15}>
+        <RecentActivityCard items={activity} loading={loading} />
+      </FadeIn>
     </div>
-  );
+  )
 }
 
-export default AdminPage;
+export default AdminOverviewPage

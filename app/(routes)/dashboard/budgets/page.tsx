@@ -4,16 +4,28 @@ import BudgetList from './_components/BudgetList'
 import { useRouter } from 'next/navigation'
 import { Button } from '/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { PageHeader } from '../_components/PageHeader';
 
 
 function Budgets() {
   const router=useRouter();
   return (
-    <div className='p-6'>
-      <div className='flex gap-2 items-center'>
-        <Button onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>
-        <h2 className='font-bold text-3xl '>My Budgets</h2>
-      </div>
+    <div>
+      <PageHeader
+        title='Budgets'
+        subtitle='Plan what each part of your money is allowed to spend.'
+        actions={
+          <Button
+            variant='outline'
+            size='icon'
+            onClick={() => router.back()}
+            aria-label='Go back'
+            title='Back'
+          >
+            <ArrowLeft className='w-4 h-4' />
+          </Button>
+        }
+      />
       <BudgetList/>
     </div>
   )

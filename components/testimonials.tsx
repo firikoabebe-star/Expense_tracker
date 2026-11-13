@@ -36,9 +36,9 @@ export default function Testimonials() {
   return (
     <section
       style={{
-        background: "#fff",
+        background: "var(--background)",
         padding: "clamp(4rem,7vw,7rem) 0",
-        borderTop: "1px solid var(--clr-border)",
+        borderTop: "1px solid var(--border)",
       }}
     >
       <div
@@ -94,6 +94,7 @@ export default function Testimonials() {
             overflow: "hidden",
             marginBottom: "1.5rem",
             background: "var(--block-cream)",
+            border: "1px solid var(--border)",
             maxHeight: 340,
           }}
         >
@@ -124,12 +125,13 @@ export default function Testimonials() {
           {CARDS.map(({ text, name, role, avatar, highlight }, i) => (
             <div
               key={i}
+              className={
+                highlight ? "surface-inverse" : "dark:border dark:border-border"
+              }
               style={{
                 borderRadius: "var(--r-lg)",
                 padding: "clamp(1.5rem,3vw,2.25rem)",
-                background: highlight
-                  ? "var(--clr-brand)"
-                  : "var(--block-sage)",
+                background: highlight ? undefined : "var(--block-sage)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "1.5rem",
@@ -140,8 +142,9 @@ export default function Testimonials() {
                 {[...Array(5)].map((_, s) => (
                   <span
                     key={s}
+                    className={highlight ? "text-on-inverse-accent" : undefined}
                     style={{
-                      color: highlight ? "#E7E1B1" : "var(--clr-brand)",
+                      color: highlight ? undefined : "var(--clr-brand)",
                       fontSize: "0.875rem",
                     }}
                   >
@@ -158,7 +161,7 @@ export default function Testimonials() {
                   fontStyle: "italic",
                   fontSize: "clamp(0.9375rem,2vw,1.0625rem)",
                   color: highlight
-                    ? "rgba(255,255,255,0.92)"
+                    ? "var(--clr-text-on-dark)"
                     : "var(--clr-text)",
                   lineHeight: 1.65,
                   flex: 1,
@@ -182,7 +185,7 @@ export default function Testimonials() {
                     borderRadius: "50%",
                     flexShrink: 0,
                     background: highlight
-                      ? "rgba(231,225,177,0.18)"
+                      ? "var(--clr-accent)"
                       : "var(--clr-brand-light)",
                     display: "flex",
                     alignItems: "center",
@@ -190,7 +193,7 @@ export default function Testimonials() {
                     fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: "1.0625rem",
-                    color: highlight ? "#E7E1B1" : "var(--clr-brand)",
+                    color: "var(--clr-brand)",
                   }}
                 >
                   {avatar}
@@ -201,19 +204,20 @@ export default function Testimonials() {
                       fontFamily: "var(--font-body)",
                       fontWeight: 600,
                       fontSize: "0.9rem",
-                      color: highlight ? "#fff" : "var(--clr-text)",
+                      color: highlight
+                        ? "var(--clr-text-on-dark)"
+                        : "var(--clr-text)",
                     }}
                   >
                     {name}
                   </p>
                   <p
+                    className={highlight ? "text-on-inverse-muted" : undefined}
                     style={{
                       fontFamily: "var(--font-body)",
                       fontWeight: 300,
                       fontSize: "0.8125rem",
-                      color: highlight
-                        ? "rgba(255,255,255,0.55)"
-                        : "var(--clr-text-muted)",
+                      color: highlight ? undefined : "var(--clr-text-muted)",
                     }}
                   >
                     {role}

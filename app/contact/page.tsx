@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Mail } from "lucide-react";
 
 import LegalLayout, { LegalHeading, type LegalSection } from "/components/legal-layout";
+import { SUPPORT_EMAIL } from "/lib/site";
 import ContactForm from "./contact-form";
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default function ContactPage() {
       <LegalHeading id="contact-support">Contact support</LegalHeading>
       <p>
         Email us at{" "}
-        <a href="mailto:support@base.et">support@base.et</a>.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
       <p>We usually reply within 2 business days.</p>
       <div className="mt-5 flex items-start gap-3 rounded-lg border border-border bg-card p-4">
@@ -33,10 +34,10 @@ export default function ContactPage() {
         <div>
           <div className="text-sm font-semibold text-foreground">Email</div>
           <a
-            href="mailto:support@base.et"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="text-sm font-medium text-primary underline underline-offset-4"
           >
-            support@base.et
+            {SUPPORT_EMAIL}
           </a>
         </div>
       </div>

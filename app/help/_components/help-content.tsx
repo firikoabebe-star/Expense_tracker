@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, LifeBuoy, Mail, Search } from "lucide-react";
 
 import LegalLayout, { LegalHeading, type LegalSection } from "/components/legal-layout";
+import { SUPPORT_EMAIL } from "/lib/site";
 import {
   Accordion,
   AccordionContent,
@@ -168,8 +169,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         question: "How do I delete my account?",
-        answer:
-          "Email support@base.et to request deletion of your account.",
+        answer: `Email ${SUPPORT_EMAIL} to request deletion of your account.`,
       },
       {
         question: "Where can I read the full policy?",
@@ -275,10 +275,10 @@ export default function HelpContent() {
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
               Send us a message and we will get back to you, or email{" "}
               <a
-                href="mailto:support@base.et"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="font-medium text-primary underline underline-offset-4"
               >
-                support@base.et
+                {SUPPORT_EMAIL}
               </a>
               .
             </p>
@@ -290,11 +290,11 @@ export default function HelpContent() {
                 </Link>
               </Button>
               <a
-                href="mailto:support@base.et"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground no-underline transition-colors hover:text-foreground"
               >
                 <Mail aria-hidden="true" className="h-4 w-4" />
-                support@base.et
+                {SUPPORT_EMAIL}
               </a>
             </div>
           </div>

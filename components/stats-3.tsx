@@ -39,8 +39,8 @@ const MARQUEE_ITEMS = [
 export default function StatsSection() {
   return (
     <section
+      className="surface-inverse"
       style={{
-        background: "var(--clr-brand)",
         overflow: "hidden",
         position: "relative",
       }}
@@ -54,7 +54,8 @@ export default function StatsSection() {
           width: 320,
           height: 320,
           borderRadius: "50%",
-          background: "rgba(231,225,177,0.07)",
+          background:
+            "color-mix(in srgb, var(--clr-text-on-dark) 8%, transparent)",
           pointerEvents: "none",
         }}
       />
@@ -66,7 +67,8 @@ export default function StatsSection() {
           width: 200,
           height: 200,
           borderRadius: "50%",
-          background: "rgba(231,225,177,0.05)",
+          background:
+            "color-mix(in srgb, var(--clr-text-on-dark) 6%, transparent)",
           pointerEvents: "none",
         }}
       />
@@ -92,11 +94,11 @@ export default function StatsSection() {
             className="et-fade-up"
           >
             <p
+              className="text-on-inverse-accent"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: "clamp(2.25rem,4.5vw,3.25rem)",
-                color: "#E7E1B1",
                 letterSpacing: "-0.03em",
                 lineHeight: 1,
                 marginBottom: "0.5rem",
@@ -109,18 +111,18 @@ export default function StatsSection() {
                 fontFamily: "var(--font-body)",
                 fontWeight: 500,
                 fontSize: "0.9375rem",
-                color: "rgba(255,255,255,0.8)",
+                color: "var(--clr-text-on-dark)",
                 marginBottom: "0.25rem",
               }}
             >
               {label}
             </p>
             <p
+              className="text-on-inverse-muted"
               style={{
                 fontFamily: "var(--font-body)",
                 fontWeight: 300,
                 fontSize: "0.8rem",
-                color: "rgba(255,255,255,0.42)",
               }}
             >
               {note}
@@ -131,18 +133,21 @@ export default function StatsSection() {
 
       {/* Marquee strip */}
       <div
+        className="border-on-inverse"
         style={{
-          borderTop: "1px solid rgba(255,255,255,0.12)",
           padding: "1.125rem 0",
           overflow: "hidden",
           position: "relative",
           zIndex: 1,
+          borderTopWidth: 1,
+          borderTopStyle: "solid",
         }}
       >
         <div className="et-marquee-track">
           {MARQUEE_ITEMS.map((item, i) => (
             <span
               key={i}
+              className="text-on-inverse-accent"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -153,7 +158,6 @@ export default function StatsSection() {
                 fontSize: "0.875rem",
                 letterSpacing: "0.04em",
                 textTransform: "uppercase",
-                color: "rgba(231,225,177,0.55)",
                 whiteSpace: "nowrap",
               }}
             >
@@ -162,7 +166,8 @@ export default function StatsSection() {
                   width: 4,
                   height: 4,
                   borderRadius: "50%",
-                  background: "rgba(231,225,177,0.4)",
+                  background:
+                    "color-mix(in srgb, var(--clr-text-on-dark) 45%, transparent)",
                   display: "inline-block",
                   flexShrink: 0,
                 }}

@@ -187,7 +187,7 @@ function AddExpense({budgetId, refreshData}: AddExpenseProps) {
     }
 
   return (
-    <div className='border border-border bg-card p-5 rounded-lg hover:shadow-md'>
+    <div className='border border-border bg-card p-5 rounded-2xl shadow-sm hover:shadow-md'>
       <h2 className="font-bold text-lg">AddExpense</h2>
       <div className="mt-2 rounded-lg border border-border bg-accent p-3">
         <div className="flex items-center gap-2">
